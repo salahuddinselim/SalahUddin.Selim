@@ -1,0 +1,294 @@
+"use client"
+
+import { useEffect, useState } from "react"
+import { motion } from "framer-motion"
+import { ExternalLink } from "lucide-react"
+import { cn } from "@/lib/utils"
+import { GitHubStats } from "@/components/ui/github-stats"
+import { getSocialLinks, getEducation, type SocialLinkData, type EducationData } from "@/lib/sanity/fetch"
+import { getSocialIcon } from "@/lib/sanity/icon-map"
+
+const stats = [
+  { value: "5+", label: "Projects Built", color: "#00D9FF" },
+  { value: "5+", label: "GitHub Repos", color: "#8B5CF6" },
+  { value: "3.68", label: "CGPA / 4.0", color: "#22C55E" },
+  { value: "112+", label: "Credits Earned", color: "#F97316" },
+  { value: "2x", label: "Perfect GPA", color: "#EAB308" },
+]
+
+const fallbackSocials = [
+  { name: "GitHub", url: "https://github.com/salahuddinselim", icon: "github" },
+  { name: "LeetCode", url: "https://leetcode.com/salahuddinselim", icon: "leetcode" },
+  { name: "HackerRank", url: "https://hackerrank.com/salahuddinselim", icon: "hackerrank" },
+]
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.08 } },
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: "easeOut" as const } },
+}
+
+export function PersonaSection() {
+  const [socials, setSocials] = useState<SocialLinkData[]>(fallbackSocials)
+  const [education, setEducation] = useState<EducationData[]>([])
+
+  useEffect(() => {
+    getSocialLinks()
+      .then(setSocials)
+      .catch(() => setSocials(fallbackSocials))
+    getEducation().then(setEducation).catch(() => {})
+  }, [])
+
+  return (
+    <section className="relative min-h-screen px-4 sm:px-6 md:px-8 pb-24 max-w-[1200px] mx-auto">
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" as const }}
+        className="text-center mb-14"
+      >
+        <p className="text-[10px] font-mono uppercase tracking-[0.35em] text-cyan-400/50 mb-3">
+          WHO I AM
+        </p>
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white">
+          Persona
+        </h1>
+      </motion.div>
+
+      {/* Two-column: Bio + Education */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" as const, delay: 0.1 }}
+        className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10"
+      >
+        {/* Bio */}
+        <div>
+          <h2 className="text-xl font-bold text-white mb-4">
+            Hi, I&apos;m Salah Uddin
+          </h2>
+          <div className="space-y-3 text-sm text-white/50 leading-relaxed">
+            <p>
+              CSE student at{" "}
+              <span className="text-cyan-400">United International University</span>{" "}
+              &mdash; CGPA <span className="text-amber-400 font-bold">3.68 / 4.0</span>,
+              graduating 2026. I build at the intersection of full-stack development,
+              IoT systems, and algorithm design.
+            </p>
+            <p>
+              My current focus: full-stack engineering with JavaFX and PHP, IoT systems
+              with Arduino sensors, and AI-driven applications. Award-winning project at
+              UIU Spring 2025 Software Project Competition.
+            </p>
+          </div>
+          <div className="mt-5 flex flex-wrap gap-2">
+            <span className="text-[11px] font-mono text-white/50 px-3 py-1 rounded-full border border-white/[0.06] bg-white/[0.02]">
+              Dhaka, Bangladesh
+            </span>
+            <span className="text-[11px] font-mono text-white/50 px-3 py-1 rounded-full border border-white/[0.06] bg-white/[0.02]">
+              UIU · 2026
+            </span>
+          </div>
+        </div>
+
+        {/* Education */}
+        <div>
+          <h2 className="text-xl font-bold text-white mb-4">Education</h2>
+          <div className="space-y-3">
+            {education.length === 0 ? (
+              <p className="text-xs font-mono text-white/20">No education data yet</p>
+            ) : (
+              education.map((edu) => (
+                <div
+                  key={edu.institution}
+                  className="relative rounded-2xl border p-5 transition-all duration-300 cursor-default"
+                  style={{
+                    background: "rgba(255,255,255,0.02)",
+                    borderColor: "rgba(0,217,255,0.15)",
+                    boxShadow: "0 0 0 1px rgba(0,217,255,0.05), inset 0 1px 0 rgba(255,255,255,0.04)",
+                  }}
+                >
+                  <div className="flex items-start gap-4">
+                    <div
+                      className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 border"
+                      style={{
+                        background: "rgba(0,217,255,0.08)",
+                        borderColor: "rgba(0,217,255,0.20)",
+                      }}
+                    >
+                      <span className="text-cyan-400 font-black text-xs">{edu.abbreviation ?? "EDU"}</span>
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-white font-bold text-sm">{edu.institution}</h3>
+                      </div>
+                      <p className="text-cyan-400 text-xs mt-0.5">
+                        {edu.degree}{edu.field ? ` in ${edu.field}` : ""}
+                      </p>
+                      <p className="text-white/50 text-xs mt-1">
+                        {edu.startYear ?? ""}{edu.startYear && edu.endYear ? " – " : ""}{edu.endYear ?? ""}
+                      </p>
+                      {edu.gpa && (
+                        <div className="flex items-center gap-3 mt-2.5">
+                          <span className="text-[10px] text-white/50 font-mono uppercase tracking-wider">CGPA</span>
+                          <span className="text-amber-400 font-black text-base leading-none">{edu.gpa}</span>
+                          {edu.gpaScale && <span className="text-white/40 text-xs">/{edu.gpaScale}</span>}
+                          {edu.status === "ongoing" && (
+                            <span className="ml-auto text-[10px] font-mono px-2 py-0.5 rounded-full border border-cyan-400/20 text-cyan-400/60">Ongoing</span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Stats Grid */}
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 mb-10"
+      >
+        {stats.map((stat) => (
+          <motion.div
+            key={stat.label}
+            variants={itemVariants}
+            whileHover={{
+              y: -4,
+              borderColor: `${stat.color}50`,
+              boxShadow: `0 0 30px ${stat.color}15`,
+            }}
+            className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5 text-center transition-all duration-300"
+          >
+            <p
+              className="text-2xl sm:text-3xl font-bold tabular-nums drop-shadow-[0_0_12px_rgba(0,0,0,0.3)]"
+              style={{ color: stat.color }}
+            >
+              {stat.value}
+            </p>
+            <p className="mt-1 text-[10px] font-mono uppercase tracking-[0.15em] text-white/35">
+              {stat.label}
+            </p>
+          </motion.div>
+        ))}
+      </motion.div>
+
+      {/* GitHub Stats */}
+      <motion.div
+        variants={itemVariants}
+        initial="hidden"
+        animate="visible"
+        className="mb-10"
+      >
+        <h2 className="text-lg font-semibold text-white/80 mb-4">
+          GitHub Stats
+        </h2>
+        <GitHubStats />
+      </motion.div>
+
+      {/* Contribution Chart */}
+      <motion.div
+        variants={itemVariants}
+        initial="hidden"
+        animate="visible"
+        className="mb-10"
+      >
+        <div
+          className="rounded-2xl border overflow-hidden transition-all duration-300"
+          style={{
+            background: "rgba(255,255,255,0.02)",
+            borderColor: "rgba(34,197,94,0.20)",
+            boxShadow: "0 0 0 1px rgba(34,197,94,0.05), 0 8px 40px rgba(34,197,94,0.06), inset 0 1px 0 rgba(255,255,255,0.04)",
+          }}
+        >
+          <div
+            className="px-5 pt-4 pb-3 flex items-center justify-between"
+            style={{ borderBottom: "1px solid rgba(34,197,94,0.10)" }}
+          >
+            <div className="flex items-center gap-2">
+              <span
+                className="w-1.5 h-1.5 rounded-full"
+                style={{ background: "#22C55E", boxShadow: "0 0 6px #22C55E" }}
+              />
+              <span className="text-[10px] font-mono text-white/50 tracking-widest uppercase">
+                Daily Contributions
+              </span>
+            </div>
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 text-[10px] font-mono text-white/40 hover:text-green-400 transition-colors"
+              href="https://github.com/salahuddinselim"
+            >
+              salahuddinselim <ExternalLink className="w-2.5 h-2.5" />
+            </a>
+          </div>
+          <div className="px-5 py-4">
+            <img
+              src="https://ghchart.rshah.org/00d9ff/salahuddinselim"
+              alt="GitHub contribution chart"
+              className="w-full rounded-lg opacity-90"
+              style={{ filter: "brightness(1.1) contrast(1.05)" }}
+            />
+            <div className="flex items-center justify-end gap-2 mt-2">
+              <span className="text-[10px] font-mono text-white/30">Less</span>
+              {["rgba(34,197,94,0.15)", "rgba(34,197,94,0.35)", "rgba(34,197,94,0.60)", "rgba(34,197,94,0.85)", "#22C55E"].map((c) => (
+                <span key={c} className="w-2.5 h-2.5 rounded-sm" style={{ background: c }} />
+              ))}
+              <span className="text-[10px] font-mono text-white/30">More</span>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Find Me On */}
+      <motion.div
+        variants={itemVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <h2 className="text-lg font-semibold text-white/80 mb-4">
+          Find me on
+        </h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+          {socials.map((s) => {
+            const Icon = getSocialIcon(s.icon)
+            return (
+              <a
+                key={s.name}
+                href={s.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cn(
+                  "group flex flex-col gap-2 p-4 rounded-xl border transition-all duration-200 hover:scale-[1.02]",
+                  "border-white/[0.06] bg-white/[0.02]",
+                  "hover:border-cyan-400/30 hover:bg-cyan-400/[0.04]",
+                )}
+              >
+                <Icon className="w-4 h-4 text-white/70" />
+                <div>
+                  <div className="text-white/60 group-hover:text-white text-xs font-semibold transition-colors">
+                    {s.name}
+                  </div>
+                  <div className="text-white/30 text-[10px] font-mono mt-0.5">
+                    {s.url.replace(/^https?:\/\//, "").replace(/\/$/, "")}
+                  </div>
+                </div>
+              </a>
+            )
+          })}
+        </div>
+      </motion.div>
+    </section>
+  )
+}

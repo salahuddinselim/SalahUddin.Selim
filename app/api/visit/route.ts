@@ -1,0 +1,104 @@
+import { NextRequest, NextResponse } from "next/server"
+import { writeClient, VISITOR_DOC_ID, type VisitorStats, type CountryStat, type DeviceStat } from "@/lib/sanity/write"
+
+function getDevice(userAgent: string): string {
+  const ua = userAgent.toLowerCase()
+  if (ua.includes("iphone") || ua.includes("ipad")) return "iOS"
+  if (ua.includes("android")) return "Android"
+  if (ua.includes("mac")) return "macOS"
+  if (ua.includes("windows")) return "Windows"
+  if (ua.includes("linux")) return "Linux"
+  if (ua.includes("ubuntu")) return "Ubuntu"
+  return "Other"
+}
+
+async function lookupCountry(ip: string): Promise<{ name: string; code: string; flag: string } | null> {
+  try {
+    const res = await fetch(`http://ip-api.com/json/${ip}?fields=status,country,countryCode`, {
+      signal: AbortSignal.timeout(3000),
+    })
+    const data = await res.json()
+    if (data.status !== "success") return null
+    const code = data.countryCode as string
+    const flag = String.fromCodePoint(code.codePointAt(0)! - 0x41 + 0x1f1e6) + String.fromCodePoint(code.codePointAt(1)! - 0x41 + 0x1f1e6)
+    return { name: data.country as string, code, flag }
+  } catch {
+    return null
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
+      ?? request.headers.get("x-real-ip")
+      ?? "127.0.0.1"
+
+    const ua = request.headers.get("user-agent") ?? "Unknown"
+    const now = new Date()
+    const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`
+
+    const [countryInfo, currentDoc] = await Promise.all([
+      ip !== "127.0.0.1" ? lookupCountry(ip) : null,
+      writeClient.getDocument<VisitorStats>(VISITOR_DOC_ID).catch(() => null),
+    ])
+
+    let total = (currentDoc?.totalViews ?? 0) + 1
+    let thisMonthViews = (currentDoc?.thisMonthViews ?? 0) + 1
+    let thisMonth = currentDoc?.thisMonth ?? monthKey
+
+    if (thisMonth !== monthKey) {
+      thisMonthViews = 1
+      thisMonth = monthKey
+    }
+
+    let countries: CountryStat[] = currentDoc?.countries ?? []
+    let devices: DeviceStat[] = currentDoc?.devices ?? []
+    let monthlyHistory: { month: string; views: number }[] = currentDoc?.monthlyHistory ?? []
+
+    if (countryInfo) {
+      const existing = countries.find((c) => c.code === countryInfo.code)
+      if (existing) {
+        existing.count += 1
+      } else {
+        countries.push({ ...countryInfo, count: 1 })
+      }
+      countries.sort((a, b) => b.count - a.count)
+    }
+
+    const deviceName = getDevice(ua)
+    const existingDevice = devices.find((d) => d.name === deviceName)
+    if (existingDevice) {
+      existingDevice.count += 1
+    } else {
+      devices.push({ name: deviceName, count: 1 })
+    }
+    devices.sort((a, b) => b.count - a.count)
+
+    const historyEntry = monthlyHistory.find((h) => h.month === thisMonth)
+    if (historyEntry) {
+      historyEntry.views = thisMonthViews
+    } else {
+      monthlyHistory.push({ month: thisMonth, views: thisMonthViews })
+    }
+    monthlyHistory.sort((a, b) => a.month.localeCompare(b.month))
+
+    const payload = {
+      _id: VISITOR_DOC_ID,
+      _type: "visitorStats",
+      totalViews: total,
+      thisMonthViews,
+      thisMonth,
+      countries,
+      devices,
+      monthlyHistory,
+      lastUpdated: now.toISOString(),
+    }
+
+    await writeClient.createOrReplace(payload)
+
+    return NextResponse.json({ ok: true })
+  } catch (err) {
+    console.error("visit error:", err)
+    return NextResponse.json({ ok: false }, { status: 500 })
+  }
+}
