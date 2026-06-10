@@ -1,0 +1,313 @@
+"use client"
+
+import React, { useMemo, useRef, useEffect, useState, useCallback } from "react"
+import { motion, useSpring, useTransform, useMotionValue } from "framer-motion"
+import { ShootingStars } from "@/components/ui/shooting-stars"
+
+function det(index: number, offset = 0): number {
+  const x = Math.sin(index * 12345.6789 + offset * 9876.54321) * 10000
+  return x - Math.floor(x)
+}
+
+const dust = Array.from({ length: 30 }, (_, i) => ({
+  id: i,
+  size: det(i) * 3 + 1.5,
+  x: det(i, 1) * 100,
+  y: det(i, 2) * 100,
+  duration: det(i, 3) * 10 + 8,
+  delay: det(i, 4) * 6,
+}))
+
+function NebulaGlow({
+  className,
+  color,
+  index,
+}: {
+  className?: string
+  color: string
+  index: number
+}) {
+  const baseX = (det(index, 10) - 0.5) * 60
+  const baseY = (det(index, 11) - 0.5) * 60
+
+  return (
+    <motion.div
+      className={`absolute rounded-full pointer-events-none ${className}`}
+      style={{
+        background: color,
+        filter: "blur(100px)",
+      }}
+      animate={{
+        x: [baseX, baseX + 30, baseX - 20, baseX],
+        y: [baseY, baseY - 25, baseY + 15, baseY],
+      }}
+      transition={{
+        duration: 20,
+        repeat: Infinity,
+        ease: "easeInOut",
+      }}
+    />
+  )
+}
+
+interface BigStar {
+  x: number
+  y: number
+  radius: number
+  opacity: number
+  hue: number
+  twinkleSpeed: number
+  twinkleDelay: number
+}
+
+function generateConstellationStars(
+  width: number,
+  height: number,
+  count: number,
+): BigStar[] {
+  const stars: BigStar[] = []
+  for (let i = 0; i < count; i++) {
+    stars.push({
+      x: det(i) * width,
+      y: det(i, 1) * height,
+      radius: det(i, 2) * 1.2 + 0.6,
+      opacity: det(i, 3) * 0.5 + 0.5,
+      hue: det(i, 4) < 0.3 ? 40 : det(i, 5) < 0.5 ? 200 : 0,
+      twinkleSpeed: det(i, 6) * 2 + 1,
+      twinkleDelay: det(i, 7) * Math.PI * 2,
+    })
+  }
+  return stars
+}
+
+function buildConstellations(
+  stars: BigStar[],
+  width: number,
+  height: number,
+  connectionDistance: number,
+) {
+  const lines: Array<[number, number, number, number]> = []
+  for (let i = 0; i < stars.length; i++) {
+    const s = stars[i]
+    const neighbors = stars
+      .map((t, j) => ({ ...t, j }))
+      .filter((_, j) => j !== i)
+      .map((t) => ({
+        dist: Math.hypot(s.x - t.x, s.y - t.y),
+        j: t.j,
+      }))
+      .filter((t) => t.dist < connectionDistance)
+      .sort((a, b) => a.dist - b.dist)
+      .slice(0, 2)
+
+    for (const n of neighbors) {
+      const t = stars[n.j]
+      if (i < n.j) {
+        lines.push([s.x, s.y, t.x, t.y])
+      }
+    }
+  }
+  return lines
+}
+
+export function SpaceBackground() {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const [size, setSize] = useState({ width: 0, height: 0 })
+
+  const mouseX = useMotionValue(0)
+  const mouseY = useMotionValue(0)
+  const smoothX = useSpring(mouseX, { stiffness: 80, damping: 20 })
+  const smoothY = useSpring(mouseY, { stiffness: 80, damping: 20 })
+  const offsetX = useTransform(smoothX, [-1, 1], [-8, 8])
+  const offsetY = useTransform(smoothY, [-1, 1], [-8, 8])
+
+  const [bigStars, setBigStars] = useState<BigStar[]>([])
+  const [constellations, setConstellations] = useState<
+    Array<[number, number, number, number]>
+  >([])
+
+  const nebulaPositions = useMemo(
+    () => [
+      { className: "top-1/4 left-1/4 w-[500px] h-[500px]" },
+      { className: "bottom-1/3 right-1/4 w-[600px] h-[600px]" },
+      { className: "top-1/2 left-2/3 w-[400px] h-[400px]" },
+    ],
+    [],
+  )
+
+  useEffect(() => {
+    const handleMouse = (e: MouseEvent) => {
+      const nx = (e.clientX / window.innerWidth) * 2 - 1
+      const ny = (e.clientY / window.innerHeight) * 2 - 1
+      mouseX.set(nx)
+      mouseY.set(ny)
+    }
+    window.addEventListener("mousemove", handleMouse)
+    return () => window.removeEventListener("mousemove", handleMouse)
+  }, [mouseX, mouseY])
+
+  useEffect(() => {
+    const w = window.innerWidth
+    const h = window.innerHeight
+    setSize({ width: w, height: h })
+    const stars = generateConstellationStars(w, h, 120)
+    setBigStars(stars)
+    setConstellations(buildConstellations(stars, w, h, 200))
+  }, [])
+
+  const draw = useCallback(
+    (ctx: CanvasRenderingContext2D, offX: number, offY: number) => {
+      ctx.clearRect(0, 0, size.width, size.height)
+
+      for (const [x1, y1, x2, y2] of constellations) {
+        const dx = x2 - x1
+        const dy = y2 - y1
+        const len = Math.hypot(dx, dy)
+        const alpha = Math.max(0, Math.min(0.15, 0.15 * (1 - len / 200)))
+        ctx.beginPath()
+        ctx.moveTo(x1 + offX, y1 + offY)
+        ctx.lineTo(x2 + offX, y2 + offY)
+        ctx.strokeStyle = `rgba(0, 217, 255, ${alpha})`
+        ctx.lineWidth = 0.5
+        ctx.stroke()
+      }
+
+      const now = Date.now() / 1000
+      for (const star of bigStars) {
+        const twinkle =
+          0.35 +
+          Math.abs(
+            Math.sin(
+              now / star.twinkleSpeed + star.twinkleDelay,
+            ) * 0.65,
+          )
+        const alpha = star.opacity * twinkle
+        const x = star.x + offX
+        const y = star.y + offY
+
+        if (star.hue > 0) {
+          ctx.beginPath()
+          ctx.arc(x, y, star.radius * 3, 0, Math.PI * 2)
+          ctx.fillStyle = `hsla(${star.hue}, 80%, 70%, ${alpha * 0.12})`
+          ctx.fill()
+        }
+
+        ctx.beginPath()
+        ctx.arc(x, y, star.radius, 0, Math.PI * 2)
+        const color =
+          star.hue > 0
+            ? `hsla(${star.hue}, 80%, 85%, ${alpha})`
+            : `rgba(255, 255, 255, ${alpha})`
+        ctx.fillStyle = color
+        ctx.fill()
+
+        if (star.radius > 1.2) {
+          ctx.beginPath()
+          ctx.arc(x, y, star.radius * 1.5, 0, Math.PI * 2)
+          ctx.fillStyle = `rgba(255, 255, 255, ${alpha * 0.08})`
+          ctx.fill()
+        }
+      }
+    },
+    [bigStars, constellations, size],
+  )
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas || size.width === 0) return
+    const ctx = canvas.getContext("2d")
+    if (!ctx) return
+
+    let animId: number
+    const render = () => {
+      ctx.clearRect(0, 0, size.width, size.height)
+      draw(ctx, offsetX.get(), offsetY.get())
+      animId = requestAnimationFrame(render)
+    }
+    render()
+    return () => cancelAnimationFrame(animId)
+  }, [draw, size, offsetX, offsetY])
+
+  return (
+    <div className="fixed inset-0 overflow-hidden pointer-events-none">
+      {/* Layer 1: Deep dark gradient background */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse 80% 80% at 50% -20%, rgba(0, 217, 255, 0.08), transparent), radial-gradient(ellipse 60% 50% at 20% 80%, rgba(139, 92, 246, 0.06), transparent), #050816",
+        }}
+      />
+
+      {/* Layer 2: Big stars + constellation canvas */}
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0"
+        width={size.width}
+        height={size.height}
+      />
+
+      {/* Layer 4: Shooting stars */}
+      <ShootingStars
+        minSpeed={8}
+        maxSpeed={25}
+        minDelay={1500}
+        maxDelay={5000}
+        starColor="#00D9FF"
+        trailColor="#00D9FF"
+        starWidth={12}
+        starHeight={1.5}
+      />
+      <ShootingStars
+        minSpeed={6}
+        maxSpeed={20}
+        minDelay={2000}
+        maxDelay={6000}
+        starColor="#8B5CF6"
+        trailColor="#8B5CF6"
+        starWidth={8}
+        starHeight={1}
+      />
+
+      {/* Layer 5: Nebula glows */}
+      {nebulaPositions.map((pos, i) => (
+        <NebulaGlow
+          key={i}
+          index={i}
+          className={pos.className}
+          color={
+            i === 0
+              ? "radial-gradient(circle, rgba(0, 217, 255, 0.1), transparent 70%)"
+              : i === 1
+                ? "radial-gradient(circle, rgba(139, 92, 246, 0.08), transparent 70%)"
+                : "radial-gradient(circle, rgba(0, 217, 255, 0.06), transparent 70%)"
+          }
+        />
+      ))}
+
+      {/* Layer 6: Dust particles */}
+      {dust.map((d) => (
+        <motion.div
+          key={d.id}
+          className="absolute rounded-full bg-white/20"
+          style={{
+            width: `${d.size}px`,
+            height: `${d.size}px`,
+            left: `${d.x}%`,
+            top: `${d.y}%`,
+          }}
+          animate={{
+            opacity: [0, 0.4, 0],
+            y: [0, -15, 0],
+          }}
+          transition={{
+            duration: d.duration,
+            delay: d.delay,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+      ))}
+    </div>
+  )
+}
