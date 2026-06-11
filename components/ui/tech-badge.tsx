@@ -1,40 +1,72 @@
 "use client"
 
 import type { ReactNode } from "react"
+import { cn } from "@/lib/utils"
 
-interface TechBadgeProps {
+export interface TechBadgeItem {
   name: string
+  logoSvg: ReactNode
   brandColor: string
-  icon: ReactNode
-  className?: string
   textColor?: string
+}
+
+interface TechBadgeProps extends TechBadgeItem {
+  className?: string
 }
 
 export function TechBadge({
   name,
+  logoSvg,
   brandColor,
-  icon,
   className = "",
   textColor,
 }: TechBadgeProps) {
   return (
     <div
-      className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 backdrop-blur-sm select-none ${className}`}
+      className={cn(
+        "inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 backdrop-blur-sm select-none bg-slate-950/60",
+        className,
+      )}
       style={{
-        background: "rgba(10, 15, 30, 0.6)",
-        borderColor: `${brandColor}55`,
-        boxShadow: `0 0 12px ${brandColor}15, inset 0 0 20px ${brandColor}08`,
+        background: "var(--glass-badge-bg)",
+        borderColor: `${brandColor}66`,
+        backdropFilter: "blur(var(--glass-badge-blur))",
+        WebkitBackdropFilter: "blur(var(--glass-badge-blur))",
+        boxShadow: `0 0 14px ${brandColor}26, inset 0 0 0 1px rgba(255,255,255,0.03)`,
       }}
     >
-      <span className="w-5 h-5 flex items-center justify-center shrink-0" style={{ color: brandColor }}>
-        {icon}
+      <span className="w-5 h-5 flex items-center justify-center shrink-0 [&>svg]:w-5 [&>svg]:h-5" style={{ color: brandColor }}>
+        {logoSvg}
       </span>
       <span
-        className="text-xs font-medium tracking-wide whitespace-nowrap"
+        className="text-sm font-medium tracking-tight whitespace-nowrap"
         style={{ color: textColor ?? brandColor }}
       >
         {name}
       </span>
+    </div>
+  )
+}
+
+interface TechBadgeRowProps {
+  items: TechBadgeItem[]
+  className?: string
+  badgeClassName?: string
+}
+
+export function TechBadgeRow({ items, className, badgeClassName }: TechBadgeRowProps) {
+  return (
+    <div className={cn("flex flex-wrap items-center gap-2", className)}>
+      {items.map((item) => (
+        <TechBadge
+          key={item.name}
+          name={item.name}
+          logoSvg={item.logoSvg}
+          brandColor={item.brandColor}
+          textColor={item.textColor}
+          className={badgeClassName}
+        />
+      ))}
     </div>
   )
 }

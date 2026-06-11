@@ -2,38 +2,13 @@
 
 import { useMemo, useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import {
-  ReactIcon,
-  NodejsIcon,
-  DockerIcon,
-  PythonIcon,
-  GitIcon,
-  TailwindIcon,
-  JavaIcon,
-  MySQLIcon,
-  TypeScriptIcon,
-} from "@/lib/tech-icons"
-
-const technologies = [
-  { name: "Python", icon: PythonIcon },
-  { name: "Java", icon: JavaIcon },
-  { name: "Git", icon: GitIcon },
-  { name: "MySQL", icon: MySQLIcon },
-  { name: "JavaScript", icon: TypeScriptIcon },
-  { name: "Node.js", icon: NodejsIcon },
-  { name: "Tailwind", icon: TailwindIcon },
-  { name: "React", icon: ReactIcon },
-  { name: "Docker", icon: DockerIcon },
-  { name: "C++", icon: null },
-  { name: "PHP", icon: null },
-  { name: "Arduino", icon: null },
-  { name: "JavaFX", icon: null },
-]
+import type { IconType } from "react-icons"
+import { TECH_STACK } from "@/lib/tech-stack"
 
 const ringConfig = [
-  { indices: [0, 1, 2, 3], radius: 130, duration: 40, dir: 1 },
-  { indices: [4, 5, 6, 7, 8], radius: 230, duration: 55, dir: -1 },
-  { indices: [9, 10, 11, 12], radius: 330, duration: 70, dir: 1 },
+  { indices: [0, 1, 2], radius: 130, duration: 40, dir: 1 },
+  { indices: [3, 4, 5, 6], radius: 225, duration: 55, dir: -1 },
+  { indices: [7, 8, 9], radius: 320, duration: 68, dir: 1 },
 ]
 
 function orbitKeyframes(
@@ -54,7 +29,8 @@ function orbitKeyframes(
 
 interface CardConfig {
   name: string
-  Icon: React.ComponentType<React.SVGProps<SVGSVGElement>> | null
+  Icon: IconType | null
+  iconColor: string
   ringIndex: number
   startAngle: number
   radius: number
@@ -64,6 +40,7 @@ interface CardConfig {
 
 export function TechOrbit() {
   const [scale, setScale] = useState(1)
+  const [reducedMotion, setReducedMotion] = useState(false)
 
   useEffect(() => {
     const handleResize = () => {
@@ -79,6 +56,14 @@ export function TechOrbit() {
     return () => window.removeEventListener("resize", handleResize)
   }, [])
 
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)")
+    const handleChange = () => setReducedMotion(media.matches)
+    handleChange()
+    media.addEventListener("change", handleChange)
+    return () => media.removeEventListener("change", handleChange)
+  }, [])
+
   const cards = useMemo<CardConfig[]>(() => {
     const result: CardConfig[] = []
     for (const ring of ringConfig) {
@@ -86,8 +71,9 @@ export function TechOrbit() {
       ring.indices.forEach((techIndex, i) => {
         const startAngle = (i / count) * Math.PI * 2
         result.push({
-          name: technologies[techIndex].name,
-          Icon: technologies[techIndex].icon,
+          name: TECH_STACK[techIndex].name,
+          Icon: TECH_STACK[techIndex].icon,
+          iconColor: TECH_STACK[techIndex].brandColor,
           ringIndex: ringConfig.indexOf(ring),
           startAngle,
           radius: ring.radius,
@@ -125,22 +111,22 @@ export function TechOrbit() {
                 left: "50%",
               }}
               animate={{
-                x: xs,
-                y: ys,
+                x: reducedMotion ? xs[0] : xs,
+                y: reducedMotion ? ys[0] : ys,
               }}
               transition={{
                 duration: card.duration,
-                repeat: Infinity,
+                repeat: reducedMotion ? 0 : Infinity,
                 ease: "linear",
               }}
             >
               <motion.div
                 className="flex flex-col items-center justify-center gap-1 w-full h-full rounded-[16px] cursor-pointer"
                 style={{
-                  background: "rgba(17, 24, 39, 0.65)",
-                  backdropFilter: "blur(16px)",
-                  WebkitBackdropFilter: "blur(16px)",
-                  border: "1px solid rgba(255, 255, 255, 0.06)",
+                  background: "var(--glass-badge-bg)",
+                  backdropFilter: "blur(var(--glass-badge-blur))",
+                  WebkitBackdropFilter: "blur(var(--glass-badge-blur))",
+                  border: "1px solid var(--glass-badge-border)",
                 }}
                 whileHover={{
                   scale: 1.1,
@@ -151,9 +137,10 @@ export function TechOrbit() {
               >
                 {card.Icon ? (
                   <card.Icon
-                    width={28}
-                    height={28}
+                    width={24}
+                    height={24}
                     className="shrink-0"
+                    style={{ color: card.iconColor }}
                   />
                 ) : (
                   <div className="w-7 h-7 rounded-lg bg-accent/10 flex items-center justify-center">

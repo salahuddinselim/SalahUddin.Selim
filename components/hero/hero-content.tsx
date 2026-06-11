@@ -38,9 +38,18 @@ export function HeroContent() {
   const [profile, setProfile] = useState<SanityProfile | null>(null)
   const [roleIndex, setRoleIndex] = useState(0)
   const [largeIndex, setLargeIndex] = useState(0)
+  const [reducedMotion, setReducedMotion] = useState(false)
 
   useEffect(() => {
     getProfile().then(setProfile).catch(() => {})
+  }, [])
+
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)")
+    const handleChange = () => setReducedMotion(media.matches)
+    handleChange()
+    media.addEventListener("change", handleChange)
+    return () => media.removeEventListener("change", handleChange)
   }, [])
 
   const tick = useCallback(() => {
@@ -52,14 +61,16 @@ export function HeroContent() {
   }, [])
 
   useEffect(() => {
+    if (reducedMotion) return
     const interval = setInterval(tick, 2500)
     return () => clearInterval(interval)
-  }, [tick])
+  }, [tick, reducedMotion])
 
   useEffect(() => {
+    if (reducedMotion) return
     const interval = setInterval(tickLarge, 3000)
     return () => clearInterval(interval)
-  }, [tickLarge])
+  }, [tickLarge, reducedMotion])
 
   return (
     <motion.section

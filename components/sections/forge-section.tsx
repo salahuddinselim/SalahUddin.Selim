@@ -71,7 +71,7 @@ export function ForgeSection() {
           transition={{ duration: 0.6, ease: "easeOut", delay: 0.15 }}
           className="relative w-full h-[600px] sm:h-[680px] mb-16"
         >
-          <SkillCloud activeCategory={activeCategory} />
+          <SkillCloud activeCategory={activeCategory} onCategorySelect={handleCategoryClick} />
         </motion.div>
 
         {/* Filter Buttons */}
@@ -83,7 +83,7 @@ export function ForgeSection() {
         >
           <button
             onClick={() => setActiveCategory(null)}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 border"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60"
             style={
               activeCategory === null
                 ? {
@@ -116,7 +116,7 @@ export function ForgeSection() {
               <button
                 key={catId}
                 onClick={() => handleCategoryClick(catId)}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 border"
+                className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60"
                 style={
                   isActive
                     ? {

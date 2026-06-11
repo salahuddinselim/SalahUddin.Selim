@@ -2,12 +2,16 @@
 
 import { useRef, useEffect } from "react"
 import { renderToStaticMarkup } from "react-dom/server"
+import type { ReactNode } from "react"
 import { getSkillIcon } from "@/lib/sanity/icon-map"
 
 interface TagItem {
   name: string
   category: string
+  brandColor?: string
+  textColor?: string
   iconName?: string
+  logoSvg?: ReactNode | string
   initials?: string
 }
 
@@ -15,6 +19,7 @@ interface TagCloudProps {
   items: TagItem[]
   categoryColors: Record<string, string>
   activeCategory?: string | null
+  onTagClick?: (category: string, name: string) => void
   className?: string
 }
 
@@ -25,6 +30,7 @@ interface Tag3D {
   name: string
   category: string
   color: string
+  textColor: string
   label: string
   iconName?: string
 }
@@ -105,6 +111,7 @@ export function TagCloud({
   items,
   categoryColors,
   activeCategory = null,
+  onTagClick,
   className = "",
 }: TagCloudProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -120,6 +127,16 @@ export function TagCloud({
   const wireframeRef = useRef(generateWireframe())
   const iconCanvasesRef = useRef<Map<number, HTMLCanvasElement>>(new Map())
   const iconLoadedRef = useRef<Map<number, boolean>>(new Map())
+  const hitRegionsRef = useRef<Array<{ x: number; y: number; w: number; h: number; category: string; name: string }>>([])
+  const hoverRegionRef = useRef<{ x: number; y: number; w: number; h: number; category: string; name: string } | null>(null)
+  const isHoveringRef = useRef(false)
+  const reducedMotionRef = useRef(false)
+  const maxFpsRef = useRef(60)
+  const onTagClickRef = useRef(onTagClick)
+
+  useEffect(() => {
+    onTagClickRef.current = onTagClick
+  }, [onTagClick])
 
   useEffect(() => {
     const pts = fibonacciSphere(items.length)
@@ -129,8 +146,9 @@ export function TagCloud({
       z: pts[i].z,
       name: item.name,
       category: item.category,
-      color: categoryColors[item.category] || "#00D9FF",
-      label: item.initials || item.name.slice(0, 2).toUpperCase(),
+      color: item.brandColor || categoryColors[item.category] || "#00D9FF",
+      textColor: item.textColor || item.brandColor || categoryColors[item.category] || "#E2E8F0",
+      label: item.name || item.initials || item.name.slice(0, 2).toUpperCase(),
       iconName: item.iconName,
     }))
 
@@ -138,11 +156,19 @@ export function TagCloud({
     iconCanvasesRef.current = new Map()
     iconLoadedRef.current = new Map()
     items.forEach((item, i) => {
-      if (!item.iconName) return
+      if (!item.iconName && !item.logoSvg) return
       try {
-        const Icon = getSkillIcon(item.iconName)
-        if (!Icon) return
-        const svgString = renderToStaticMarkup(<Icon />)
+        let svgString = ""
+        if (item.logoSvg) {
+          svgString =
+            typeof item.logoSvg === "string"
+              ? item.logoSvg
+              : renderToStaticMarkup(<>{item.logoSvg}</>)
+        } else {
+          const Icon = getSkillIcon(item.iconName)
+          if (!Icon) return
+          svgString = renderToStaticMarkup(<Icon />)
+        }
         const offscreen = document.createElement("canvas")
         offscreen.width = 80
         offscreen.height = 80
@@ -173,6 +199,15 @@ export function TagCloud({
     const ctx = canvas.getContext("2d")!
     let isActive = true
     const { rings, meridians } = wireframeRef.current
+    const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)")
+    const setMotionPrefs = () => {
+      reducedMotionRef.current = reducedMotionQuery.matches
+      autoRotateRef.current = !reducedMotionRef.current && !isHoveringRef.current
+      const lowPower = (navigator.hardwareConcurrency || 8) <= 4
+      maxFpsRef.current = reducedMotionRef.current ? 24 : lowPower ? 30 : 60
+    }
+    setMotionPrefs()
+    reducedMotionQuery.addEventListener("change", setMotionPrefs)
 
     function resize() {
       const c = canvasRef.current
@@ -206,7 +241,6 @@ export function TagCloud({
           const r = rotate3D(pt.x, pt.y, pt.z, rot.x, rot.y)
           const sx = cx + r.x * radius
           const sy = cy + r.y * radius
-          const zDepth = (r.z + 1) / 2
           if (r.z < 0.05 && r.z > -0.05 && !started) continue
           if (!started) {
             ctx.moveTo(sx, sy)
@@ -248,29 +282,39 @@ export function TagCloud({
       cx: number,
       cy: number,
       color: string,
+      textColor: string,
       label: string,
       opacity: number,
       scale: number,
       iconCanvas?: HTMLCanvasElement,
       iconLoaded?: boolean,
-    ) {
+    ): { width: number; height: number } | null {
       const r = BADGE_RADIUS * scale
-      if (r < 3) return
+      if (r < 3) return null
       const hasIcon = iconCanvas && iconLoaded
-      const pillW = hasIcon ? r * 3.2 : r * 2.2
       const pillH = r * 1.3
+      const fontSize = Math.max(8, Math.round(10 * scale))
+      const textApproxW = Math.max(fontSize * 2.6, Math.min(fontSize * 9.5, label.length * fontSize * 0.58))
+      const horizontalPad = pillH * 0.34
+      const iconSize = pillH * 0.62
+      const gap = pillH * 0.24
+      const pillW = hasIcon
+        ? horizontalPad + iconSize + gap + textApproxW + horizontalPad
+        : horizontalPad + textApproxW + horizontalPad
       const pillR = pillH / 2
 
       ctx.save()
       ctx.translate(cx, cy)
       ctx.globalAlpha = opacity
+      const blurPx = Math.max(0, (1 - scale) * 1.4)
+      ctx.filter = blurPx > 0.2 ? `blur(${blurPx.toFixed(2)}px)` : "none"
 
       // outer glow
       ctx.shadowColor = color
       ctx.shadowBlur = 10 * scale
 
       // glassmorphism dark background
-      ctx.fillStyle = "rgba(10, 15, 30, 0.55)"
+      ctx.fillStyle = "rgba(10, 15, 30, 0.6)"
 
       ctx.beginPath()
       ctx.roundRect(-pillW / 2, -pillH / 2, pillW, pillH, pillR)
@@ -278,8 +322,8 @@ export function TagCloud({
 
       // subtle inner glow overlay
       const grad = ctx.createLinearGradient(0, -pillH / 2, 0, 0)
-      grad.addColorStop(0, `${color}18`)
-      grad.addColorStop(1, `${color}04`)
+      grad.addColorStop(0, `${color}12`)
+      grad.addColorStop(1, "rgba(255,255,255,0)")
       ctx.fillStyle = grad
       ctx.beginPath()
       ctx.roundRect(-pillW / 2, -pillH / 2, pillW, pillH, pillR)
@@ -288,25 +332,23 @@ export function TagCloud({
       // pill border
       ctx.shadowBlur = 0
       ctx.strokeStyle = color
-      ctx.lineWidth = 1.2 * scale
-      ctx.globalAlpha = opacity * 0.5
+      ctx.lineWidth = Math.max(0.8, 1.05 * scale)
+      ctx.globalAlpha = opacity * 0.62
       ctx.beginPath()
       ctx.roundRect(-pillW / 2, -pillH / 2, pillW, pillH, pillR)
       ctx.stroke()
 
       if (hasIcon) {
         // icon on the left
-        const iconSize = pillH * 0.6
-        const iconX = -pillW / 2 + pillR * 0.5
+        const iconX = -pillW / 2 + horizontalPad
         const iconY = -iconSize / 2
         ctx.shadowBlur = 0
         ctx.globalAlpha = opacity
         ctx.drawImage(iconCanvas, iconX, iconY, iconSize, iconSize)
 
         // text on the right of icon
-        const textX = iconX + iconSize + pillR * 0.35
-        const fontSize = Math.max(8, Math.round(9 * scale))
-        ctx.fillStyle = color
+        const textX = iconX + iconSize + gap
+        ctx.fillStyle = textColor
         ctx.globalAlpha = opacity
         ctx.textAlign = "left"
         ctx.textBaseline = "middle"
@@ -315,20 +357,28 @@ export function TagCloud({
       } else {
         // centered text fallback
         ctx.shadowBlur = 0
-        const fontSize = Math.max(7, Math.round(10 * scale))
-        ctx.fillStyle = color
+        ctx.fillStyle = textColor
         ctx.globalAlpha = opacity
         ctx.textAlign = "center"
         ctx.textBaseline = "middle"
-        ctx.font = `700 ${fontSize}px "DM Mono", ui-monospace, monospace`
+        ctx.font = `600 ${fontSize}px "Inter", "DM Sans", system-ui, sans-serif`
         ctx.fillText(label, 0, 1)
       }
 
       ctx.restore()
+      return { width: pillW, height: pillH }
     }
 
-    function render() {
+    let lastFrameTs = 0
+    function render(ts: number) {
       if (!isActive) return
+      const minFrameGap = 1000 / maxFpsRef.current
+      if (ts - lastFrameTs < minFrameGap) {
+        rafRef.current = requestAnimationFrame(render)
+        return
+      }
+      lastFrameTs = ts
+
       const { w, h } = sizeRef.current
       const radius = Math.min(w, h) * SPHERE_RADIUS
       const rot = rotationRef.current
@@ -367,6 +417,7 @@ export function TagCloud({
         .sort((a, b) => a.rz - b.rz)
 
       // Draw badges
+      hitRegionsRef.current = []
       for (const tag of sorted) {
         const sx = cx + tag.rx * radius
         const sy = cy + tag.ry * radius
@@ -379,16 +430,27 @@ export function TagCloud({
         const iconCanvas = idx >= 0 ? iconCanvasesRef.current.get(idx) : undefined
         const iconLoaded = idx >= 0 ? iconLoadedRef.current.get(idx) : undefined
 
-        drawPillBadge(
+        const dims = drawPillBadge(
           sx,
           sy,
           tag.color,
+          tag.textColor,
           tag.label,
           isInactive ? opacity * 0.15 : opacity,
           isInactive ? scale * 0.5 : scale,
           iconCanvas,
           iconLoaded,
         )
+        if (dims && (!activeCategory || tag.category === activeCategory)) {
+          hitRegionsRef.current.push({
+            x: sx - dims.width / 2,
+            y: sy - dims.height / 2,
+            w: dims.width,
+            h: dims.height,
+            category: tag.category,
+            name: tag.name,
+          })
+        }
       }
 
       // center glow dot
@@ -409,6 +471,7 @@ export function TagCloud({
 
     const handleDown = (x: number, y: number) => {
       isDragging.current = true
+      autoRotateRef.current = false
       velocityRef.current = { x: 0, y: 0 }
       lastPos.current = { x, y }
     }
@@ -425,11 +488,41 @@ export function TagCloud({
 
     const handleUp = () => {
       isDragging.current = false
+      if (!reducedMotionRef.current && !isHoveringRef.current) {
+        autoRotateRef.current = true
+      }
     }
 
     const onMouseDown = (e: MouseEvent) => handleDown(e.clientX, e.clientY)
     const onMouseMove = (e: MouseEvent) => handleMove(e.clientX, e.clientY)
     const onMouseUp = () => handleUp()
+    const onMouseEnter = () => {
+      isHoveringRef.current = true
+      if (!reducedMotionRef.current) autoRotateRef.current = false
+    }
+    const onMouseLeaveCanvas = () => {
+      isHoveringRef.current = false
+      hoverRegionRef.current = null
+      if (!reducedMotionRef.current) autoRotateRef.current = true
+      if (!isDragging.current && containerRef.current) {
+        containerRef.current.style.cursor = "grab"
+      }
+    }
+    const onMouseMoveCanvas = (e: MouseEvent) => {
+      const rect = canvas.getBoundingClientRect()
+      const x = e.clientX - rect.left
+      const y = e.clientY - rect.top
+      const region = [...hitRegionsRef.current].reverse().find((r) => x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h) || null
+      hoverRegionRef.current = region
+      if (!isDragging.current && containerRef.current) {
+        containerRef.current.style.cursor = region ? "pointer" : "grab"
+      }
+    }
+    const onClickCanvas = () => {
+      if (hoverRegionRef.current && onTagClickRef.current) {
+        onTagClickRef.current(hoverRegionRef.current.category, hoverRegionRef.current.name)
+      }
+    }
 
     const onTouchStart = (e: TouchEvent) => {
       if (e.touches.length === 1) handleDown(e.touches[0].clientX, e.touches[0].clientY)
@@ -440,6 +533,10 @@ export function TagCloud({
     const onTouchEnd = () => handleUp()
 
     canvas.addEventListener("mousedown", onMouseDown)
+    canvas.addEventListener("mouseenter", onMouseEnter)
+    canvas.addEventListener("mouseleave", onMouseLeaveCanvas)
+    canvas.addEventListener("mousemove", onMouseMoveCanvas)
+    canvas.addEventListener("click", onClickCanvas)
     window.addEventListener("mousemove", onMouseMove)
     window.addEventListener("mouseup", onMouseUp)
     canvas.addEventListener("touchstart", onTouchStart, { passive: true })
@@ -450,7 +547,12 @@ export function TagCloud({
       isActive = false
       cancelAnimationFrame(rafRef.current)
       ro.disconnect()
+      reducedMotionQuery.removeEventListener("change", setMotionPrefs)
       canvas.removeEventListener("mousedown", onMouseDown)
+      canvas.removeEventListener("mouseenter", onMouseEnter)
+      canvas.removeEventListener("mouseleave", onMouseLeaveCanvas)
+      canvas.removeEventListener("mousemove", onMouseMoveCanvas)
+      canvas.removeEventListener("click", onClickCanvas)
       window.removeEventListener("mousemove", onMouseMove)
       window.removeEventListener("mouseup", onMouseUp)
       canvas.removeEventListener("touchstart", onTouchStart)
