@@ -239,6 +239,7 @@ function InputField({
         placeholder={placeholder}
         disabled={disabled}
         required={required}
+        suppressHydrationWarning
         className={cn(
           "w-full px-4 py-3 rounded-xl text-sm font-body text-foreground placeholder:text-muted/50",
           "bg-[rgba(17,24,39,0.65)] backdrop-blur-[12px]",

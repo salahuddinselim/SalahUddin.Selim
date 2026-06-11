@@ -14,6 +14,7 @@ import {
   RefreshCw,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { getProjects, getCredentials, getSkills } from "@/lib/sanity/fetch"
 
 function formatUptime(seconds: number): string {
   const m = Math.floor(seconds / 60)
@@ -55,7 +56,18 @@ export function MonitorSection() {
   const [memEfficiency, setMemEfficiency] = useState(88)
   const [load1, setLoad1] = useState(0.0)
   const [load5, setLoad5] = useState(0.0)
+  const [contentMetrics, setContentMetrics] = useState({ projects: 0, credentials: 0, skills: 0 })
   const [diagnosticsRunning, setDiagnosticsRunning] = useState(false)
+
+  useEffect(() => {
+    Promise.all([
+      getProjects().then((p) => p.length),
+      getCredentials().then((c) => c.length),
+      getSkills().then((s) => s.length),
+    ]).then(([projects, credentials, skills]) => {
+      setContentMetrics({ projects, credentials, skills })
+    }).catch(() => {})
+  }, [])
 
   const tick = useCallback(() => {
     setDbLatency((p) => Math.max(80, Math.min(400, p + (Math.random() > 0.5 ? 1 : -1) * Math.floor(Math.random() * 8))))
@@ -379,9 +391,9 @@ export function MonitorSection() {
           </span>
           <div className="mt-5 grid grid-cols-3 gap-4">
             {[
-              { label: "Projects", value: "8", icon: HardDrive },
-              { label: "Credentials", value: "3", icon: FileText },
-              { label: "Skills", value: "30", icon: Zap },
+              { label: "Projects", value: String(contentMetrics.projects), icon: HardDrive },
+              { label: "Credentials", value: String(contentMetrics.credentials), icon: FileText },
+              { label: "Skills", value: String(contentMetrics.skills), icon: Zap },
             ].map((item) => {
               const Icon = item.icon
               return (

@@ -18,8 +18,8 @@ const stats = [
 
 const fallbackSocials = [
   { name: "GitHub", url: "https://github.com/salahuddinselim", icon: "github" },
-  { name: "LeetCode", url: "https://leetcode.com/salahuddinselim", icon: "leetcode" },
-  { name: "HackerRank", url: "https://hackerrank.com/salahuddinselim", icon: "hackerrank" },
+  { name: "Kaggle", url: "https://kaggle.com/salahuddinselim", icon: "kaggle" },
+  { name: "X (Twitter)", url: "https://x.com/salahuddinselim", icon: "twitter" },
 ]
 
 const containerVariants = {

@@ -1,10 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Link2, X, Mail, AtSign, UserRound, Code2 } from "lucide-react"
-import { FaFacebook, FaInstagram } from "react-icons/fa"
+import { Link2, X, Mail } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { getSocialLinks } from "@/lib/sanity/fetch"
+import { getSocialIcon } from "@/lib/sanity/icon-map"
 
 interface SocialNode {
   id: string
@@ -13,54 +14,43 @@ interface SocialNode {
   label: string
 }
 
-const socialNodes: SocialNode[] = [
-  {
-    id: "email",
-    icon: <Mail size={18} />,
-    href: "mailto:sselim223512@bscse.uiu.ac.bd",
-    label: "Email",
-  },
-  {
-    id: "github",
-    icon: <Code2 size={18} />,
-    href: "https://github.com/salahuddinselim",
-    label: "GitHub",
-  },
-  {
-    id: "leetcode",
-    icon: <UserRound size={18} />,
-    href: "https://leetcode.com/salahuddinselim",
-    label: "LeetCode",
-  },
-  {
-    id: "facebook",
-    icon: <FaFacebook size={16} />,
-    href: "https://facebook.com/salahuddinselim",
-    label: "Facebook",
-  },
-  {
-    id: "instagram",
-    icon: <FaInstagram size={16} />,
-    href: "https://instagram.com/salahuddinselim",
-    label: "Instagram",
-  },
-  {
-    id: "hackerrank",
-    icon: <AtSign size={18} />,
-    href: "https://hackerrank.com/salahuddinselim",
-    label: "HackerRank",
-  },
-]
+const emailNode: SocialNode = {
+  id: "email",
+  icon: <Mail size={18} />,
+  href: "mailto:sselim223512@bscse.uiu.ac.bd",
+  label: "Email",
+}
 
 export function SocialOrbit() {
   const [open, setOpen] = useState(false)
+  const [socialLinks, setSocialLinks] = useState<SocialNode[]>([])
+
+  useEffect(() => {
+    getSocialLinks()
+      .then((links) => {
+        const nodes: SocialNode[] = links
+          .filter((l) => l.url && l.name)
+          .map((l) => {
+            const Icon = getSocialIcon(l.icon)
+            return {
+              id: l.name.toLowerCase().replace(/\s+/g, "-"),
+              icon: <Icon size={16} />,
+              href: l.url,
+              label: l.name,
+            }
+          })
+        setSocialLinks(nodes)
+      })
+      .catch(() => setSocialLinks([]))
+  }, [])
+
+  const allNodes = [emailNode, ...socialLinks]
 
   return (
     <div
       className="relative flex items-center justify-center max-w-[320px] w-full"
       style={{ aspectRatio: "1/1" }}
     >
-      {/* Animated rings */}
       <motion.div
         animate={{
           rotate: 360,
@@ -82,7 +72,6 @@ export function SocialOrbit() {
         style={{ width: 280, height: 280 }}
       />
 
-      {/* Center button */}
       <motion.button
         onClick={() => setOpen(!open)}
         whileHover={{ scale: 1.08 }}
@@ -127,9 +116,8 @@ export function SocialOrbit() {
         )}
       </motion.button>
 
-      {/* Social nodes */}
-      {socialNodes.map((node, i) => {
-        const angle = (i / socialNodes.length) * Math.PI * 2 - Math.PI / 2
+      {allNodes.map((node, i) => {
+        const angle = (i / allNodes.length) * Math.PI * 2 - Math.PI / 2
         const radius = 130
         const x = Math.cos(angle) * radius
         const y = Math.sin(angle) * radius
@@ -153,7 +141,7 @@ export function SocialOrbit() {
               damping: 24,
               delay: open
                 ? i * 0.04 + 0.1
-                : (socialNodes.length - 1 - i) * 0.03,
+                : (allNodes.length - 1 - i) * 0.03,
             }}
             whileHover={{
               scale: 1.15,

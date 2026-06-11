@@ -7,6 +7,7 @@ import { VisitorPanelProvider } from '@/components/analytics/visitor-context'
 import { VisitTracker } from '@/components/analytics/visit-tracker'
 import { SpaceBackground } from '@/components/effects/space-background'
 import { CursorFollower } from '@/components/ui/cursor-follower'
+import { ShowOnMainSite } from '@/components/layout/shell-provider'
 
 const baseUrl = 'https://salahuddin.dev'
 
@@ -47,12 +48,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SpaceBackground />
         <CursorFollower />
         <div className="relative z-10">
-          <VisitorPanelProvider>
-            <VisitTracker />
-            <Navbar />
-            {children}
-            <Footer />
-          </VisitorPanelProvider>
+            <VisitorPanelProvider>
+              <ShowOnMainSite>
+                <VisitTracker />
+                <Navbar />
+              </ShowOnMainSite>
+              {children}
+              <ShowOnMainSite>
+                <Footer />
+              </ShowOnMainSite>
+            </VisitorPanelProvider>
         </div>
       </body>
     </html>

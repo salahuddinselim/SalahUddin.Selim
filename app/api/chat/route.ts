@@ -65,7 +65,9 @@ export async function POST(req: Request) {
     let historyMessages = messages.slice(0, -1)
     // Gemini requires first message in history to be from 'user'
     const firstUserIdx = historyMessages.findIndex((m: { role: string }) => m.role === "user")
-    if (firstUserIdx > 0) {
+    if (firstUserIdx === -1) {
+      historyMessages = []
+    } else if (firstUserIdx > 0) {
       historyMessages = historyMessages.slice(firstUserIdx)
     }
     const history = historyMessages.map((m: { role: string; content: string }) => ({
