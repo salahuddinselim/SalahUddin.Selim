@@ -21,7 +21,6 @@ export const metadata: Metadata = {
   description:
     'CSE student at UIU (GPA 3.68/4.0) with hands-on experience in full-stack web development, IoT systems, and algorithm design. Built 5 production-quality projects across Java, Python, PHP, C/C++, and Arduino.',
   icons: { icon: '/favicon.svg' },
-  verification: { google: 'google08db23e23b4fc7df' },
   openGraph: {
     title: 'Salah Uddin Selim | CSE Student & Software Engineer',
     description:
