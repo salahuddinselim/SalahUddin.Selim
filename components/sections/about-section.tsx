@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion"
 import Image from "next/image"
-import { User, GraduationCap, Briefcase, Target, Info, ScanLine } from "lucide-react"
+import { User, GraduationCap, Briefcase, Target, Info } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const aboutData = {
@@ -60,6 +60,13 @@ export function AboutSection() {
       id="about"
       className="relative w-full py-24 sm:py-32 px-4"
     >
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(74% 54% at 18% 12%, rgba(0, 217, 255, 0.14), transparent 69%), radial-gradient(66% 52% at 84% 80%, rgba(139, 92, 246, 0.13), transparent 72%)",
+        }}
+      />
       <div className="mx-auto max-w-6xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -91,9 +98,9 @@ export function AboutSection() {
             <div
               className={cn(
                 "relative w-full aspect-[3/4] rounded-2xl overflow-hidden group",
-                "bg-[rgba(17,24,39,0.65)] backdrop-blur-[16px]",
-                "border border-[rgba(0,217,255,0.1)]",
-                "shadow-[0_0_30px_rgba(0,217,255,0.04)]",
+                "bg-[rgba(10,15,30,0.58)] backdrop-blur-[14px]",
+                "border border-[rgba(148,163,184,0.2)]",
+                "shadow-[0_0_30px_rgba(0,217,255,0.06)]",
               )}
             >
               {aboutData.avatar ? (

@@ -8,6 +8,7 @@ import { VisitTracker } from '@/components/analytics/visit-tracker'
 import { SpaceBackground } from '@/components/effects/space-background'
 import { CursorFollower } from '@/components/ui/cursor-follower'
 import { ShowOnMainSite } from '@/components/layout/shell-provider'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 
 const baseUrl = 'https://salahuddin.dev'
 
@@ -20,6 +21,7 @@ export const metadata: Metadata = {
   description:
     'CSE student at UIU (GPA 3.68/4.0) with hands-on experience in full-stack web development, IoT systems, and algorithm design. Built 5 production-quality projects across Java, Python, PHP, C/C++, and Arduino.',
   icons: { icon: '/favicon.svg' },
+  verification: { google: 'google08db23e23b4fc7df' },
   openGraph: {
     title: 'Salah Uddin Selim | CSE Student & Software Engineer',
     description:
@@ -47,6 +49,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-screen bg-[#050816] text-foreground antialiased relative overflow-x-hidden">
         <SpaceBackground />
         <CursorFollower />
+        <SpeedInsights />
         <div className="relative z-10">
             <VisitorPanelProvider>
               <ShowOnMainSite>

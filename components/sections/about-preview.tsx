@@ -17,6 +17,13 @@ const fadeUp = {
 export function AboutPreview() {
   return (
     <section id="about-preview" className="relative w-full py-24 sm:py-32 px-4">
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(74% 54% at 20% 14%, rgba(0, 217, 255, 0.14), transparent 69%), radial-gradient(66% 52% at 82% 82%, rgba(139, 92, 246, 0.13), transparent 72%)",
+        }}
+      />
       <div className="mx-auto max-w-6xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -46,9 +53,9 @@ export function AboutPreview() {
             <div
               className={cn(
                 "relative w-64 h-64 sm:w-72 sm:h-72 rounded-2xl overflow-hidden",
-                "bg-[rgba(17,24,39,0.65)] backdrop-blur-[16px]",
-                "border border-[rgba(0,217,255,0.1)]",
-                "shadow-[0_0_30px_rgba(0,217,255,0.04)]",
+                "bg-[rgba(10,15,30,0.58)] backdrop-blur-[14px]",
+                "border border-[rgba(148,163,184,0.2)]",
+                "shadow-[0_0_30px_rgba(0,217,255,0.06)]",
               )}
             >
               <div className="absolute inset-0 z-10 pointer-events-none">
