@@ -10,7 +10,7 @@ import { CursorFollower } from '@/components/ui/cursor-follower'
 import { ShowOnMainSite } from '@/components/layout/shell-provider'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 
-const baseUrl = 'https://salahuddin.dev'
+const baseUrl = 'https://salah-uddin-selim.vercel.app'
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),

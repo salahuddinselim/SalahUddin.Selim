@@ -8,7 +8,7 @@ ABOUT SALAH UDDIN SELIM:
 - Name: Salah Uddin Selim
 - Title: CSE Student & Software Engineer
 - Location: Dhaka, Bangladesh
-- Email: sselim223512@bscse.uiu.ac.bd
+- Email: ${['sselim223512', 'bscse.uiu.ac.bd'].join('@')}
 - GitHub: github.com/salahuddinselim
 - Education: B.Sc. in Computer Science & Engineering at United International University (GPA 3.68/4.00, 112/137 credits, 2022 — Present)
 - HSC: Pirganj Govt. College, Thakurgaon — GPA 5.00/5.00 (2018-2020)

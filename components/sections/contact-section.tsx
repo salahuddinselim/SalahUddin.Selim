@@ -11,6 +11,7 @@ interface FormFields {
   email: string
   subject: string
   message: string
+  website: string
 }
 
 type SubmitState = "idle" | "loading" | "success" | "error"
@@ -30,6 +31,7 @@ export function ContactSection() {
     email: "",
     subject: "",
     message: "",
+    website: "",
   })
   const [state, setState] = useState<SubmitState>("idle")
   const [errorMsg, setErrorMsg] = useState("")
@@ -57,7 +59,7 @@ export function ContactSection() {
       }
 
       setState("success")
-      setFields({ name: "", email: "", subject: "", message: "" })
+      setFields({ name: "", email: "", subject: "", message: "", website: "" })
       setTimeout(() => setState("idle"), 4000)
     } catch (err) {
       setState("error")
@@ -132,6 +134,19 @@ export function ContactSection() {
               disabled={state === "loading"}
               required
             />
+
+            <div className="absolute opacity-0 pointer-events-none -z-10" aria-hidden="true">
+              <label htmlFor="field-website">Leave this empty</label>
+              <input
+                id="field-website"
+                type="text"
+                name="website"
+                tabIndex={-1}
+                autoComplete="off"
+                value={fields.website}
+                onChange={(e) => updateField("website", e.target.value)}
+              />
+            </div>
 
             <motion.button
               type="submit"

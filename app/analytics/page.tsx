@@ -4,11 +4,11 @@ import { MonitorSection } from "@/components/sections/monitor-section"
 export const metadata: Metadata = {
   title: "Monitor",
   description:
-    "System dashboard and real-time analytics for salahuddin.dev.",
+    "System dashboard and real-time analytics for the portfolio.",
   openGraph: {
     title: "Monitor | Salah Uddin Selim",
     description:
-      "System dashboard and real-time analytics for salahuddin.dev.",
+      "System dashboard and real-time analytics for the portfolio.",
   },
 }
 

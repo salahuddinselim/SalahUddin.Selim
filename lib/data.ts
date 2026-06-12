@@ -7,7 +7,7 @@ export const portfolioData: PortfolioData = {
   bio: 'CSE student at United International University (GPA 3.68/4.0) with hands-on experience in full-stack web development, IoT systems, and algorithm design. Built 5 production-quality projects across Java, Python, PHP, C/C++, and Arduino. Award-winning project (6th Runner-Up, UIU Spring 2025). Seeking software engineering or research roles to build scalable, impactful solutions.',
   avatar: '',
   location: 'Dhaka, Bangladesh',
-  email: 'sselim223512@bscse.uiu.ac.bd',
+  email: ['sselim223512', 'bscse.uiu.ac.bd'].join('@'),
   resumeUrl: '',
   available: true,
   navItems: [
@@ -18,7 +18,7 @@ export const portfolioData: PortfolioData = {
   ],
   socialLinks: [
     { name: 'GitHub', url: 'https://github.com/salahuddinselim', icon: 'github' },
-    { name: 'Email', url: 'mailto:sselim223512@bscse.uiu.ac.bd', icon: 'email' },
+    { name: 'Email', url: 'mailto:' + ['sselim223512', 'bscse.uiu.ac.bd'].join('@'), icon: 'email' },
   ],
   skills: [
     { name: 'Python', category: 'Languages', proficiency: 85 },

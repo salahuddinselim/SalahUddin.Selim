@@ -74,7 +74,7 @@ export function Navbar() {
             <Home size={18} />
           </span>
           <span className="text-sm font-semibold uppercase tracking-[0.32em] text-white/90">
-            salahuddin.dev
+            SELIM.DEV
           </span>
         </Link>
 

@@ -124,7 +124,7 @@ export function MonitorSection() {
               </span>
             </h1>
             <p className="mt-2 text-xs font-mono tracking-[0.2em] text-white/25">
-              Real-time diagnostics · salahuddin.dev infrastructure
+              Real-time diagnostics · portfolio infrastructure
             </p>
           </div>
           <button

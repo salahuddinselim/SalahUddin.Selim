@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Link2, X, Mail } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { getSocialLinks } from "@/lib/sanity/fetch"
+import { getSocialLinks, getProfile } from "@/lib/sanity/fetch"
 import { getSocialIcon } from "@/lib/sanity/icon-map"
 
 interface SocialNode {
@@ -14,16 +14,17 @@ interface SocialNode {
   label: string
 }
 
-const emailNode: SocialNode = {
-  id: "email",
-  icon: <Mail size={18} />,
-  href: "mailto:sselim223512@bscse.uiu.ac.bd",
-  label: "Email",
-}
-
 export function SocialOrbit() {
   const [open, setOpen] = useState(false)
   const [socialLinks, setSocialLinks] = useState<SocialNode[]>([])
+  const defaultEmail = ["sselim223512", "bscse.uiu.ac.bd"].join("@")
+  const [email, setEmail] = useState(defaultEmail)
+
+  useEffect(() => {
+    getProfile()
+      .then((p) => { if (p.email) setEmail(p.email) })
+      .catch(() => {})
+  }, [])
 
   useEffect(() => {
     getSocialLinks()
@@ -43,6 +44,13 @@ export function SocialOrbit() {
       })
       .catch(() => setSocialLinks([]))
   }, [])
+
+  const emailNode: SocialNode = {
+    id: "email",
+    icon: <Mail size={18} />,
+    href: `mailto:${email}`,
+    label: "Email",
+  }
 
   const allNodes = [emailNode, ...socialLinks]
 

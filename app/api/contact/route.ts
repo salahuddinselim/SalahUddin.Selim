@@ -1,8 +1,45 @@
 import { NextResponse } from "next/server"
 
+const rateLimit = new Map<string, { count: number; resetAt: number }>()
+const RATE_LIMIT = 3
+const RATE_WINDOW = 60_000
+
+function getIP(request: Request): string {
+  return request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
+    || request.headers.get("x-real-ip")
+    || "unknown"
+}
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now()
+  const entry = rateLimit.get(ip)
+  if (!entry || now > entry.resetAt) {
+    rateLimit.set(ip, { count: 1, resetAt: now + RATE_WINDOW })
+    return false
+  }
+  entry.count++
+  if (entry.count > RATE_LIMIT) return true
+  return false
+}
+
 export async function POST(request: Request) {
   try {
-    const { name, email, subject, message } = await request.json()
+    const ip = getIP(request)
+    if (isRateLimited(ip)) {
+      return NextResponse.json(
+        { error: "Too many requests. Please try again later." },
+        { status: 429 },
+      )
+    }
+
+    const { name, email, subject, message, website } = await request.json()
+
+    if (website) {
+      return NextResponse.json(
+        { error: "Something went wrong. Please try again." },
+        { status: 400 },
+      )
+    }
 
     if (!name || !email || !subject || !message) {
       return NextResponse.json(
