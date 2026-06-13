@@ -6,7 +6,7 @@ import { FileText, Send, Eye, Download } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const buttonData = [
-  { label: "Resume & CV", icon: FileText },
+  { label: "Resume & CV (PDF, 2025)", icon: FileText },
   { label: "Get In Touch", icon: Send, href: "#contact" },
 ]
 
@@ -42,7 +42,7 @@ export function HeroActions() {
       {buttonData.map((btn, i) => {
         const Icon = btn.icon
 
-        if (btn.label === "Resume & CV") {
+        if (btn.label === "Resume & CV (PDF, 2025)") {
           return (
             <div key={btn.label} ref={cvRef} className="relative">
               <motion.button
@@ -66,6 +66,9 @@ export function HeroActions() {
               >
                 <Icon size={16} className="shrink-0 text-accent" />
                 <span>{btn.label}</span>
+                <span className="flex items-center justify-center w-5 h-5 rounded-md bg-accent/10 text-accent ml-0.5">
+                  <Download size={10} />
+                </span>
               </motion.button>
 
               <AnimatePresence>

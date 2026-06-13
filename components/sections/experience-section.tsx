@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils"
 import { getExperience, getEducation } from "@/lib/sanity/fetch"
 import type { SanityExperience } from "@/types"
 import type { EducationData } from "@/lib/sanity/fetch"
+import { fallbackExperience, type ExperienceEntry } from "@/lib/experience-data"
 
 function useScrollProgress(ref: React.RefObject<HTMLDivElement | null>) {
   const [progress, setProgress] = useState(0)
@@ -69,6 +70,16 @@ export function ExperienceSection() {
           data: e,
         })),
       ]
+      if (items.length === 0 && fallbackExperience.length > 0) {
+        const fallbackItems: TimelineItem[] = fallbackExperience.map((e) => ({
+          type: e.type,
+          date: e.type === "education" ? (e.endYear ?? "") : (e.period ?? ""),
+          data: e as unknown as SanityExperience | EducationData,
+        }))
+        fallbackItems.sort((a, b) => b.date.localeCompare(a.date))
+        setTimeline(fallbackItems)
+        return
+      }
       items.sort((a, b) => b.date.localeCompare(a.date))
       setTimeline(items)
     })

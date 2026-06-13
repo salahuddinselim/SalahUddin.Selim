@@ -231,8 +231,6 @@ export function TagCloud({
       // Draw latitude rings
       ctx.strokeStyle = "rgba(0, 242, 254, 0.15)"
       ctx.lineWidth = 1.5
-      ctx.shadowColor = "rgba(0, 242, 254, 0.08)"
-      ctx.shadowBlur = 4
 
       for (const ring of rings) {
         ctx.beginPath()
@@ -255,8 +253,6 @@ export function TagCloud({
       // Draw longitude meridians
       ctx.strokeStyle = "rgba(0, 242, 254, 0.12)"
       ctx.lineWidth = 1
-      ctx.shadowColor = "rgba(0, 242, 254, 0.05)"
-      ctx.shadowBlur = 2
 
       for (const meridian of meridians) {
         ctx.beginPath()
@@ -306,12 +302,6 @@ export function TagCloud({
       ctx.save()
       ctx.translate(cx, cy)
       ctx.globalAlpha = opacity
-      const blurPx = Math.max(0, (1 - scale) * 1.4)
-      ctx.filter = blurPx > 0.2 ? `blur(${blurPx.toFixed(2)}px)` : "none"
-
-      // outer glow
-      ctx.shadowColor = color
-      ctx.shadowBlur = 10 * scale
 
       // glassmorphism dark background
       ctx.fillStyle = "rgba(10, 15, 30, 0.6)"
@@ -330,7 +320,6 @@ export function TagCloud({
       ctx.fill()
 
       // pill border
-      ctx.shadowBlur = 0
       ctx.strokeStyle = color
       ctx.lineWidth = Math.max(0.8, 1.05 * scale)
       ctx.globalAlpha = opacity * 0.62
@@ -342,7 +331,6 @@ export function TagCloud({
         // icon on the left
         const iconX = -pillW / 2 + horizontalPad
         const iconY = -iconSize / 2
-        ctx.shadowBlur = 0
         ctx.globalAlpha = opacity
         ctx.drawImage(iconCanvas, iconX, iconY, iconSize, iconSize)
 
@@ -356,7 +344,6 @@ export function TagCloud({
         ctx.fillText(label, textX, 1)
       } else {
         // centered text fallback
-        ctx.shadowBlur = 0
         ctx.fillStyle = textColor
         ctx.globalAlpha = opacity
         ctx.textAlign = "center"
@@ -565,6 +552,7 @@ export function TagCloud({
     <div
       ref={containerRef}
       className={`relative w-full h-full cursor-grab active:cursor-grabbing select-none ${className}`}
+      style={{ willChange: "transform" }}
     >
       <canvas
         ref={canvasRef}

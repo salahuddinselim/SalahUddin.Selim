@@ -9,17 +9,20 @@ import { SpaceBackground } from '@/components/effects/space-background'
 import { CursorFollower } from '@/components/ui/cursor-follower'
 import { ShowOnMainSite } from '@/components/layout/shell-provider'
 import { SpeedInsights } from '@vercel/speed-insights/next'
+import { Analytics } from '@vercel/analytics/react'
 
-const baseUrl = 'https://salah-uddin-selim.vercel.app'
+const siteUrl = 'https://salah-uddin-selim-git-main-sussalahuddin19-8236s-projects.vercel.app'
 
 export const metadata: Metadata = {
-  metadataBase: new URL(baseUrl),
+  metadataBase: new URL('https://salah-uddin-selim-git-main-sussalahuddin19-8236s-projects.vercel.app'),
   title: {
     default: 'Salah Uddin Selim | CSE Student & Software Engineer',
     template: '%s | Salah Uddin Selim',
   },
   description:
     'CSE student at UIU (GPA 3.68/4.0) with hands-on experience in full-stack web development, IoT systems, and algorithm design. Built 5 production-quality projects across Java, Python, PHP, C/C++, and Arduino.',
+  keywords: ['Salah Uddin Selim', 'CSE', 'UIU', 'full-stack developer', 'software engineer', 'IoT', 'portfolio', 'Bangladesh'],
+  authors: [{ name: 'Salah Uddin Selim' }],
   icons: { icon: '/favicon.svg' },
   openGraph: {
     title: 'Salah Uddin Selim | CSE Student & Software Engineer',
@@ -28,7 +31,7 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
     siteName: 'Salah Uddin Selim',
-    url: baseUrl,
+    url: siteUrl,
     images: [{ url: '/og-image.png', width: 1200, height: 630 }],
   },
   twitter: {
@@ -39,17 +42,72 @@ export const metadata: Metadata = {
     images: ['/og-image.png'],
   },
   robots: { index: true, follow: true },
-  alternates: { canonical: baseUrl },
+  alternates: { canonical: siteUrl },
+  other: {
+    'google-site-verification': 'google08db23e23b4fc7df',
+  },
+}
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": "https://salah-uddin-selim-git-main-sussalahuddin19-8236s-projects.vercel.app/#person",
+      name: "Salah Uddin Selim",
+      url: "https://salah-uddin-selim-git-main-sussalahuddin19-8236s-projects.vercel.app/",
+      jobTitle: "CSE Student & Software Engineer",
+      alumniOf: "United International University",
+      award: "6th Runner-Up — UIU Software Project Competition, Spring 2025",
+      sameAs: [
+        "https://github.com/salahuddinselim",
+        "https://linkedin.com/in/salahuddinselim",
+        "mailto:sselim223512@bscse.uiu.ac.bd",
+      ],
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://salah-uddin-selim-git-main-sussalahuddin19-8236s-projects.vercel.app/#website",
+      url: "https://salah-uddin-selim-git-main-sussalahuddin19-8236s-projects.vercel.app/",
+      name: "Salah Uddin Selim",
+      description:
+        "CSE student at UIU (GPA 3.68/4.0) with hands-on experience in full-stack web development, IoT systems, and algorithm design.",
+      publisher: { "@id": "https://salah-uddin-selim-git-main-sussalahuddin19-8236s-projects.vercel.app/#person" },
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://salah-uddin-selim-git-main-sussalahuddin19-8236s-projects.vercel.app/#breadcrumb",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: "https://salah-uddin-selim-git-main-sussalahuddin19-8236s-projects.vercel.app/" },
+        { "@type": "ListItem", position: 2, name: "Projects", item: "https://salah-uddin-selim-git-main-sussalahuddin19-8236s-projects.vercel.app/projects" },
+        { "@type": "ListItem", position: 3, name: "Credentials", item: "https://salah-uddin-selim-git-main-sussalahuddin19-8236s-projects.vercel.app/credentials" },
+        { "@type": "ListItem", position: 4, name: "Forge", item: "https://salah-uddin-selim-git-main-sussalahuddin19-8236s-projects.vercel.app/forge" },
+        { "@type": "ListItem", position: 5, name: "Persona", item: "https://salah-uddin-selim-git-main-sussalahuddin19-8236s-projects.vercel.app/persona" },
+        { "@type": "ListItem", position: 6, name: "Gallery", item: "https://salah-uddin-selim-git-main-sussalahuddin19-8236s-projects.vercel.app/gallery" },
+      ],
+    },
+  ],
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${fontVariables} dark`} suppressHydrationWarning>
       <body className="min-h-screen bg-[#050816] text-foreground antialiased relative overflow-x-hidden">
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-xl focus:bg-accent focus:text-white focus:text-sm focus:font-semibold focus:outline-none focus:ring-2 focus:ring-accent/50"
+        >
+          Skip to main content
+        </a>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <SpaceBackground />
         <CursorFollower />
         <SpeedInsights />
-        <div className="relative z-10">
+        <Analytics />
+        <div className="relative z-10" id="main-content">
             <VisitorPanelProvider>
               <ShowOnMainSite>
                 <VisitTracker />

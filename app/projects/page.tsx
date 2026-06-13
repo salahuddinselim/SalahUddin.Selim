@@ -1,3 +1,4 @@
+import { getProjects } from "@/lib/sanity/fetch"
 import type { Metadata } from "next"
 import { ProjectsSection } from "@/components/sections/projects-section"
 
@@ -12,10 +13,14 @@ export const metadata: Metadata = {
   },
 }
 
-export default function ProjectsPage() {
+export const revalidate = 3600
+
+export default async function ProjectsPage() {
+  const projects = await getProjects()
+
   return (
     <main className="min-h-screen pt-28">
-      <ProjectsSection />
+      <ProjectsSection projects={projects} />
     </main>
   )
 }

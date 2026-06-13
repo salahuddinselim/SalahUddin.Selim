@@ -75,7 +75,7 @@ export function Navbar() {
             <Home size={18} />
           </span>
           <span className="text-sm font-semibold uppercase tracking-[0.32em] text-white/90">
-            salahuddin.dev
+            S.Selim
           </span>
         </Link>
 
@@ -142,6 +142,19 @@ export function Navbar() {
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-30 bg-black/40 backdrop-blur-sm md:hidden"
+            onClick={() => setMobileOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
             initial={{ opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
@@ -156,6 +169,7 @@ export function Navbar() {
                     <Link
                       key={item.href}
                       href={item.href}
+                      onClick={() => setMobileOpen(false)}
                       className={cn(
                         "rounded-2xl px-4 py-3 text-sm font-semibold uppercase tracking-wider transition-all duration-200",
                         isActive

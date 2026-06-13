@@ -1,19 +1,14 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { motion } from "framer-motion"
 import { FolderKanban, ArrowUpRight } from "lucide-react"
 import { ProjectCard } from "@/components/sections/project-card"
-import { getProjects } from "@/lib/sanity/fetch"
 import type { SanityProject } from "@/types"
 
-export function ProjectsPreview() {
-  const [featured, setFeatured] = useState<SanityProject[]>([])
+export function ProjectsPreview({ projects: featuredProjects }: { projects: SanityProject[] }) {
+  const featured = featuredProjects.filter((p) => p.featured).slice(0, 3)
   const [activeProject, setActiveProject] = useState<SanityProject | null>(null)
-
-  useEffect(() => {
-    getProjects().then((all) => setFeatured(all.filter((p) => p.featured).slice(0, 3)))
-  }, [])
 
   return (
     <section id="projects-preview" className="relative w-full py-24 sm:py-32 px-4">

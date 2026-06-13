@@ -108,8 +108,11 @@ export function AboutSection() {
                   src={aboutData.avatar}
                   alt={aboutData.name}
                   fill
+                  priority
                   className="object-cover"
                   sizes="(max-width: 1024px) 100vw, 40vw"
+                  placeholder="blur"
+                  blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mN8/+F9PQAI8wNPvd7POQAAAABJRU5ErkJggg=="
                 />
               ) : (
                 <div className="absolute inset-0 flex flex-col items-center justify-center p-6">

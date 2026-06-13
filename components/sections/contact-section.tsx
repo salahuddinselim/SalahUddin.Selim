@@ -5,6 +5,7 @@ import { motion } from "framer-motion"
 import { Send, Loader2, CheckCircle2, AlertCircle, Mail } from "lucide-react"
 import { SocialOrbit } from "@/components/sections/social-orbit"
 import { cn } from "@/lib/utils"
+import { Turnstile, resetTurnstile } from "@/components/ui/turnstile"
 
 interface FormFields {
   name: string
@@ -12,6 +13,7 @@ interface FormFields {
   subject: string
   message: string
   website: string
+  turnstileToken: string
 }
 
 type SubmitState = "idle" | "loading" | "success" | "error"
@@ -32,9 +34,18 @@ export function ContactSection() {
     subject: "",
     message: "",
     website: "",
+    turnstileToken: "",
   })
   const [state, setState] = useState<SubmitState>("idle")
   const [errorMsg, setErrorMsg] = useState("")
+
+  const handleTurnstileVerify = (token: string) => {
+    updateField("turnstileToken", token)
+  }
+
+  const handleTurnstileExpire = () => {
+    updateField("turnstileToken", "")
+  }
 
   const updateField = (field: keyof FormFields, value: string) => {
     setFields((prev) => ({ ...prev, [field]: value }))
@@ -59,7 +70,8 @@ export function ContactSection() {
       }
 
       setState("success")
-      setFields({ name: "", email: "", subject: "", message: "", website: "" })
+      setFields({ name: "", email: "", subject: "", message: "", website: "", turnstileToken: "" })
+      resetTurnstile()
       setTimeout(() => setState("idle"), 4000)
     } catch (err) {
       setState("error")
@@ -147,6 +159,8 @@ export function ContactSection() {
                 onChange={(e) => updateField("website", e.target.value)}
               />
             </div>
+
+            <Turnstile onVerify={handleTurnstileVerify} onExpire={handleTurnstileExpire} />
 
             <motion.button
               type="submit"

@@ -67,8 +67,11 @@ export function AboutPreview() {
                 src="/hero.png"
                 alt="Salah Uddin Selim"
                 fill
+                priority
                 className="object-cover"
-                sizes="288px"
+                sizes="(max-width: 640px) 256px, 288px"
+                placeholder="blur"
+                blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mN8/+F9PQAI8wNPvd7POQAAAABJRU5ErkJggg=="
               />
             </div>
           </motion.div>
@@ -89,9 +92,16 @@ export function AboutPreview() {
               CSE Student & Software Engineer
             </p>
             <p className="text-muted font-body leading-relaxed max-w-xl">
-              CSE student at United International University (GPA 3.68/4.0) with hands-on experience in full-stack web
-              development, IoT systems, and algorithm design. Built 5 production-quality projects across Java, Python, PHP,
-              C/C++, and Arduino. Award-winning project (6th Runner-Up, UIU Spring 2025).
+              CSE student at United International University, Dhaka (GPA 3.68/4.00) with
+              demonstrated experience in full-stack web development, IoT systems, and
+              algorithm design. Proficient in Java, Python, PHP, C/C++, JavaScript,
+              Node.js, Express, SQL, and Arduino. Built 5 production-quality projects
+              spanning desktop applications, embedded IoT telemetry systems, web
+              platforms, and AI-powered tools. Awarded 6th Runner-Up at UIU Software
+              Project Competition, Spring 2025 for a JavaFX-based multilevel puzzle
+              game with real-time Socket Programming chat. Seeking software engineering
+              and research opportunities where I can apply systems thinking and
+              full-stack skills to solve real-world problems.
             </p>
 
             <div className="flex flex-wrap gap-4 text-sm text-muted font-body">
@@ -105,7 +115,7 @@ export function AboutPreview() {
               </span>
               <span className="flex items-center gap-1.5">
                 <Code2 size={14} className="text-accent" />
-                Java · Python · PHP · Arduino
+                Java · Python · PHP · C/C++ · JS · Node · Arduino
               </span>
             </div>
 
