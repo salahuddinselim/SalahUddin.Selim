@@ -52,14 +52,15 @@ export function InfernapeChat({ open, onClose }: InfernapeChatProps) {
         body: JSON.stringify({ messages: [...messages, userMsg] }),
       })
 
-      if (!res.ok) throw new Error("Failed to fetch")
-
       const data = await res.json()
+      if (!res.ok) throw new Error(data.detail || data.error || "Failed to fetch")
+
       setMessages((prev) => [...prev, data])
-    } catch {
+    } catch (e) {
+      const detail = e instanceof Error ? e.message : "Something went wrong"
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: "Sorry, I'm having trouble connecting. Try again or reach out directly via the contact form!" },
+        { role: "assistant", content: detail.includes("quota") ? "API quota hit — try again in a minute!" : `Sorry, I'm having trouble: ${detail}` },
       ])
     } finally {
       setLoading(false)

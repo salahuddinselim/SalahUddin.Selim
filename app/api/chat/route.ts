@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { GoogleGenAI } from "@google/genai"
 
-const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" })
+const genAI = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY || "" })
 
 const PORTFOLIO_DATA = `
 ABOUT SALAH UDDIN SELIM:
@@ -84,10 +84,15 @@ export async function POST(req: Request) {
     })
 
     return NextResponse.json({ role: "assistant", content: response.text })
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Infernape chat error:", error)
+    const msg = error instanceof Error ? error.message : String(error)
+    const isQuota = msg.includes("429") || msg.includes("quota") || msg.includes("RESOURCE_EXHAUSTED")
     return NextResponse.json(
-      { error: "Failed to get response from Infernape" },
+      {
+        error: "Failed to get response from Infernape",
+        detail: isQuota ? "API quota exceeded — try again in a minute" : msg.slice(0, 300),
+      },
       { status: 500 },
     )
   }
