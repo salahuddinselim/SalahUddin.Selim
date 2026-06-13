@@ -74,8 +74,8 @@ export function Navbar() {
           <span className="flex h-10 w-10 items-center justify-center rounded-full bg-cyan-400/10 text-cyan-300 shadow-[0_0_24px_rgba(0,217,255,0.08)]">
             <Home size={18} />
           </span>
-          <span className="text-sm font-semibold uppercase tracking-[0.32em] text-white/90">
-            S.Selim
+          <span className="text-sm font-semibold uppercase tracking-[0.32em] text-white/90 hidden sm:inline">
+            salahuddin.dev
           </span>
         </Link>
 

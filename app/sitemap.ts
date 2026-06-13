@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next"
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = "https://salah-uddin-selim-git-main-sussalahuddin19-8236s-projects.vercel.app"
+  const base = "https://salah-uddin-selim.vercel.app"
   return [
     { url: base, lastModified: new Date(), changeFrequency: "monthly", priority: 1 },
     { url: `${base}/projects`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },

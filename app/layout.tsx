@@ -6,15 +6,14 @@ import { Footer } from '@/components/layout/Footer'
 import { VisitorPanelProvider } from '@/components/analytics/visitor-context'
 import { VisitTracker } from '@/components/analytics/visit-tracker'
 import { SpaceBackground } from '@/components/effects/space-background'
-import { CursorFollower } from '@/components/ui/cursor-follower'
 import { ShowOnMainSite } from '@/components/layout/shell-provider'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Analytics } from '@vercel/analytics/react'
 
-const siteUrl = 'https://salah-uddin-selim-git-main-sussalahuddin19-8236s-projects.vercel.app'
+const siteUrl = 'https://salah-uddin-selim.vercel.app'
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://salah-uddin-selim-git-main-sussalahuddin19-8236s-projects.vercel.app'),
+  metadataBase: new URL('https://salah-uddin-selim.vercel.app'),
   title: {
     default: 'Salah Uddin Selim | CSE Student & Software Engineer',
     template: '%s | Salah Uddin Selim',
@@ -53,9 +52,9 @@ const jsonLd = {
   "@graph": [
     {
       "@type": "Person",
-      "@id": "https://salah-uddin-selim-git-main-sussalahuddin19-8236s-projects.vercel.app/#person",
+      "@id": "https://salah-uddin-selim.vercel.app/#person",
       name: "Salah Uddin Selim",
-      url: "https://salah-uddin-selim-git-main-sussalahuddin19-8236s-projects.vercel.app/",
+      url: "https://salah-uddin-selim.vercel.app/",
       jobTitle: "CSE Student & Software Engineer",
       alumniOf: "United International University",
       award: "6th Runner-Up — UIU Software Project Competition, Spring 2025",
@@ -67,23 +66,23 @@ const jsonLd = {
     },
     {
       "@type": "WebSite",
-      "@id": "https://salah-uddin-selim-git-main-sussalahuddin19-8236s-projects.vercel.app/#website",
-      url: "https://salah-uddin-selim-git-main-sussalahuddin19-8236s-projects.vercel.app/",
+      "@id": "https://salah-uddin-selim.vercel.app/#website",
+      url: "https://salah-uddin-selim.vercel.app/",
       name: "Salah Uddin Selim",
       description:
         "CSE student at UIU (GPA 3.68/4.0) with hands-on experience in full-stack web development, IoT systems, and algorithm design.",
-      publisher: { "@id": "https://salah-uddin-selim-git-main-sussalahuddin19-8236s-projects.vercel.app/#person" },
+      publisher: { "@id": "https://salah-uddin-selim.vercel.app/#person" },
     },
     {
       "@type": "BreadcrumbList",
-      "@id": "https://salah-uddin-selim-git-main-sussalahuddin19-8236s-projects.vercel.app/#breadcrumb",
+      "@id": "https://salah-uddin-selim.vercel.app/#breadcrumb",
       itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Home", item: "https://salah-uddin-selim-git-main-sussalahuddin19-8236s-projects.vercel.app/" },
-        { "@type": "ListItem", position: 2, name: "Projects", item: "https://salah-uddin-selim-git-main-sussalahuddin19-8236s-projects.vercel.app/projects" },
-        { "@type": "ListItem", position: 3, name: "Credentials", item: "https://salah-uddin-selim-git-main-sussalahuddin19-8236s-projects.vercel.app/credentials" },
-        { "@type": "ListItem", position: 4, name: "Forge", item: "https://salah-uddin-selim-git-main-sussalahuddin19-8236s-projects.vercel.app/forge" },
-        { "@type": "ListItem", position: 5, name: "Persona", item: "https://salah-uddin-selim-git-main-sussalahuddin19-8236s-projects.vercel.app/persona" },
-        { "@type": "ListItem", position: 6, name: "Gallery", item: "https://salah-uddin-selim-git-main-sussalahuddin19-8236s-projects.vercel.app/gallery" },
+        { "@type": "ListItem", position: 1, name: "Home", item: "https://salah-uddin-selim.vercel.app/" },
+        { "@type": "ListItem", position: 2, name: "Projects", item: "https://salah-uddin-selim.vercel.app/projects" },
+        { "@type": "ListItem", position: 3, name: "Credentials", item: "https://salah-uddin-selim.vercel.app/credentials" },
+        { "@type": "ListItem", position: 4, name: "Forge", item: "https://salah-uddin-selim.vercel.app/forge" },
+        { "@type": "ListItem", position: 5, name: "Persona", item: "https://salah-uddin-selim.vercel.app/persona" },
+        { "@type": "ListItem", position: 6, name: "Gallery", item: "https://salah-uddin-selim.vercel.app/gallery" },
       ],
     },
   ],
@@ -104,7 +103,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <SpaceBackground />
-        <CursorFollower />
         <SpeedInsights />
         <Analytics />
         <div className="relative z-10" id="main-content">
