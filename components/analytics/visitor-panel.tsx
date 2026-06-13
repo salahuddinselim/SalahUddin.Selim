@@ -87,6 +87,7 @@ export function VisitorPanel({ open, onClose }: VisitorPanelProps) {
   const thisMonthViews = stats?.thisMonthViews ?? 0
   const countries = stats?.countries ?? []
   const devices = stats?.devices ?? []
+  const lastUpdated = stats?.lastUpdated ?? null
   const maxCountry = Math.max(...countries.map((c) => c.count), 1)
   const maxDevice = Math.max(...devices.map((d) => d.count), 1)
 
@@ -178,9 +179,21 @@ export function VisitorPanel({ open, onClose }: VisitorPanelProps) {
                 </div>
               </motion.div>
 
+              {lastUpdated && (
+                <motion.p
+                  custom={1}
+                  variants={itemVariants}
+                  initial="hidden"
+                  animate="visible"
+                  className="text-[10px] font-mono text-white/20 mb-6 text-right"
+                >
+                  Updated {new Date(lastUpdated).toLocaleString()}
+                </motion.p>
+              )}
+
               {/* Countries */}
               <motion.div
-                custom={1}
+                custom={2}
                 variants={itemVariants}
                 initial="hidden"
                 animate="visible"
@@ -225,7 +238,7 @@ export function VisitorPanel({ open, onClose }: VisitorPanelProps) {
 
               {/* Devices & OS */}
               <motion.div
-                custom={2}
+                custom={3}
                 variants={itemVariants}
                 initial="hidden"
                 animate="visible"

@@ -14,11 +14,14 @@ import {
   RefreshCw,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { getProjects, getCredentials, getSkills } from "@/lib/sanity/fetch"
 
 function formatUptime(seconds: number): string {
-  const m = Math.floor(seconds / 60)
+  const d = Math.floor(seconds / 86400)
+  const h = Math.floor((seconds % 86400) / 3600)
+  const m = Math.floor((seconds % 3600) / 60)
   const s = seconds % 60
+  if (d > 0) return `${d}d ${h}h`
+  if (h > 0) return `${h}h ${m}m`
   return `${m}m ${s.toString().padStart(2, "0")}s`
 }
 
@@ -39,50 +42,42 @@ const cardVariants = {
   },
 }
 
-const seoItems = [
-  { label: "Robots", status: "ACTIVE" as const },
-  { label: "Sitemap", status: "ACTIVE" as const },
-  { label: "Favicon", status: "ACTIVE" as const },
-  { label: "OG Image", status: "ACTIVE" as const },
-]
+interface MonitorData {
+  dbLatency: number
+  contentMetrics: {
+    projects: number
+    credentials: number
+    skills: number
+  }
+  techStack: {
+    next: string
+    react: string
+    node: string
+    env: string
+  }
+  seo: {
+    score: number
+    items: { label: string; status: string }[]
+  }
+}
 
 export function MonitorSection() {
-  const [dbLatency, setDbLatency] = useState(236)
-  const [serverLatency, setServerLatency] = useState(44)
-  const [uptime, setUptime] = useState(475)
-  const [heapUsed, setHeapUsed] = useState(21)
-  const [heapTotal] = useState(24)
-  const [rss, setRss] = useState(101)
-  const [memEfficiency, setMemEfficiency] = useState(88)
-  const [load1, setLoad1] = useState(0.0)
-  const [load5, setLoad5] = useState(0.0)
-  const [contentMetrics, setContentMetrics] = useState({ projects: 0, credentials: 0, skills: 0 })
+  const [data, setData] = useState<MonitorData | null>(null)
+  const [uptime, setUptime] = useState(0)
   const [diagnosticsRunning, setDiagnosticsRunning] = useState(false)
 
-  useEffect(() => {
-    Promise.all([
-      getProjects().then((p) => p.length),
-      getCredentials().then((c) => c.length),
-      getSkills().then((s) => s.length),
-    ]).then(([projects, credentials, skills]) => {
-      setContentMetrics({ projects, credentials, skills })
-    }).catch(() => {})
-  }, [])
-
-  const tick = useCallback(() => {
-    setDbLatency((p) => Math.max(80, Math.min(400, p + (Math.random() > 0.5 ? 1 : -1) * Math.floor(Math.random() * 8))))
-    setServerLatency((p) => Math.max(10, Math.min(120, p + (Math.random() > 0.5 ? 1 : -1) * Math.floor(Math.random() * 4))))
-    setHeapUsed((p) => Math.max(14, Math.min(30, p + (Math.random() > 0.5 ? 1 : -1) * Math.floor(Math.random() * 2))))
-    setRss((p) => Math.max(80, Math.min(130, p + (Math.random() > 0.5 ? 1 : -1) * Math.floor(Math.random() * 4))))
-    setMemEfficiency((p) => Math.max(78, Math.min(96, p + (Math.random() > 0.5 ? 1 : -1) * Math.floor(Math.random() * 3))))
-    setLoad1((p) => Math.round(Math.max(0, Math.min(5, p + (Math.random() - 0.5) * 0.2)) * 100) / 100)
-    setLoad5((p) => Math.round(Math.max(0, Math.min(5, p + (Math.random() - 0.5) * 0.1)) * 100) / 100)
+  const fetchMonitor = useCallback(() => {
+    fetch("/api/monitor")
+      .then((r) => r.json())
+      .then(setData)
+      .catch(() => {})
   }, [])
 
   useEffect(() => {
-    const interval = setInterval(tick, 3500)
+    fetchMonitor()
+    const interval = setInterval(fetchMonitor, 30000)
     return () => clearInterval(interval)
-  }, [tick])
+  }, [fetchMonitor])
 
   useEffect(() => {
     const interval = setInterval(() => setUptime((p) => p + 1), 1000)
@@ -92,29 +87,33 @@ export function MonitorSection() {
   const runDiagnostics = () => {
     if (diagnosticsRunning) return
     setDiagnosticsRunning(true)
-    setTimeout(() => setDiagnosticsRunning(false), 3000)
+    fetchMonitor()
+    setTimeout(() => setDiagnosticsRunning(false), 2000)
   }
+
+  const dbLatency = data?.dbLatency ?? 0
+  const serverLatency = 0
+  const contentMetrics = data?.contentMetrics ?? { projects: 0, credentials: 0, skills: 0 }
+  const techStack = data?.techStack ?? { next: "—", react: "—", node: "—", env: "development" }
+  const seo = data?.seo ?? { score: 100, items: [] }
 
   return (
     <section className="relative min-h-screen px-4 sm:px-6 md:px-8 pb-24 max-w-[1340px] mx-auto">
-      {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" as const }}
         className="mb-10"
       >
-        {/* Status + Title row */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            {/* Status indicator */}
             <div className="flex items-center gap-2 mb-3">
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan-400/75" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(0,217,255,0.6)]" />
               </span>
               <span className="text-[10px] font-mono uppercase tracking-[0.3em] text-cyan-400/70">
-                SYSTEM LIVE
+                SYSTEM {techStack.env.toUpperCase()}
               </span>
             </div>
             <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-white">
@@ -143,19 +142,17 @@ export function MonitorSection() {
               size={12}
               className={cn(diagnosticsRunning && "animate-spin")}
             />
-            {diagnosticsRunning ? "Scanning..." : "Run Diagnostics"}
+            {diagnosticsRunning ? "Scanning..." : "Refresh"}
           </button>
         </div>
       </motion.div>
 
-      {/* === ROW 1: Real-Time Metrics === */}
       <motion.div
         variants={containerVariants}
         initial="hidden"
         animate="visible"
         className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4"
       >
-        {/* System Health — large left card */}
         <motion.div
           variants={cardVariants}
           className="md:col-span-2 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 shadow-[0_8px_30px_rgba(0,0,0,0.2)]"
@@ -165,7 +162,7 @@ export function MonitorSection() {
               SYSTEM HEALTH
             </span>
             <span className="inline-flex items-center rounded-full border border-cyan-400/20 bg-cyan-400/10 px-2.5 py-0.5 text-[9px] font-mono uppercase tracking-[0.2em] text-cyan-300">
-              EXCELLENT
+              {data ? "ONLINE" : "LOADING"}
             </span>
           </div>
           <div className="flex items-baseline gap-2 mb-2">
@@ -185,7 +182,6 @@ export function MonitorSection() {
           </p>
         </motion.div>
 
-        {/* Right column: Latency cards */}
         <div className="flex flex-col gap-4">
           <motion.div
             variants={cardVariants}
@@ -194,7 +190,7 @@ export function MonitorSection() {
             <div className="flex items-center gap-2 mb-3">
               <Database size={14} className="text-blue-400" />
               <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-white/30">
-                DB LATENCY
+                SANITY LATENCY
               </span>
             </div>
             <div className="flex items-baseline gap-1.5">
@@ -208,7 +204,7 @@ export function MonitorSection() {
                 animate={{ opacity: 1, y: 0 }}
                 className="text-2xl font-bold text-white tabular-nums"
               >
-                {dbLatency}
+                {dbLatency || "—"}
               </motion.span>
               <span className="text-sm font-mono text-white/30">ms</span>
             </div>
@@ -219,66 +215,29 @@ export function MonitorSection() {
             className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 shadow-[0_8px_30px_rgba(0,0,0,0.2)]"
           >
             <div className="flex items-center gap-2 mb-3">
-              <Zap size={14} className="text-cyan-400" />
+              <BarChart3 size={14} className="text-green-400" />
               <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-white/30">
-                SERVER LATENCY
+                UPTIME
               </span>
             </div>
-            <div className="flex items-baseline gap-1.5">
-              <span className="relative flex h-1.5 w-1.5">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan-400/75" />
-                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-cyan-400" />
-              </span>
-              <motion.span
-                key={serverLatency}
-                initial={{ opacity: 0, y: -4 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-2xl font-bold text-white tabular-nums"
-              >
-                {serverLatency}
-              </motion.span>
-              <span className="text-sm font-mono text-white/30">ms</span>
-            </div>
+            <motion.span
+              key={uptime}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-2xl font-bold text-green-400 tabular-nums font-mono"
+            >
+              {formatUptime(uptime)}
+            </motion.span>
           </motion.div>
         </div>
       </motion.div>
 
-      {/* Uptime card */}
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="mb-4"
-      >
-        <motion.div
-          variants={cardVariants}
-          className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 shadow-[0_8px_30px_rgba(0,0,0,0.2)]"
-        >
-          <div className="flex items-center gap-2 mb-2">
-            <BarChart3 size={14} className="text-green-400" />
-            <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-white/30">
-              UPTIME
-            </span>
-          </div>
-          <motion.span
-            key={uptime}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-2xl font-bold text-green-400 tabular-nums font-mono"
-          >
-            {formatUptime(uptime)}
-          </motion.span>
-        </motion.div>
-      </motion.div>
-
-      {/* === ROW 2: Architecture & Memory === */}
       <motion.div
         variants={containerVariants}
         initial="hidden"
         animate="visible"
         className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"
       >
-        {/* Tech Stack */}
         <motion.div
           variants={cardVariants}
           className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 shadow-[0_8px_30px_rgba(0,0,0,0.2)]"
@@ -288,10 +247,10 @@ export function MonitorSection() {
           </span>
           <div className="mt-5 grid grid-cols-2 gap-3">
             {[
-              { label: "Next.js", value: "16.2.7" },
-              { label: "React", value: "19.2.4" },
-              { label: "Node", value: "24.14.1" },
-              { label: "Env", value: "PRODUCTION" },
+              { label: "Next.js", value: techStack.next },
+              { label: "React", value: techStack.react },
+              { label: "Node", value: techStack.node },
+              { label: "Env", value: techStack.env },
             ].map((item) => (
               <div
                 key={item.label}
@@ -308,80 +267,58 @@ export function MonitorSection() {
           </div>
         </motion.div>
 
-        {/* Memory Usage */}
         <motion.div
           variants={cardVariants}
           className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 shadow-[0_8px_30px_rgba(0,0,0,0.2)]"
         >
           <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-white/30">
-            MEMORY USAGE
+            INFRASTRUCTURE
           </span>
-          <div className="mt-5 grid grid-cols-3 gap-3">
-            {[
-              { label: "Heap Used", value: heapUsed, unit: "MB" },
-              { label: "Heap Total", value: heapTotal, unit: "MB" },
-              { label: "RSS", value: rss, unit: "MB" },
-            ].map((item) => (
-              <div key={item.label} className="text-center">
-                <p className="text-[9px] font-mono uppercase tracking-[0.15em] text-white/25">
-                  {item.label}
-                </p>
-                <motion.p
-                  key={`${item.label}-${item.value}`}
-                  initial={{ opacity: 0, y: -4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mt-1 text-lg font-bold text-white tabular-nums"
-                >
-                  {item.value}
-                </motion.p>
-                <p className="text-[10px] font-mono text-white/20">{item.unit}</p>
+          <div className="mt-5 space-y-4">
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-[10px] font-mono uppercase tracking-[0.15em] text-white/30">
+                  Database
+                </span>
+                <span className="text-[11px] font-mono tabular-nums text-cyan-300">Sanity CMS</span>
               </div>
-            ))}
-          </div>
-          <div className="mt-5">
-            <div className="flex items-center justify-between mb-1.5">
-              <span className="text-[10px] font-mono uppercase tracking-[0.15em] text-white/30">
-                Memory Efficiency
-              </span>
-              <span className="text-[11px] font-mono tabular-nums text-cyan-300">
-                {memEfficiency}%
-              </span>
-            </div>
-            <div className="w-full h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
-              <motion.div
-                key={memEfficiency}
-                className="h-full rounded-full bg-gradient-to-r from-cyan-400 to-purple-500"
-                initial={{ width: 0 }}
-                animate={{ width: `${memEfficiency}%` }}
-                transition={{ duration: 0.6, ease: "easeOut" as const }}
-              />
-            </div>
-          </div>
-          <div className="mt-4 flex gap-6">
-            <div>
-              <span className="text-[9px] font-mono uppercase tracking-[0.15em] text-white/20">
-                LOAD AVG 1m
-              </span>
-              <span className="ml-2 text-xs font-mono tabular-nums text-white/50">{load1.toFixed(2)}</span>
+              <div className="w-full h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
+                <motion.div
+                  className="h-full rounded-full bg-gradient-to-r from-cyan-400 to-blue-500"
+                  initial={{ width: 0 }}
+                  animate={{ width: "100%" }}
+                  transition={{ duration: 0.6, ease: "easeOut" as const }}
+                />
+              </div>
             </div>
             <div>
-              <span className="text-[9px] font-mono uppercase tracking-[0.15em] text-white/20">
-                LOAD AVG 5m
-              </span>
-              <span className="ml-2 text-xs font-mono tabular-nums text-white/50">{load5.toFixed(2)}</span>
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-[10px] font-mono uppercase tracking-[0.15em] text-white/30">
+                  Hosting
+                </span>
+                <span className="text-[11px] font-mono tabular-nums text-cyan-300">
+                  {techStack.env === "production" ? "Vercel" : "Local"}
+                </span>
+              </div>
+              <div className="w-full h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
+                <motion.div
+                  className="h-full rounded-full bg-gradient-to-r from-purple-400 to-pink-500"
+                  initial={{ width: 0 }}
+                  animate={{ width: "100%" }}
+                  transition={{ duration: 0.6, ease: "easeOut" as const }}
+                />
+              </div>
             </div>
           </div>
         </motion.div>
       </motion.div>
 
-      {/* === ROW 3: Metrics & Optimization === */}
       <motion.div
         variants={containerVariants}
         initial="hidden"
         animate="visible"
         className="grid grid-cols-1 md:grid-cols-2 gap-4"
       >
-        {/* Content Metrics */}
         <motion.div
           variants={cardVariants}
           className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 shadow-[0_8px_30px_rgba(0,0,0,0.2)]"
@@ -411,7 +348,6 @@ export function MonitorSection() {
           </div>
         </motion.div>
 
-        {/* SEO Health */}
         <motion.div
           variants={cardVariants}
           className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 shadow-[0_8px_30px_rgba(0,0,0,0.2)]"
@@ -421,12 +357,12 @@ export function MonitorSection() {
               SEO HEALTH
             </span>
             <span className="inline-flex items-baseline gap-0.5 rounded-full border border-cyan-400/20 bg-cyan-400/10 px-2.5 py-0.5 text-sm font-bold text-cyan-300 tabular-nums">
-              100
+              {seo.score}
               <span className="text-[10px] font-mono text-cyan-300/60">/100</span>
             </span>
           </div>
           <div className="space-y-3">
-            {seoItems.map((item) => (
+            {seo.items.map((item) => (
               <div
                 key={item.label}
                 className="flex items-center justify-between rounded-xl border border-white/[0.04] bg-white/[0.02] px-4 py-2.5"

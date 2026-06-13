@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
-import { GoogleGenerativeAI } from "@google/generative-ai"
+import { GoogleGenAI } from "@google/genai"
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "")
+const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" })
 
 const PORTFOLIO_DATA = `
 ABOUT SALAH UDDIN SELIM:
@@ -64,21 +64,26 @@ export async function POST(req: Request) {
     } else if (firstUserIdx > 0) {
       historyMessages = historyMessages.slice(firstUserIdx)
     }
-    const history = historyMessages.map((m: { role: string; content: string }) => ({
+
+    const contents = historyMessages.map((m: { role: string; content: string }) => ({
       role: m.role === "assistant" ? "model" : "user",
       parts: [{ text: m.content }],
     }))
 
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" })
-    const chat = model.startChat({
-      systemInstruction: SYSTEM_INSTRUCTION,
-      history,
+    contents.push({
+      role: "user",
+      parts: [{ text: messages[messages.length - 1].content }],
     })
-    const lastMessage = messages[messages.length - 1]
-    const result = await chat.sendMessage(lastMessage.content)
-    const response = result.response.text()
 
-    return NextResponse.json({ role: "assistant", content: response })
+    const response = await genAI.models.generateContent({
+      model: "gemini-2.0-flash",
+      contents,
+      config: {
+        systemInstruction: SYSTEM_INSTRUCTION,
+      },
+    })
+
+    return NextResponse.json({ role: "assistant", content: response.text })
   } catch (error) {
     console.error("Infernape chat error:", error)
     return NextResponse.json(

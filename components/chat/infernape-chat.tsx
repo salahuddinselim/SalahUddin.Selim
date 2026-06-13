@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { X, Bot, User, Loader2, Sparkles } from "lucide-react"
+import { X, User, Loader2, Sparkles } from "lucide-react"
 
 interface Message {
   role: "user" | "assistant"
@@ -86,8 +86,8 @@ export function InfernapeChat({ open, onClose }: InfernapeChatProps) {
           >
             <div className="flex items-center justify-between px-5 py-4 border-b border-white/10 shrink-0">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-400 to-purple-500 flex items-center justify-center">
-                  <Bot size={16} className="text-white" />
+                <div className="w-8 h-8 rounded-full overflow-hidden bg-[#0B1220] border border-white/10">
+                  <img src="/infernape-icon.png" alt="Infernape" className="w-full h-full object-cover" />
                 </div>
                 <div>
                   <span className="text-sm font-semibold text-white/90">Infernape</span>
@@ -106,8 +106,8 @@ export function InfernapeChat({ open, onClose }: InfernapeChatProps) {
               {messages.map((msg, i) => (
                 <div key={i} className={`flex gap-3 ${msg.role === "user" ? "justify-end" : ""}`}>
                   {msg.role === "assistant" && (
-                    <div className="w-7 h-7 rounded-full bg-cyan-400/10 flex items-center justify-center shrink-0 mt-1">
-                      <Bot size={14} className="text-cyan-300" />
+                    <div className="w-7 h-7 rounded-full overflow-hidden shrink-0 mt-1 border border-white/10">
+                      <img src="/infernape-icon.png" alt="Infernape" className="w-full h-full object-cover" />
                     </div>
                   )}
                   <div
@@ -128,8 +128,8 @@ export function InfernapeChat({ open, onClose }: InfernapeChatProps) {
               ))}
               {loading && (
                 <div className="flex gap-3">
-                  <div className="w-7 h-7 rounded-full bg-cyan-400/10 flex items-center justify-center shrink-0">
-                    <Bot size={14} className="text-cyan-300" />
+                  <div className="w-7 h-7 rounded-full overflow-hidden shrink-0 border border-white/10">
+                    <img src="/infernape-icon.png" alt="Infernape" className="w-full h-full object-cover" />
                   </div>
                   <div className="bg-white/5 rounded-2xl px-4 py-3 border border-white/5">
                     <Loader2 size={16} className="text-white/40 animate-spin" />
