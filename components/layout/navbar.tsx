@@ -68,13 +68,14 @@ export function Navbar() {
         />
         <Link
           href="/"
+          onClick={() => { if (pathname === "/") window.scrollTo({ top: 0, behavior: "smooth" }) }}
           className="flex items-center gap-3 rounded-full px-3 py-2 transition-all duration-200 hover:bg-white/5"
         >
           <span className="flex h-10 w-10 items-center justify-center rounded-full bg-cyan-400/10 text-cyan-300 shadow-[0_0_24px_rgba(0,217,255,0.08)]">
             <Home size={18} />
           </span>
           <span className="text-sm font-semibold uppercase tracking-[0.32em] text-white/90">
-            SELIM.DEV
+            salahuddin.dev
           </span>
         </Link>
 
