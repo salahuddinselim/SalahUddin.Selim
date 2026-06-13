@@ -57,13 +57,7 @@ export async function POST(req: Request) {
   try {
     const { messages } = await req.json()
 
-    const model = genAI.getGenerativeModel({
-      model: "gemini-2.0-flash",
-      systemInstruction: SYSTEM_INSTRUCTION,
-    })
-
     let historyMessages = messages.slice(0, -1)
-    // Gemini requires first message in history to be from 'user'
     const firstUserIdx = historyMessages.findIndex((m: { role: string }) => m.role === "user")
     if (firstUserIdx === -1) {
       historyMessages = []
@@ -75,7 +69,11 @@ export async function POST(req: Request) {
       parts: [{ text: m.content }],
     }))
 
-    const chat = model.startChat({ history })
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" })
+    const chat = model.startChat({
+      systemInstruction: SYSTEM_INSTRUCTION,
+      history,
+    })
     const lastMessage = messages[messages.length - 1]
     const result = await chat.sendMessage(lastMessage.content)
     const response = result.response.text()

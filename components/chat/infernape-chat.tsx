@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { X, Send, Bot, User, Loader2 } from "lucide-react"
+import { X, Bot, User, Loader2, Sparkles } from "lucide-react"
 
 interface Message {
   role: "user" | "assistant"
@@ -16,26 +16,33 @@ interface InfernapeChatProps {
 
 const WELCOME_MESSAGE: Message = {
   role: "assistant",
-  content: "Hey! I'm Infernape, your AI guide. Ask me about Salah's projects, skills, education, or get recommendations on what to check out!",
+  content: "Hey! I'm Infernape, your AI guide. Pick a question below to learn more about Salah!",
 }
+
+const QUESTIONS = [
+  "What are Salah's technical skills?",
+  "Tell me about his projects",
+  "What's his education background?",
+  "What awards has he won?",
+  "How can I contact him?",
+]
 
 export function InfernapeChat({ open, onClose }: InfernapeChatProps) {
   const [messages, setMessages] = useState<Message[]>([WELCOME_MESSAGE])
-  const [input, setInput] = useState("")
   const [loading, setLoading] = useState(false)
+  const [asked, setAsked] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages])
 
-  const handleSend = async () => {
-    const trimmed = input.trim()
-    if (!trimmed || loading) return
+  const handleQuestion = async (question: string) => {
+    if (loading) return
+    setAsked(true)
 
-    const userMsg: Message = { role: "user", content: trimmed }
+    const userMsg: Message = { role: "user", content: question }
     setMessages((prev) => [...prev, userMsg])
-    setInput("")
     setLoading(true)
 
     try {
@@ -52,17 +59,10 @@ export function InfernapeChat({ open, onClose }: InfernapeChatProps) {
     } catch {
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: "Sorry, I'm having trouble connecting. Please try again." },
+        { role: "assistant", content: "Sorry, I'm having trouble connecting. Try again or reach out directly via the contact form!" },
       ])
     } finally {
       setLoading(false)
-    }
-  }
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault()
-      handleSend()
     }
   }
 
@@ -82,9 +82,9 @@ export function InfernapeChat({ open, onClose }: InfernapeChatProps) {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="fixed bottom-6 right-6 z-50 w-[400px] max-w-[calc(100vw-2rem)] h-[600px] max-h-[calc(100vh-6rem)] rounded-2xl border border-white/10 bg-[#0B1220]/95 backdrop-blur-2xl shadow-2xl flex flex-col overflow-hidden"
+            className="fixed bottom-6 right-6 z-50 w-[400px] max-w-[calc(100vw-2rem)] h-[560px] max-h-[calc(100vh-6rem)] rounded-2xl border border-white/10 bg-[#0B1220]/95 backdrop-blur-2xl shadow-2xl flex flex-col overflow-hidden"
           >
-            <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-white/10 shrink-0">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-400 to-purple-500 flex items-center justify-center">
                   <Bot size={16} className="text-white" />
@@ -139,24 +139,42 @@ export function InfernapeChat({ open, onClose }: InfernapeChatProps) {
               <div ref={bottomRef} />
             </div>
 
-            <div className="p-4 border-t border-white/10">
-              <div className="flex items-center gap-2 bg-white/5 rounded-full px-4 py-2 border border-white/10">
-                <input
-                  type="text"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  placeholder="Ask Infernape anything..."
-                  className="flex-1 bg-transparent text-sm text-white/80 placeholder-white/30 outline-none"
-                />
-                <button
-                  onClick={handleSend}
-                  disabled={!input.trim() || loading}
-                  className="w-8 h-8 rounded-full bg-cyan-400/10 flex items-center justify-center text-cyan-300 hover:bg-cyan-400/20 disabled:opacity-30 disabled:cursor-not-allowed transition-all shrink-0"
-                >
-                  <Send size={14} />
-                </button>
-              </div>
+            <div className="p-4 border-t border-white/10 shrink-0">
+              {!asked ? (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Sparkles size={12} className="text-cyan-400" />
+                    <span className="text-xs font-mono text-white/40 uppercase tracking-wider">Choose a question</span>
+                  </div>
+                  {QUESTIONS.map((q) => (
+                    <motion.button
+                      key={q}
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => handleQuestion(q)}
+                      disabled={loading}
+                      className="w-full text-left px-4 py-2.5 rounded-xl text-sm text-white/70 bg-white/5 border border-white/10 hover:bg-white/10 hover:text-white hover:border-cyan-400/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {q}
+                    </motion.button>
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {QUESTIONS.map((q) => (
+                    <motion.button
+                      key={q}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => handleQuestion(q)}
+                      disabled={loading}
+                      className="text-xs px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-white/50 hover:text-white hover:bg-white/10 hover:border-cyan-400/30 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                    >
+                      {q}
+                    </motion.button>
+                  ))}
+                </div>
+              )}
             </div>
           </motion.div>
         </>
