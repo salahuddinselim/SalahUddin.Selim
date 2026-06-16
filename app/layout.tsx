@@ -12,6 +12,7 @@ import { Analytics } from '@vercel/analytics/react'
 import { headers } from 'next/headers'
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://salah-uddin-selim.vercel.app'
+const s = siteUrl.replace(/\/+$/, '')
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -53,9 +54,9 @@ const jsonLd = {
   "@graph": [
     {
       "@type": "Person",
-      "@id": "https://salah-uddin-selim.vercel.app/#person",
+      "@id": `${s}/#person`,
       name: "Salah Uddin Selim",
-      url: "https://salah-uddin-selim.vercel.app/",
+      url: s,
       jobTitle: "CSE Student & Software Engineer",
       alumniOf: "United International University",
       award: "6th Runner-Up — UIU Software Project Competition, Spring 2025",
@@ -67,23 +68,23 @@ const jsonLd = {
     },
     {
       "@type": "WebSite",
-      "@id": "https://salah-uddin-selim.vercel.app/#website",
-      url: "https://salah-uddin-selim.vercel.app/",
+      "@id": `${s}/#website`,
+      url: s,
       name: "Salah Uddin Selim",
       description:
         "CSE student at UIU (GPA 3.68/4.0) with hands-on experience in full-stack web development, IoT systems, and algorithm design.",
-      publisher: { "@id": "https://salah-uddin-selim.vercel.app/#person" },
+      publisher: { "@id": `${s}/#person` },
     },
     {
       "@type": "BreadcrumbList",
-      "@id": "https://salah-uddin-selim.vercel.app/#breadcrumb",
+      "@id": `${s}/#breadcrumb`,
       itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Home", item: "https://salah-uddin-selim.vercel.app/" },
-        { "@type": "ListItem", position: 2, name: "Projects", item: "https://salah-uddin-selim.vercel.app/projects" },
-        { "@type": "ListItem", position: 3, name: "Credentials", item: "https://salah-uddin-selim.vercel.app/credentials" },
-        { "@type": "ListItem", position: 4, name: "Forge", item: "https://salah-uddin-selim.vercel.app/forge" },
-        { "@type": "ListItem", position: 5, name: "Persona", item: "https://salah-uddin-selim.vercel.app/persona" },
-        { "@type": "ListItem", position: 6, name: "Gallery", item: "https://salah-uddin-selim.vercel.app/gallery" },
+        { "@type": "ListItem", position: 1, name: "Home", item: s },
+        { "@type": "ListItem", position: 2, name: "Projects", item: `${s}/projects` },
+        { "@type": "ListItem", position: 3, name: "Credentials", item: `${s}/credentials` },
+        { "@type": "ListItem", position: 4, name: "Forge", item: `${s}/forge` },
+        { "@type": "ListItem", position: 5, name: "Persona", item: `${s}/persona` },
+        { "@type": "ListItem", position: 6, name: "Gallery", item: `${s}/gallery` },
       ],
     },
   ],

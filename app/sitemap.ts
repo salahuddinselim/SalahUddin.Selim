@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next"
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = "https://salah-uddin-selim.vercel.app"
+  const base = process.env.NEXT_PUBLIC_SITE_URL || "https://salah-uddin-selim.vercel.app"
   return [
     { url: base, lastModified: new Date(), changeFrequency: "monthly", priority: 1 },
     { url: `${base}/projects`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
