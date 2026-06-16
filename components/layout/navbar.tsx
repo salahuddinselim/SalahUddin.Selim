@@ -6,8 +6,13 @@ import { Home, Menu, X, MessageCircle } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { InfernapeChat } from "@/components/chat/infernape-chat"
+import dynamic from "next/dynamic"
 import { LiquidRipple } from "@/components/ui/liquid-ripple"
+
+const InfernapeChat = dynamic(
+  () => import("@/components/chat/infernape-chat").then(m => m.InfernapeChat),
+  { ssr: false }
+)
 
 const navItems = [
   { label: "PROJECTS", href: "/projects" },

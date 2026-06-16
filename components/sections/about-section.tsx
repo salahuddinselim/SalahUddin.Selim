@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils"
 const aboutData = {
   name: "Salah Uddin Selim",
   role: "CSE Student & Software Engineer",
-  avatar: "/hero.png",
+  avatar: "/hero.webp",
   aboutCards: [
     {
       icon: User,

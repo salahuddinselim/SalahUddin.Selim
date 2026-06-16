@@ -1,7 +1,8 @@
 "use client"
 
-import { createContext, useContext, useState, useCallback, type ReactNode } from "react"
-import { VisitorPanel } from "./visitor-panel"
+import { createContext, useContext, useState, useCallback, lazy, Suspense, type ReactNode } from "react"
+
+const VisitorPanel = lazy(() => import("./visitor-panel").then(m => ({ default: m.VisitorPanel })))
 
 interface VisitorContextType {
   openPanel: () => void
@@ -25,7 +26,9 @@ export function VisitorPanelProvider({ children }: { children: ReactNode }) {
   return (
     <VisitorContext.Provider value={{ openPanel, closePanel }}>
       {children}
-      <VisitorPanel open={open} onClose={closePanel} />
+      <Suspense fallback={null}>
+        <VisitorPanel open={open} onClose={closePanel} />
+      </Suspense>
     </VisitorContext.Provider>
   )
 }

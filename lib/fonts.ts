@@ -2,7 +2,7 @@ import { Poppins, Inter, JetBrains_Mono } from 'next/font/google'
 
 export const fontHeading = Poppins({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700', '800'],
+  weight: ['400', '500', '600', '700'],
   variable: '--font-heading',
   display: 'swap',
   preload: true,
@@ -11,7 +11,7 @@ export const fontHeading = Poppins({
 
 export const fontBody = Inter({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700'],
+  weight: ['400', '500', '600'],
   variable: '--font-body',
   display: 'swap',
   preload: true,
@@ -20,7 +20,7 @@ export const fontBody = Inter({
 
 export const fontCode = JetBrains_Mono({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
+  weight: ['400', '500'],
   variable: '--font-code',
   display: 'swap',
   preload: true,

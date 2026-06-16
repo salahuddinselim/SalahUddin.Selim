@@ -5,7 +5,7 @@ import { Navbar } from '@/components/layout/navbar'
 import { Footer } from '@/components/layout/Footer'
 import { VisitorPanelProvider } from '@/components/analytics/visitor-context'
 import { VisitTracker } from '@/components/analytics/visit-tracker'
-import { SpaceBackground } from '@/components/effects/space-background'
+import { SpaceBackgroundWrapper } from '@/components/effects/space-background-wrapper'
 import { ShowOnMainSite } from '@/components/layout/shell-provider'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Analytics } from '@vercel/analytics/react'
@@ -103,7 +103,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <SpaceBackground />
+        <SpaceBackgroundWrapper />
         <SpeedInsights />
         <Analytics />
         <div className="relative z-10" id="main-content">

@@ -8,12 +8,27 @@ const nextConfig: NextConfig = {
   },
   images: {
     formats: ['image/avif', 'image/webp'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'cdn.sanity.io',
+      },
+    ],
   },
   experimental: {
     optimizePackageImports: ['lucide-react', 'framer-motion'],
+    optimizeServerReact: true,
+    scrollRestoration: true,
   },
   async headers() {
     return [
+      {
+        source: '/:all*(svg|png|jpg|jpeg|webp|avif|ico|woff2)',
+        locale: false,
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+        ],
+      },
       {
         source: '/(.*)',
         headers: [
