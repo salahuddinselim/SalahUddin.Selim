@@ -9,7 +9,6 @@ import { SpaceBackground } from '@/components/effects/space-background'
 import { ShowOnMainSite } from '@/components/layout/shell-provider'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Analytics } from '@vercel/analytics/react'
-import { headers } from 'next/headers'
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://salah-uddin-selim.vercel.app'
 const s = siteUrl.replace(/\/+$/, '')
@@ -90,8 +89,7 @@ const jsonLd = {
   ],
 }
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const nonce = (await headers()).get('x-nonce') ?? undefined
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${fontVariables} dark`} data-scroll-behavior="smooth" suppressHydrationWarning>
       <body className="min-h-screen bg-[#050816] text-foreground antialiased relative overflow-x-hidden">
@@ -103,7 +101,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         </a>
         <script
           type="application/ld+json"
-          nonce={nonce}
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <SpaceBackground />
