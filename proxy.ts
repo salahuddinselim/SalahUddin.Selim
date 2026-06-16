@@ -8,7 +8,7 @@ export default function middleware(request: NextRequest) {
 
   const csp = [
     "default-src 'self'",
-    `script-src 'nonce-${nonce}' 'strict-dynamic' 'unsafe-eval' https://challenges.cloudflare.com`,
+    `script-src 'nonce-${nonce}' 'unsafe-eval' https://challenges.cloudflare.com`,
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob: https: https://cdn.sanity.io",
     "font-src 'self' data:",

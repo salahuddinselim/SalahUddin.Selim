@@ -57,6 +57,8 @@ export function Turnstile({ onVerify, onExpire, theme = "dark" }: TurnstileProps
         window.turnstile.remove(globalWidgetId)
         globalWidgetId = null
       }
+      loadedRef.current = false
+      window.onTurnstileLoad = undefined
     }
   }, [renderWidget])
 
