@@ -2,13 +2,9 @@ import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 
 export default function middleware(request: NextRequest) {
-  const nonce = crypto.randomUUID()
-  const requestHeaders = new Headers(request.headers)
-  requestHeaders.set("x-nonce", nonce)
-
   const csp = [
     "default-src 'self'",
-    `script-src 'self' 'unsafe-inline' 'nonce-${nonce}' 'unsafe-eval' https://challenges.cloudflare.com`,
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com",
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob: https: https://cdn.sanity.io",
     "font-src 'self' data:",
@@ -20,9 +16,8 @@ export default function middleware(request: NextRequest) {
     "report-uri /api/csp-report",
   ].join("; ")
 
-  const response = NextResponse.next({ request: { headers: requestHeaders } })
+  const response = NextResponse.next()
   response.headers.set("Content-Security-Policy", csp)
-  response.headers.set("x-nonce", nonce)
   return response
 }
 
