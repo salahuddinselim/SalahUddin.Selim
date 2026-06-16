@@ -345,3 +345,16 @@
   position: absolute;
   animation: scanner 3s ease-in-out infinite;
 }
+
+.skill-pill {
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+.skill-pill:hover {
+  border-color: var(--cat-color-99) !important;
+  background: var(--cat-color-0C) !important;
+  box-shadow: 0 0 12px var(--cat-color-20, transparent) !important;
+}
+.skill-pill:hover .skill-pill-icon,
+.skill-pill:hover .skill-pill-label {
+  color: var(--cat-color) !important;
+}
