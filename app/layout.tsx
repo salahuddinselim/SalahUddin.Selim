@@ -10,10 +10,10 @@ import { ShowOnMainSite } from '@/components/layout/shell-provider'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Analytics } from '@vercel/analytics/react'
 
-const siteUrl = 'https://salah-uddin-selim.vercel.app'
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://salah-uddin-selim.vercel.app'
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://salah-uddin-selim.vercel.app'),
+  metadataBase: new URL(siteUrl),
   title: {
     default: 'Salah Uddin Selim | CSE Student & Software Engineer',
     template: '%s | Salah Uddin Selim',
@@ -90,7 +90,7 @@ const jsonLd = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${fontVariables} dark`} suppressHydrationWarning>
+    <html lang="en" className={`${fontVariables} dark`} data-scroll-behavior="smooth" suppressHydrationWarning>
       <body className="min-h-screen bg-[#050816] text-foreground antialiased relative overflow-x-hidden">
         <a
           href="#main-content"

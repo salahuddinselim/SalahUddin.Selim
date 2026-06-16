@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from "next/server"
 import { writeClient, VISITOR_DOC_ID, type VisitorStats, type CountryStat, type DeviceStat } from "@/lib/sanity/write"
 
+async function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return await Promise.race([
+    promise,
+    new Promise<T>((_, reject) => setTimeout(() => reject(new Error(`timeout:${ms}`)), ms)),
+  ])
+}
+
 function getDevice(userAgent: string): string {
   const ua = userAgent.toLowerCase()
   if (ua.includes("iphone") || ua.includes("ipad")) return "iOS"
@@ -14,7 +21,7 @@ function getDevice(userAgent: string): string {
 
 async function lookupCountry(ip: string): Promise<{ name: string; code: string; flag: string } | null> {
   try {
-    const res = await fetch(`http://ip-api.com/json/${ip}?fields=status,country,countryCode`, {
+    const res = await fetch(`https://ip-api.com/json/${ip}?fields=status,country,countryCode`, {
       signal: AbortSignal.timeout(3000),
     })
     const data = await res.json()
@@ -39,10 +46,10 @@ export async function POST(request: NextRequest) {
 
     const [countryInfo, currentDoc] = await Promise.all([
       ip !== "127.0.0.1" ? lookupCountry(ip) : null,
-      writeClient.getDocument<VisitorStats>(VISITOR_DOC_ID).catch(() => null),
+      withTimeout(writeClient.getDocument<VisitorStats>(VISITOR_DOC_ID), 2500).catch(() => null),
     ])
 
-    let total = (currentDoc?.totalViews ?? 0) + 1
+    const total = (currentDoc?.totalViews ?? 0) + 1
     let thisMonthViews = (currentDoc?.thisMonthViews ?? 0) + 1
     let thisMonth = currentDoc?.thisMonth ?? monthKey
 
@@ -51,9 +58,9 @@ export async function POST(request: NextRequest) {
       thisMonth = monthKey
     }
 
-    let countries: CountryStat[] = currentDoc?.countries ?? []
-    let devices: DeviceStat[] = currentDoc?.devices ?? []
-    let monthlyHistory: { month: string; views: number }[] = currentDoc?.monthlyHistory ?? []
+    const countries: CountryStat[] = currentDoc?.countries ?? []
+    const devices: DeviceStat[] = currentDoc?.devices ?? []
+    const monthlyHistory: { month: string; views: number }[] = currentDoc?.monthlyHistory ?? []
 
     if (countryInfo) {
       const existing = countries.find((c) => c.code === countryInfo.code)
@@ -94,11 +101,13 @@ export async function POST(request: NextRequest) {
       lastUpdated: now.toISOString(),
     }
 
-    await writeClient.createOrReplace(payload)
+    await withTimeout(writeClient.createOrReplace(payload), 3500)
 
     return NextResponse.json({ ok: true })
   } catch (err) {
-    console.error("visit error:", err)
-    return NextResponse.json({ ok: false }, { status: 500 })
+    const message = err instanceof Error ? err.message : "unknown"
+    console.warn("visit write skipped:", message)
+    // Keep analytics endpoint non-blocking for UX; failures are expected during network outages.
+    return NextResponse.json({ ok: true, persisted: false }, { status: 202 })
   }
 }

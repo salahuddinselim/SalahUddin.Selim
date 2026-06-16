@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server"
 import { GoogleGenAI } from "@google/genai"
 
-const genAI = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY || "" })
-
 const PORTFOLIO_DATA = `
 ABOUT SALAH UDDIN SELIM:
 - Name: Salah Uddin Selim
@@ -55,6 +53,14 @@ STRICT RULES:
 
 export async function POST(req: Request) {
   try {
+    const apiKey = process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY
+    if (!apiKey) {
+      return NextResponse.json(
+        { error: "Chat is not configured — missing API key", detail: "Contact the site owner to set up GEMINI_API_KEY" },
+        { status: 500 },
+      )
+    }
+    const genAI = new GoogleGenAI({ apiKey })
     const { messages } = await req.json()
 
     let historyMessages = messages.slice(0, -1)

@@ -1,6 +1,7 @@
 import { getProjects } from "@/lib/sanity/fetch"
 import type { Metadata } from "next"
 import { ProjectsSection } from "@/components/sections/projects-section"
+import type { SanityProject } from "@/types"
 
 export const metadata: Metadata = {
   title: "Projects",
@@ -16,7 +17,12 @@ export const metadata: Metadata = {
 export const revalidate = 3600
 
 export default async function ProjectsPage() {
-  const projects = await getProjects()
+  let projects: SanityProject[] = []
+  try {
+    projects = await getProjects()
+  } catch (error) {
+    console.error("Failed to load projects for projects page:", error)
+  }
 
   return (
     <main className="min-h-screen pt-28">

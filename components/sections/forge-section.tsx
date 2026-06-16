@@ -1,11 +1,21 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import dynamic from "next/dynamic"
 import { motion } from "framer-motion"
-import { SkillCloud } from "./skill-cloud"
 import { getSkills } from "@/lib/sanity/fetch"
 import { getSkillIcon } from "@/lib/sanity/icon-map"
 import type { SanitySkill } from "@/types"
+
+const SkillCloud = dynamic(
+  () => import("./skill-cloud").then((mod) => mod.SkillCloud),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-full w-full rounded-2xl border border-cyan-300/20 bg-black/20 animate-pulse" />
+    ),
+  },
+)
 
 const categoryDefaults: Record<string, { heading: string; description: string; color: string }> = {
   languages: { heading: "Languages", description: "Proficient in multiple programming languages across systems, web, and application development.", color: "#00D9FF" },
@@ -69,7 +79,7 @@ export function ForgeSection() {
           initial={{ opacity: 0, scale: 0.94 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6, ease: "easeOut", delay: 0.15 }}
-          className="relative w-full h-[600px] sm:h-[680px] mb-16"
+          className="relative w-full h-[440px] sm:h-[600px] md:h-[680px] mb-12 sm:mb-16"
         >
           <SkillCloud activeCategory={activeCategory} onCategorySelect={handleCategoryClick} />
         </motion.div>

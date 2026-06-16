@@ -12,7 +12,7 @@ const csp = [
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
-  "report-uri https://salahuddin.report-uri.com/r/d/csp/enforce",
+  "report-uri /api/csp-report",
 ].join("; ")
 
 export default function proxy(request: NextRequest) {

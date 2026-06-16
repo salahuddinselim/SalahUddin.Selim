@@ -5,9 +5,15 @@ import { AboutPreview } from "@/components/sections/about-preview"
 import { ExperienceSection } from "@/components/sections/experience-section"
 import { ContactSection } from "@/components/sections/contact-section"
 import { getProjects } from "@/lib/sanity/fetch"
+import type { SanityProject } from "@/types"
 
 export default async function Home() {
-  const allProjects = await getProjects()
+  let allProjects: SanityProject[] = []
+  try {
+    allProjects = await getProjects()
+  } catch (error) {
+    console.error("Failed to load projects for home page:", error)
+  }
 
   return (
     <main>

@@ -24,6 +24,7 @@ interface TagCloudProps {
 }
 
 interface Tag3D {
+  idx: number
   x: number
   y: number
   z: number
@@ -132,6 +133,9 @@ export function TagCloud({
   const isHoveringRef = useRef(false)
   const reducedMotionRef = useRef(false)
   const maxFpsRef = useRef(60)
+  const isMobileRef = useRef(false)
+  const isLowPowerRef = useRef(false)
+  const activeCategoryRef = useRef(activeCategory)
   const onTagClickRef = useRef(onTagClick)
 
   useEffect(() => {
@@ -139,8 +143,13 @@ export function TagCloud({
   }, [onTagClick])
 
   useEffect(() => {
+    activeCategoryRef.current = activeCategory
+  }, [activeCategory])
+
+  useEffect(() => {
     const pts = fibonacciSphere(items.length)
     tagsRef.current = items.map((item, i) => ({
+      idx: i,
       x: pts[i].x,
       y: pts[i].y,
       z: pts[i].z,
@@ -196,18 +205,21 @@ export function TagCloud({
     if (!canvas || !container) return
 
     const dpr = window.devicePixelRatio || 1
-    const ctx = canvas.getContext("2d")!
+    const ctx = canvas.getContext("2d", { desynchronized: true })!
     let isActive = true
     const { rings, meridians } = wireframeRef.current
     const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)")
+    const mobileQuery = window.matchMedia("(max-width: 768px), (pointer: coarse)")
     const setMotionPrefs = () => {
+      isMobileRef.current = mobileQuery.matches
       reducedMotionRef.current = reducedMotionQuery.matches
       autoRotateRef.current = !reducedMotionRef.current && !isHoveringRef.current
-      const lowPower = (navigator.hardwareConcurrency || 8) <= 4
-      maxFpsRef.current = reducedMotionRef.current ? 24 : lowPower ? 30 : 60
+      isLowPowerRef.current = (navigator.hardwareConcurrency || 8) <= 4
+      maxFpsRef.current = reducedMotionRef.current ? 24 : isMobileRef.current ? 24 : isLowPowerRef.current ? 30 : 60
     }
     setMotionPrefs()
     reducedMotionQuery.addEventListener("change", setMotionPrefs)
+    mobileQuery.addEventListener("change", setMotionPrefs)
 
     function resize() {
       const c = canvasRef.current
@@ -215,8 +227,9 @@ export function TagCloud({
       if (!c || !el) return
       const rect = el.getBoundingClientRect()
       sizeRef.current = { w: rect.width, h: rect.height }
-      c.width = rect.width * dpr
-      c.height = rect.height * dpr
+      const cappedDpr = isMobileRef.current ? Math.min(dpr, 1.25) : isLowPowerRef.current ? Math.min(dpr, 1.5) : Math.min(dpr, 2)
+      c.width = rect.width * cappedDpr
+      c.height = rect.height * cappedDpr
       c.style.width = `${rect.width}px`
       c.style.height = `${rect.height}px`
     }
@@ -369,6 +382,8 @@ export function TagCloud({
       const { w, h } = sizeRef.current
       const radius = Math.min(w, h) * SPHERE_RADIUS
       const rot = rotationRef.current
+      const currentDpr = canvas!.width / Math.max(1, w)
+      const activeCategory = activeCategoryRef.current
 
       // Update rotation
       if (isDragging.current) {
@@ -385,9 +400,9 @@ export function TagCloud({
         rotationRef.current.x += 0.001
       }
 
-      ctx.clearRect(0, 0, w * dpr, h * dpr)
+      ctx.clearRect(0, 0, w * currentDpr, h * currentDpr)
       ctx.save()
-      ctx.scale(dpr, dpr)
+      ctx.scale(currentDpr, currentDpr)
 
       const cx = w / 2
       const cy = h / 2
@@ -413,9 +428,8 @@ export function TagCloud({
         const isInactive = activeCategory && tag.category !== activeCategory
         if (isInactive && scale < 0.3) continue
 
-        const idx = items.findIndex((it) => it.name === tag.name)
-        const iconCanvas = idx >= 0 ? iconCanvasesRef.current.get(idx) : undefined
-        const iconLoaded = idx >= 0 ? iconLoadedRef.current.get(idx) : undefined
+        const iconCanvas = iconCanvasesRef.current.get(tag.idx)
+        const iconLoaded = iconLoadedRef.current.get(tag.idx)
 
         const dims = drawPillBadge(
           sx,
@@ -535,6 +549,7 @@ export function TagCloud({
       cancelAnimationFrame(rafRef.current)
       ro.disconnect()
       reducedMotionQuery.removeEventListener("change", setMotionPrefs)
+      mobileQuery.removeEventListener("change", setMotionPrefs)
       canvas.removeEventListener("mousedown", onMouseDown)
       canvas.removeEventListener("mouseenter", onMouseEnter)
       canvas.removeEventListener("mouseleave", onMouseLeaveCanvas)
@@ -546,7 +561,7 @@ export function TagCloud({
       canvas.removeEventListener("touchmove", onTouchMove)
       canvas.removeEventListener("touchend", onTouchEnd)
     }
-  }, [activeCategory, items])
+  }, [items])
 
   return (
     <div
