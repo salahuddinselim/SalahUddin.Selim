@@ -10,6 +10,8 @@ export const metadata: Metadata = {
     description:
       "System dashboard and real-time analytics for the portfolio.",
   },
+  robots: { index: false, follow: true },
+  alternates: { canonical: "/analytics" },
 }
 
 export default function AnalyticsPage() {

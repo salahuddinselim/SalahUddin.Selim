@@ -1,26 +1,31 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 
-const csp = [
-  "default-src 'self'",
-  "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://challenges.cloudflare.com",
-  "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https: https://cdn.sanity.io",
-  "font-src 'self' data:",
-  "connect-src 'self' https: wss: https://id5e9a8v.apicdn.sanity.io https://cdn.sanity.io https://api.resend.com",
-  "frame-src https://challenges.cloudflare.com",
-  "object-src 'none'",
-  "base-uri 'self'",
-  "form-action 'self'",
-  "report-uri /api/csp-report",
-].join("; ")
+export default function middleware(request: NextRequest) {
+  const nonce = crypto.randomUUID()
+  const requestHeaders = new Headers(request.headers)
+  requestHeaders.set("x-nonce", nonce)
 
-export default function proxy(request: NextRequest) {
-  const response = NextResponse.next()
+  const csp = [
+    "default-src 'self'",
+    `script-src 'nonce-${nonce}' 'strict-dynamic' 'unsafe-eval' https://challenges.cloudflare.com`,
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data: blob: https: https://cdn.sanity.io",
+    "font-src 'self' data:",
+    "connect-src 'self' https: wss: https://id5e9a8v.apicdn.sanity.io https://cdn.sanity.io https://api.resend.com",
+    "frame-src https://challenges.cloudflare.com",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "report-uri /api/csp-report",
+  ].join("; ")
+
+  const response = NextResponse.next({ request: { headers: requestHeaders } })
   response.headers.set("Content-Security-Policy", csp)
+  response.headers.set("x-nonce", nonce)
   return response
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.svg|robots.txt|sitemap.xml|opengraph-image|google08db23e23b4fc7df.html).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.svg|robots.txt|sitemap.xml|opengraph-image|manifest.webmanifest|\\.well-known|google08db23e23b4fc7df.html).*)"],
 }

@@ -10,6 +10,7 @@ export const metadata: Metadata = {
     description:
       "Technical expertise and skill set of Salah Uddin Selim — languages, frameworks, IoT, tools, and design.",
   },
+  alternates: { canonical: "/forge" },
 }
 
 export default function ForgePage() {

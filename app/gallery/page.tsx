@@ -10,6 +10,7 @@ export const metadata: Metadata = {
     description:
       "Visual archive of Salah Uddin Selim's academic life, creations, and memorable moments.",
   },
+  alternates: { canonical: "/gallery" },
 }
 
 export default function GalleryPage() {

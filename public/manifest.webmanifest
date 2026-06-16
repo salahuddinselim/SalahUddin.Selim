@@ -1,0 +1,12 @@
+{
+  "name": "Salah Uddin Selim",
+  "short_name": "Salah Uddin Selim",
+  "description": "CSE student at UIU — portfolio, projects, credentials, and technical blog.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#050816",
+  "theme_color": "#050816",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

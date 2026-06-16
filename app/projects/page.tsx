@@ -12,6 +12,7 @@ export const metadata: Metadata = {
     description:
       "Explore 5+ production-quality projects by Salah Uddin Selim across Java, Python, PHP, Arduino, and full-stack web development.",
   },
+  alternates: { canonical: "/projects" },
 }
 
 export const revalidate = 3600

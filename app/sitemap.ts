@@ -9,6 +9,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${base}/forge`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
     { url: `${base}/persona`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
     { url: `${base}/gallery`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
-    { url: `${base}/analytics`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.3 },
   ]
 }

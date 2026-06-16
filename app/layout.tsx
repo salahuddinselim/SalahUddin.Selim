@@ -9,6 +9,7 @@ import { SpaceBackground } from '@/components/effects/space-background'
 import { ShowOnMainSite } from '@/components/layout/shell-provider'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Analytics } from '@vercel/analytics/react'
+import { headers } from 'next/headers'
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://salah-uddin-selim.vercel.app'
 
@@ -23,6 +24,7 @@ export const metadata: Metadata = {
   keywords: ['Salah Uddin Selim', 'CSE', 'UIU', 'full-stack developer', 'software engineer', 'IoT', 'portfolio', 'Bangladesh'],
   authors: [{ name: 'Salah Uddin Selim' }],
   icons: { icon: '/favicon.svg' },
+  manifest: '/manifest.webmanifest',
   openGraph: {
     title: 'Salah Uddin Selim | CSE Student & Software Engineer',
     description:
@@ -41,7 +43,6 @@ export const metadata: Metadata = {
     images: ['/og-image.png'],
   },
   robots: { index: true, follow: true },
-  alternates: { canonical: siteUrl },
   other: {
     'google-site-verification': 'google08db23e23b4fc7df',
   },
@@ -88,7 +89,8 @@ const jsonLd = {
   ],
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const nonce = (await headers()).get('x-nonce') ?? ''
   return (
     <html lang="en" className={`${fontVariables} dark`} data-scroll-behavior="smooth" suppressHydrationWarning>
       <body className="min-h-screen bg-[#050816] text-foreground antialiased relative overflow-x-hidden">
@@ -100,6 +102,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </a>
         <script
           type="application/ld+json"
+          nonce={nonce}
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <SpaceBackground />

@@ -10,6 +10,7 @@ export const metadata: Metadata = {
     description:
       "Achievements, awards, and certifications earned by Salah Uddin Selim throughout his academic career.",
   },
+  alternates: { canonical: "/credentials" },
 }
 
 export default function CredentialsPage() {

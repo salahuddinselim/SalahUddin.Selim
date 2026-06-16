@@ -10,6 +10,7 @@ export const metadata: Metadata = {
     description:
       "Complete profile of Salah Uddin Selim — CSE student at UIU, GitHub stats, education history, and social links.",
   },
+  alternates: { canonical: "/persona" },
 }
 
 export default function PersonaPage() {
