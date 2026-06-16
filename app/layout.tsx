@@ -91,7 +91,7 @@ const jsonLd = {
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const nonce = (await headers()).get('x-nonce') ?? ''
+  const nonce = (await headers()).get('x-nonce') ?? undefined
   return (
     <html lang="en" className={`${fontVariables} dark`} data-scroll-behavior="smooth" suppressHydrationWarning>
       <body className="min-h-screen bg-[#050816] text-foreground antialiased relative overflow-x-hidden">
