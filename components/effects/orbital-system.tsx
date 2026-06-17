@@ -1,7 +1,6 @@
 "use client"
 
-import { useMemo } from "react"
-import { motion } from "framer-motion"
+import { useMemo, useEffect, useState } from "react"
 
 function det(index: number, offset = 0): number {
   const x = Math.sin(index * 12345.6789 + offset * 9876.54321) * 10000
@@ -16,6 +15,19 @@ const rings = [
 ]
 
 export function OrbitalSystem() {
+  const [isMobile, setIsMobile] = useState(false)
+  const [isLowPower, setIsLowPower] = useState(false)
+
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 768px), (pointer: coarse)")
+    const update = () => setIsMobile(media.matches)
+    const detectPower = () => setIsLowPower((navigator.hardwareConcurrency || 8) <= 4)
+    update()
+    detectPower()
+    media.addEventListener("change", update)
+    return () => media.removeEventListener("change", update)
+  }, [])
+
   const bodies = useMemo(
     () =>
       rings.map((ring, ringIndex) =>
@@ -27,10 +39,12 @@ export function OrbitalSystem() {
     [],
   )
 
+  if (isMobile || isLowPower) return null
+
   return (
     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
       {rings.map((ring, i) => (
-        <motion.div
+        <div
           key={i}
           className="absolute rounded-full"
           style={{
@@ -38,12 +52,7 @@ export function OrbitalSystem() {
             height: ring.size,
             border: "1px solid rgba(255, 255, 255, 0.08)",
             boxShadow: `0 0 30px rgba(0, 217, 255, 0.04), inset 0 0 30px rgba(0, 217, 255, 0.02)`,
-          }}
-          animate={{ rotate: ring.clockwise ? 360 : -360 }}
-          transition={{
-            duration: ring.duration,
-            repeat: Infinity,
-            ease: "linear",
+            animation: `orbit-spin-${ring.clockwise ? "clockwise" : "counter"} ${ring.duration}s linear infinite`,
           }}
         >
           {bodies[i].map((body, j) => (
@@ -71,7 +80,7 @@ export function OrbitalSystem() {
               }}
             />
           ))}
-        </motion.div>
+        </div>
       ))}
     </div>
   )

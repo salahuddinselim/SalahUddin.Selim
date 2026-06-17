@@ -1,14 +1,18 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo, useCallback } from "react"
 import { motion } from "framer-motion"
 import { FolderKanban, ArrowUpRight } from "lucide-react"
 import { ProjectCard } from "@/components/sections/project-card"
 import type { SanityProject } from "@/types"
 
 export function ProjectsPreview({ projects: featuredProjects }: { projects: SanityProject[] }) {
-  const featured = featuredProjects.filter((p) => p.featured).slice(0, 3)
+  const featured = useMemo(() => featuredProjects.filter((p) => p.featured).slice(0, 3), [featuredProjects])
   const [activeProject, setActiveProject] = useState<SanityProject | null>(null)
+
+  const handleSelectProject = useCallback((project: SanityProject | null) => {
+    setActiveProject(project)
+  }, [])
 
   return (
     <section id="projects-preview" className="relative w-full py-24 sm:py-32 px-4">
@@ -30,7 +34,7 @@ export function ProjectsPreview({ projects: featuredProjects }: { projects: Sani
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
           {featured.map((project, i) => (
-            <ProjectCard key={project._id ?? project.title} project={project} index={i} activeProject={activeProject} setActiveProject={setActiveProject} />
+            <ProjectCard key={project._id ?? project.title} project={project} index={i} activeProject={activeProject} setActiveProject={handleSelectProject} />
           ))}
         </div>
 

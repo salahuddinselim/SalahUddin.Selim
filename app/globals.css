@@ -300,6 +300,16 @@
     color: var(--accent-secondary);
   }
 
+  button,
+  [role="button"],
+  a,
+  input,
+  textarea,
+  select {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
   /* ── Focus ring ──────────────────────────────── */
   *:focus-visible {
     outline: 2px solid var(--accent-primary);
@@ -357,4 +367,22 @@
 .skill-pill:hover .skill-pill-icon,
 .skill-pill:hover .skill-pill-label {
   color: var(--cat-color) !important;
+}
+
+@keyframes orbit-spin-clockwise {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes orbit-spin-counter {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
 }

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useId, useRef } from "react"
+import { useEffect, useId, useRef, memo } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { GitBranch, ExternalLink, X } from "lucide-react"
 import { useOutsideClick } from "@/hooks/use-outside-click"
@@ -14,7 +14,7 @@ interface ProjectCardProps {
   setActiveProject: (project: Project | null) => void
 }
 
-export function ProjectCard({ project, index, activeProject, setActiveProject }: ProjectCardProps) {
+export const ProjectCard = memo(function ProjectCard({ project, index, activeProject, setActiveProject }: ProjectCardProps) {
   const ref = useRef<HTMLDivElement>(null)
   const id = useId()
   const active = activeProject?.title === project.title
@@ -230,4 +230,4 @@ export function ProjectCard({ project, index, activeProject, setActiveProject }:
       </motion.div>
     </>
   )
-}
+})

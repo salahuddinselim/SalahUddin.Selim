@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { getProfile } from "@/lib/sanity/fetch"
 import type { SanityProfile } from "@/types"
 
 const roles = [
@@ -34,15 +33,10 @@ const fadeUp = {
   show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" as const } },
 }
 
-export function HeroContent() {
-  const [profile, setProfile] = useState<SanityProfile | null>(null)
+export function HeroContent({ profile }: { profile: SanityProfile | null }) {
   const [roleIndex, setRoleIndex] = useState(0)
   const [largeIndex, setLargeIndex] = useState(0)
   const [reducedMotion, setReducedMotion] = useState(false)
-
-  useEffect(() => {
-    getProfile().then(setProfile).catch(() => {})
-  }, [])
 
   useEffect(() => {
     const media = window.matchMedia("(prefers-reduced-motion: reduce)")

@@ -87,24 +87,37 @@ function buildConstellations(
   connectionDistance: number,
 ) {
   const lines: Array<[number, number, number, number]> = []
-  for (let i = 0; i < stars.length; i++) {
+  const n = stars.length
+  
+  for (let i = 0; i < n; i++) {
     const s = stars[i]
-    const neighbors = stars
-      .map((t, j) => ({ ...t, j }))
-      .filter((_, j) => j !== i)
-      .map((t) => ({
-        dist: Math.hypot(s.x - t.x, s.y - t.y),
-        j: t.j,
-      }))
-      .filter((t) => t.dist < connectionDistance)
-      .sort((a, b) => a.dist - b.dist)
-      .slice(0, 2)
+    let firstMinDist = connectionDistance
+    let secondMinDist = connectionDistance
+    let firstNeighborIndex = -1
+    let secondNeighborIndex = -1
 
-    for (const n of neighbors) {
-      const t = stars[n.j]
-      if (i < n.j) {
-        lines.push([s.x, s.y, t.x, t.y])
+    for (let j = 0; j < n; j++) {
+      if (i === j) continue
+      const t = stars[j]
+      const dist = Math.hypot(s.x - t.x, s.y - t.y)
+      if (dist < connectionDistance) {
+        if (dist < firstMinDist) {
+          secondMinDist = firstMinDist
+          secondNeighborIndex = firstNeighborIndex
+          firstMinDist = dist
+          firstNeighborIndex = j
+        } else if (dist < secondMinDist) {
+          secondMinDist = dist
+          secondNeighborIndex = j
+        }
       }
+    }
+
+    if (firstNeighborIndex !== -1 && i < firstNeighborIndex) {
+      lines.push([s.x, s.y, stars[firstNeighborIndex].x, stars[firstNeighborIndex].y])
+    }
+    if (secondNeighborIndex !== -1 && i < secondNeighborIndex) {
+      lines.push([s.x, s.y, stars[secondNeighborIndex].x, stars[secondNeighborIndex].y])
     }
   }
   return lines
@@ -113,6 +126,8 @@ function buildConstellations(
 export function SpaceBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [size, setSize] = useState({ width: 0, height: 0 })
+  const [isReducedMotion, setIsReducedMotion] = useState(false)
+  const [isLowPower, setIsLowPower] = useState(false)
 
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
@@ -136,6 +151,7 @@ export function SpaceBackground() {
   )
 
   useEffect(() => {
+    if (isReducedMotion) return
     const handleMouse = (e: MouseEvent) => {
       const nx = (e.clientX / window.innerWidth) * 2 - 1
       const ny = (e.clientY / window.innerHeight) * 2 - 1
@@ -144,16 +160,35 @@ export function SpaceBackground() {
     }
     window.addEventListener("mousemove", handleMouse)
     return () => window.removeEventListener("mousemove", handleMouse)
-  }, [mouseX, mouseY])
+  }, [mouseX, mouseY, isReducedMotion])
+
+  useEffect(() => {
+    const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)")
+    const updateMotion = () => setIsReducedMotion(reducedMotionQuery.matches)
+    const updatePower = () => setIsLowPower((navigator.hardwareConcurrency || 8) <= 4)
+
+    updateMotion()
+    updatePower()
+
+    reducedMotionQuery.addEventListener("change", updateMotion)
+    window.addEventListener("resize", updatePower)
+
+    return () => {
+      reducedMotionQuery.removeEventListener("change", updateMotion)
+      window.removeEventListener("resize", updatePower)
+    }
+  }, [])
 
   useEffect(() => {
     const w = window.innerWidth
     const h = window.innerHeight
     setSize({ width: w, height: h })
-    const stars = generateConstellationStars(w, h, 120)
+    const isMobile = w < 768
+    const starCount = isMobile || isReducedMotion || isLowPower ? 40 : 120
+    const stars = generateConstellationStars(w, h, starCount)
     setBigStars(stars)
-    setConstellations(buildConstellations(stars, w, h, 200))
-  }, [])
+    setConstellations(isMobile || isReducedMotion || isLowPower ? [] : buildConstellations(stars, w, h, 200))
+  }, [isReducedMotion, isLowPower])
 
   const draw = useCallback(
     (ctx: CanvasRenderingContext2D, offX: number, offY: number) => {
@@ -248,29 +283,33 @@ export function SpaceBackground() {
       />
 
       {/* Layer 4: Shooting stars */}
-      <ShootingStars
-        minSpeed={8}
-        maxSpeed={25}
-        minDelay={1500}
-        maxDelay={5000}
-        starColor="#00D9FF"
-        trailColor="#00D9FF"
-        starWidth={12}
-        starHeight={1.5}
-      />
-      <ShootingStars
-        minSpeed={6}
-        maxSpeed={20}
-        minDelay={2000}
-        maxDelay={6000}
-        starColor="#8B5CF6"
-        trailColor="#8B5CF6"
-        starWidth={8}
-        starHeight={1}
-      />
+      {!(isReducedMotion || isLowPower) && (
+        <>
+          <ShootingStars
+            minSpeed={8}
+            maxSpeed={25}
+            minDelay={1500}
+            maxDelay={5000}
+            starColor="#00D9FF"
+            trailColor="#00D9FF"
+            starWidth={12}
+            starHeight={1.5}
+          />
+          <ShootingStars
+            minSpeed={6}
+            maxSpeed={20}
+            minDelay={2000}
+            maxDelay={6000}
+            starColor="#8B5CF6"
+            trailColor="#8B5CF6"
+            starWidth={8}
+            starHeight={1}
+          />
+        </>
+      )}
 
       {/* Layer 5: Nebula glows */}
-      {nebulaPositions.map((pos, i) => (
+      {!(isReducedMotion || isLowPower) && nebulaPositions.map((pos, i) => (
         <NebulaGlow
           key={i}
           index={i}

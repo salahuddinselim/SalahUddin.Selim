@@ -1,4 +1,5 @@
 "use client"
+"use client"
 
 import { motion } from "framer-motion"
 import Image from "next/image"
@@ -8,7 +9,7 @@ import { cn } from "@/lib/utils"
 const aboutData = {
   name: "Salah Uddin Selim",
   role: "CSE Student & Software Engineer",
-  avatar: "/hero.webp",
+  avatar: "/hero.png",
   aboutCards: [
     {
       icon: User,
@@ -108,9 +109,11 @@ export function AboutSection() {
                   src={aboutData.avatar}
                   alt={aboutData.name}
                   fill
-                  priority
+                  priority={true}
                   className="object-cover"
-                  sizes="(max-width: 1024px) 100vw, 40vw"
+                  sizes="(max-width: 390px) 390px, (max-width: 768px) 768px, 1440px"
+                  quality={75}
+                  fetchPriority="high"
                   placeholder="blur"
                   blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mN8/+F9PQAI8wNPvd7POQAAAABJRU5ErkJggg=="
                 />

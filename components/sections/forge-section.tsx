@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo, memo } from "react"
+import { useState, useMemo, memo, useCallback } from "react"
 import dynamic from "next/dynamic"
 import { motion, AnimatePresence } from "framer-motion"
 import { getSkillIcon } from "@/lib/sanity/icon-map"
@@ -85,9 +85,13 @@ export function ForgeSection({ skills }: ForgeSectionProps) {
 
   const categoryIds = useMemo(() => Object.keys(grouped), [grouped])
 
-  const handleCategoryClick = (id: string) => {
+  const handleCategoryClick = useCallback((id: string) => {
     setActiveCategory((prev) => (prev === id ? null : id))
-  }
+  }, [])
+
+  const handleClearCategory = useCallback(() => {
+    setActiveCategory(null)
+  }, [])
 
   return (
     <section className="relative min-h-screen pb-24">
@@ -126,7 +130,7 @@ export function ForgeSection({ skills }: ForgeSectionProps) {
             isActive={activeCategory === null}
             label="All"
             color="#00D9FF"
-            onClick={() => setActiveCategory(null)}
+            onClick={handleClearCategory}
           />
           {categoryIds.map((catId) => {
             const cat = categoryDefaults[catId] ?? { heading: catId, description: "", color: "#00D9FF" }

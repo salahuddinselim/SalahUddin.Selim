@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import Image from "next/image"
 import { motion } from "framer-motion"
 import Link from "next/link"
 import { ArrowLeft, MapPin, Image as ImageIcon } from "lucide-react"
@@ -110,9 +111,12 @@ export function GallerySection() {
             )}
           >
             <div className="relative h-full w-full">
-              <img
+              <Image
                 src={img.image}
                 alt={img.caption ?? img.title}
+                fill
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                quality={65}
                 loading="lazy"
                 className={cn(
                   "h-full w-full object-cover transition-all duration-500",

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { ChevronDown, Award, GraduationCap } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -63,19 +63,36 @@ export function CredentialsSection() {
     getCredentials().then(setCredentials).catch(() => {})
   }, [])
 
-  const filtered = activeCategory === "All"
-    ? credentials
-    : credentials.filter((c) => c.category === activeCategory)
+  const filtered = useMemo(() => {
+    return activeCategory === "All"
+      ? credentials
+      : credentials.filter((c) => c.category === activeCategory)
+  }, [credentials, activeCategory])
 
-  const categories = [
-    { id: "All", count: credentials.length },
-    ...Array.from(new Set(credentials.map((c) => c.category))).map((cat) => ({
-      id: cat,
-      count: credentials.filter((c) => c.category === cat).length,
-    })),
-  ]
+  const categories = useMemo(() => {
+    return [
+      { id: "All", count: credentials.length },
+      ...Array.from(new Set(credentials.map((c) => c.category))).map((cat) => ({
+        id: cat,
+        count: credentials.filter((c) => c.category === cat).length,
+      })),
+    ]
+  }, [credentials])
 
-  const years = [...new Set(filtered.map((c) => c.year))].sort((a, b) => b - a)
+  const years = useMemo(() => {
+    return [...new Set(filtered.map((c) => c.year))].sort((a, b) => b - a)
+  }, [filtered])
+
+  const certsByYear = useMemo(() => {
+    const groups: Record<number, CredentialData[]> = {}
+    for (const cert of filtered) {
+      if (!groups[cert.year]) {
+        groups[cert.year] = []
+      }
+      groups[cert.year].push(cert)
+    }
+    return groups
+  }, [filtered])
 
   return (
     <section className="relative min-h-screen px-4 sm:px-6 md:px-8 pb-24 max-w-[1000px] mx-auto">
@@ -148,7 +165,7 @@ export function CredentialsSection() {
           className="space-y-10"
         >
           {years.map((year) => {
-            const yearCerts = filtered.filter((c) => c.year === year)
+            const yearCerts = certsByYear[year] || []
             return (
               <motion.div key={year} variants={itemVariants}>
                 <div className="flex items-center justify-between mb-4">

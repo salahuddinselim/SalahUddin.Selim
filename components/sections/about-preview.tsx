@@ -64,12 +64,14 @@ export function AboutPreview() {
                 </div>
               </div>
               <Image
-                src="/hero.webp"
+                src="/hero.png"
                 alt="Salah Uddin Selim"
                 fill
-                priority
+                priority={true}
                 className="object-cover"
-                sizes="(max-width: 640px) 256px, 288px"
+                sizes="(max-width: 390px) 390px, (max-width: 768px) 768px, 1440px"
+                quality={75}
+                fetchPriority="high"
                 placeholder="blur"
                 blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mN8/+F9PQAI8wNPvd7POQAAAABJRU5ErkJggg=="
               />

@@ -213,9 +213,9 @@ export function TagCloud({
     const setMotionPrefs = () => {
       isMobileRef.current = mobileQuery.matches
       reducedMotionRef.current = reducedMotionQuery.matches
-      autoRotateRef.current = !reducedMotionRef.current && !isHoveringRef.current
       isLowPowerRef.current = (navigator.hardwareConcurrency || 8) <= 4
-      maxFpsRef.current = reducedMotionRef.current ? 24 : isMobileRef.current ? 24 : isLowPowerRef.current ? 30 : 60
+      autoRotateRef.current = !reducedMotionRef.current && !isHoveringRef.current && !isMobileRef.current
+      maxFpsRef.current = reducedMotionRef.current ? 12 : isMobileRef.current ? 12 : isLowPowerRef.current ? 24 : 60
     }
     setMotionPrefs()
     reducedMotionQuery.addEventListener("change", setMotionPrefs)
@@ -227,7 +227,7 @@ export function TagCloud({
       if (!c || !el) return
       const rect = el.getBoundingClientRect()
       sizeRef.current = { w: rect.width, h: rect.height }
-      const cappedDpr = isMobileRef.current ? Math.min(dpr, 1.25) : isLowPowerRef.current ? Math.min(dpr, 1.5) : Math.min(dpr, 2)
+      const cappedDpr = isMobileRef.current ? Math.min(dpr, 1) : isLowPowerRef.current ? Math.min(dpr, 1.5) : Math.min(dpr, 2)
       c.width = rect.width * cappedDpr
       c.height = rect.height * cappedDpr
       c.style.width = `${rect.width}px`
