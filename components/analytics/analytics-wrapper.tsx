@@ -1,12 +1,27 @@
 "use client"
 
-import dynamic from "next/dynamic"
+import { useEffect, useState, lazy, Suspense } from "react"
 
-const ClientAnalytics = dynamic(
-  () => import("@/components/analytics/AnalyticsLoader"),
-  { ssr: false }
+const AnalyticsLoader = lazy(
+  () => import("@/components/analytics/AnalyticsLoader")
 )
 
 export function AnalyticsWrapper() {
-  return <ClientAnalytics />
+  const [ready, setReady] = useState(false)
+
+  useEffect(() => {
+    if ("requestIdleCallback" in window) {
+      requestIdleCallback(() => setReady(true), { timeout: 2000 })
+    } else {
+      setTimeout(() => setReady(true), 1500)
+    }
+  }, [])
+
+  if (!ready) return null
+
+  return (
+    <Suspense fallback={null}>
+      <AnalyticsLoader />
+    </Suspense>
+  )
 }
