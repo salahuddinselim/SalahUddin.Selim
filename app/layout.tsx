@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import dynamic from 'next/dynamic'
 import './globals.css'
 import { fontVariables } from '@/lib/fonts'
 import { Navbar } from '@/components/layout/navbar'
@@ -7,8 +6,8 @@ import { Footer } from '@/components/layout/Footer'
 import { VisitorPanelProvider } from '@/components/analytics/visitor-context'
 import { VisitTracker } from '@/components/analytics/visit-tracker'
 import { SpaceBackgroundWrapper } from '@/components/effects/space-background-wrapper'
+import { AnalyticsWrapper } from '@/components/analytics/analytics-wrapper'
 import { ShowOnMainSite } from '@/components/layout/shell-provider'
-const ClientAnalytics = dynamic(() => import('@/components/analytics/AnalyticsLoader'), { ssr: false })
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://salah-uddin-selim.vercel.app'
 const s = siteUrl.replace(/\/+$/, '')
@@ -105,7 +104,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
         <style>{`html{background:#050816;color:#ffffff;scroll-behavior:smooth;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}body{margin:0;font-family:var(--font-body-family),system-ui,sans-serif;line-height:1.5;background:#050816;color:#ffffff}body,button,textarea,input,select{font:inherit}a{color:#00d9ff;text-decoration:none}img{max-width:100%;display:block}button{font:inherit}.hero-content{display:flex;flex-direction:column;align-items:center;text-align:center;width:100%;max-width:900px;margin-inline:auto;padding-inline:1rem}.hero-subtitle{font-size:0.875rem;font-weight:500;letter-spacing:0.2em;margin-bottom:1.5rem;color:#94a3b8}.hero-title{font-weight:800;color:#ffffff;line-height:1;letter-spacing:0;max-width:100%;word-break:break-word}.hero-role{font-size:1rem;color:#00d9ff;font-weight:500;white-space:nowrap}.hero-copy{font-size:1rem;color:#94a3b8;line-height:1.75;max-width:700px;margin-inline:auto}`}</style>
         <SpaceBackgroundWrapper />
-        <ClientAnalytics />
+        <AnalyticsWrapper />
         <div className="relative z-10" id="main-content">
             <VisitorPanelProvider>
               <ShowOnMainSite>
