@@ -48,6 +48,19 @@ export function Navbar() {
     return () => observer.disconnect()
   }, [])
 
+  useEffect(() => {
+    if (!mobileOpen) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileOpen(false)
+    }
+    document.addEventListener("keydown", onKey)
+    document.body.style.overflow = "hidden"
+    return () => {
+      document.removeEventListener("keydown", onKey)
+      document.body.style.overflow = ""
+    }
+  }, [mobileOpen])
+
   return (
     <>
       <motion.header
@@ -66,11 +79,14 @@ export function Navbar() {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.55, ease: "easeOut" }}
         className={cn(
-          "fixed top-5 left-1/2 z-50 flex items-center justify-between",
-          "-translate-x-1/2 w-[95%] max-w-[1240px] rounded-full",
+          "fixed top-3 sm:top-5 left-1/2 z-50 flex items-center justify-between",
+          "-translate-x-1/2 w-[96%] sm:w-[95%] max-w-[1240px]",
+          "rounded-full",
           "border border-white/10 bg-[#0B1220]/80 backdrop-blur-[28px] shadow-[0_40px_120px_rgba(0,0,0,0.18)]",
           "transition-all duration-300",
-          scrolled ? "py-2 px-4" : "py-3 px-5",
+          scrolled
+            ? "py-1.5 sm:py-2 px-3 sm:px-4"
+            : "py-2 sm:py-3 px-3 sm:px-5",
         )}
       >
         {/* Mouse glow */}
@@ -85,17 +101,17 @@ export function Navbar() {
           href="/"
           aria-label="Home"
           onClick={() => { if (pathname === "/") window.scrollTo({ top: 0, behavior: "smooth" }) }}
-          className="flex items-center gap-3 rounded-full px-3 py-2 transition-all duration-200 hover:bg-white/5"
+          className="flex items-center gap-2 sm:gap-3 rounded-full px-2 sm:px-3 py-2 transition-all duration-200 hover:bg-white/5 shrink-0"
         >
-          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-cyan-400/10 text-cyan-300 shadow-[0_0_24px_rgba(0,217,255,0.08)]">
-            <Home size={18} />
+          <span className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-cyan-400/10 text-cyan-300 shadow-[0_0_24px_rgba(0,217,255,0.08)]">
+            <Home size={16} />
           </span>
-          <span className="text-sm font-semibold uppercase tracking-[0.32em] text-white/90 hidden sm:inline">
+          <span className="text-xs sm:text-sm font-semibold uppercase tracking-[0.32em] text-white/90 hidden sm:inline">
             salahuddin.dev
           </span>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-1">
+        <nav className="hidden md:flex items-center gap-0.5 lg:gap-1 overflow-x-auto scrollbar-none">
           {navItems.map((item) => {
             const isActive = pathname === item.href
             return (
@@ -103,7 +119,7 @@ export function Navbar() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "relative rounded-full px-4 py-2 text-sm font-semibold uppercase tracking-[0.20em] transition-all duration-200 overflow-hidden",
+                  "relative rounded-full px-3 lg:px-4 py-1.5 lg:py-2 text-xs lg:text-sm font-semibold uppercase tracking-[0.15em] lg:tracking-[0.20em] transition-all duration-200 overflow-hidden whitespace-nowrap",
                   isActive
                     ? "text-cyan-300 bg-cyan-400/10"
                     : "text-white/75 hover:bg-white/5 hover:text-white",
@@ -124,17 +140,26 @@ export function Navbar() {
           })}
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-3">
           <button
             type="button"
             onClick={() => setChatOpen(true)}
-            className="hidden md:inline-flex items-center justify-center gap-2 rounded-full border border-cyan-400/20 bg-white/5 px-4 py-2 text-sm font-semibold uppercase tracking-[0.20em] text-cyan-200 transition-all duration-200 hover:border-cyan-300/30 hover:bg-cyan-400/10"
+            className="hidden lg:inline-flex items-center justify-center gap-2 rounded-full border border-cyan-400/20 bg-white/5 px-4 py-2 text-sm font-semibold uppercase tracking-[0.20em] text-cyan-200 transition-all duration-200 hover:border-cyan-300/30 hover:bg-cyan-400/10"
           >
             <MessageCircle size={14} />
             INFERNAPE
           </button>
 
-            <button
+          <button
+            type="button"
+            onClick={() => setChatOpen(true)}
+            className="hidden md:flex lg:hidden h-10 w-10 items-center justify-center rounded-full border border-cyan-400/20 bg-cyan-400/10 text-cyan-300 transition-all duration-200 hover:bg-cyan-400/20"
+            aria-label="Open chat"
+          >
+            <MessageCircle size={16} />
+          </button>
+
+          <button
             type="button"
             onClick={() => setChatOpen(true)}
             className="flex md:hidden h-11 w-11 items-center justify-center rounded-full border border-cyan-400/20 bg-cyan-400/10 text-cyan-300 transition-all duration-200 hover:bg-cyan-400/20"
