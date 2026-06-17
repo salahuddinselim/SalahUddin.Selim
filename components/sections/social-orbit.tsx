@@ -81,6 +81,7 @@ export function SocialOrbit() {
       />
 
       <motion.button
+        aria-label={open ? "Close social links" : "Open social links"}
         onClick={() => setOpen(!open)}
         whileHover={{ scale: 1.08 }}
         whileTap={{ scale: 0.92 }}

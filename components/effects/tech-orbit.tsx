@@ -140,6 +140,7 @@ export function TechOrbit() {
                   >
                     {card.Icon ? (
                       <card.Icon
+                        title={card.name}
                         width={24}
                         height={24}
                         className="shrink-0"
