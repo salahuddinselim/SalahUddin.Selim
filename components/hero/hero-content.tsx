@@ -71,18 +71,18 @@ export function HeroContent({ profile }: { profile: SanityProfile | null }) {
       variants={staggerVariants}
       initial="hidden"
       animate="show"
-      className="flex flex-col items-center text-center w-full max-w-[900px] mx-auto px-4"
+      className="hero-content flex flex-col items-center text-center w-full max-w-[900px] mx-auto px-4"
     >
       <motion.span
         variants={fadeUp}
-        className="text-sm font-medium tracking-[0.2em] text-muted mb-6 font-body"
+        className="hero-subtitle text-sm font-medium tracking-[0.2em] text-muted mb-6 font-body"
       >
         HELLO I&apos;M
       </motion.span>
 
       <motion.h1
         variants={fadeUp}
-        className="font-heading font-bold text-foreground leading-none mb-4"
+        className="hero-title font-heading font-bold text-foreground leading-none mb-4"
         style={{
           fontSize: "clamp(2.5rem, 8vw, 90px)",
         }}
@@ -92,7 +92,7 @@ export function HeroContent({ profile }: { profile: SanityProfile | null }) {
 
       <motion.div
         variants={fadeUp}
-        className="relative h-8 mb-10"
+        className="hero-role-wrapper relative h-8 mb-10"
       >
         <AnimatePresence mode="wait">
           <motion.span
@@ -101,7 +101,7 @@ export function HeroContent({ profile }: { profile: SanityProfile | null }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.3 }}
-            className="text-base sm:text-lg text-accent font-medium font-body absolute left-1/2 -translate-x-1/2 whitespace-nowrap"
+            className="hero-role text-base sm:text-lg text-accent font-medium font-body absolute left-1/2 -translate-x-1/2 whitespace-nowrap"
           >
             {roles[roleIndex]}
           </motion.span>
@@ -110,7 +110,7 @@ export function HeroContent({ profile }: { profile: SanityProfile | null }) {
 
       <motion.div
         variants={fadeUp}
-        className="relative h-[clamp(3rem,12vw,140px)] mb-8"
+        className="hero-large-role-wrapper relative h-[clamp(3rem,12vw,140px)] mb-8"
         style={{ width: "100%" }}
       >
         <AnimatePresence mode="wait">
@@ -120,7 +120,7 @@ export function HeroContent({ profile }: { profile: SanityProfile | null }) {
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             exit={{ opacity: 0, y: -40, filter: "blur(8px)" }}
             transition={{ duration: 0.5, ease: "easeOut" }}
-            className="font-heading font-black leading-none absolute left-1/2 -translate-x-1/2 whitespace-nowrap"
+            className="hero-large-role font-heading font-black leading-none absolute left-1/2 -translate-x-1/2 whitespace-nowrap"
             style={{
               fontSize: "clamp(2.5rem, 12vw, 140px)",
               background:
@@ -139,7 +139,7 @@ export function HeroContent({ profile }: { profile: SanityProfile | null }) {
 
       <motion.p
         variants={fadeUp}
-        className="text-base sm:text-lg text-muted leading-relaxed font-body max-w-[700px]"
+        className="hero-copy text-base sm:text-lg text-muted leading-relaxed font-body max-w-[700px]"
       >
         {profile?.bio ?? "CSE student at UIU · Building intelligent systems with full-stack engineering, IoT, and AI."}
       </motion.p>

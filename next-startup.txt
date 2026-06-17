@@ -256,3 +256,4 @@
 ✓ Compiled in 192ms
  GET / 200 in 195ms (next.js: 92ms, proxy.ts: 41ms, application-code: 62ms)
  GET / 200 in 47ms (next.js: 3ms, proxy.ts: 5ms, application-code: 39ms)
+^C

@@ -23,6 +23,20 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
+        source: '/_next/static/:path*',
+        locale: false,
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+        ],
+      },
+      {
+        source: '/_next/image/:path*',
+        locale: false,
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+        ],
+      },
+      {
         source: '/:all*(svg|png|jpg|jpeg|webp|avif|ico|woff2)',
         locale: false,
         headers: [
