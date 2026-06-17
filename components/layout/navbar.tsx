@@ -28,6 +28,7 @@ export function Navbar() {
   const [chatOpen, setChatOpen] = useState(false)
   const headerRef = useRef<HTMLElement>(null)
   const [glow, setGlow] = useState({ x: 50, y: 50, opacity: 0 })
+  const [headerHeight, setHeaderHeight] = useState(72)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -36,6 +37,15 @@ export function Navbar() {
 
     window.addEventListener("scroll", handleScroll, { passive: true })
     return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
+
+  useEffect(() => {
+    if (!headerRef.current) return
+    const observer = new ResizeObserver(([entry]) => {
+      setHeaderHeight(entry.contentRect.height)
+    })
+    observer.observe(headerRef.current)
+    return () => observer.disconnect()
   }, [])
 
   return (
@@ -73,6 +83,7 @@ export function Navbar() {
         />
         <Link
           href="/"
+          aria-label="Home"
           onClick={() => { if (pathname === "/") window.scrollTo({ top: 0, behavior: "smooth" }) }}
           className="flex items-center gap-3 rounded-full px-3 py-2 transition-all duration-200 hover:bg-white/5"
         >
@@ -126,14 +137,14 @@ export function Navbar() {
             <button
             type="button"
             onClick={() => setChatOpen(true)}
-            className="flex md:hidden h-10 w-10 items-center justify-center rounded-full border border-cyan-400/20 bg-cyan-400/10 text-cyan-300 transition-all duration-200 hover:bg-cyan-400/20"
+            className="flex md:hidden h-11 w-11 items-center justify-center rounded-full border border-cyan-400/20 bg-cyan-400/10 text-cyan-300 transition-all duration-200 hover:bg-cyan-400/20"
             aria-label="Open chat"
           >
             <MessageCircle size={18} />
           </button>
 
           <motion.button
-            className="flex md:hidden h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/80 transition-all duration-200 hover:bg-white/10"
+            className="flex md:hidden h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/80 transition-all duration-200 hover:bg-white/10"
             onClick={() => setMobileOpen(!mobileOpen)}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -151,6 +162,7 @@ export function Navbar() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
+            aria-label="Close navigation menu"
             className="fixed inset-0 z-30 bg-black/40 backdrop-blur-sm md:hidden"
             onClick={() => setMobileOpen(false)}
           />
@@ -164,7 +176,8 @@ export function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.2 }}
-            className="fixed top-[82px] left-1/2 -translate-x-1/2 z-40 w-[90%] max-w-[1100px]"
+            style={{ top: headerHeight + 16 }}
+            className="fixed left-1/2 -translate-x-1/2 z-40 w-[90%] max-w-[1100px]"
           >
             <nav className="rounded-3xl border border-white/10 bg-[#0B1220]/95 p-4 backdrop-blur-2xl shadow-2xl">
               <div className="flex flex-col gap-2">
