@@ -40,6 +40,11 @@ yarn-error.log*
 .agents/
 skills-lock.json
 
+# lighthouse
+.lighthouseci/
+lhci-*.json
+lighthouserc.json
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
