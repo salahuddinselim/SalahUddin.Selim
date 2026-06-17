@@ -99,7 +99,7 @@ export function Navbar() {
         />
         <Link
           href="/"
-          aria-label="Home"
+          aria-label="SALAHUDDIN.DEV"
           onClick={() => { if (pathname === "/") window.scrollTo({ top: 0, behavior: "smooth" }) }}
           className="flex items-center gap-2 sm:gap-3 rounded-full px-2 sm:px-3 py-2 transition-all duration-200 hover:bg-white/5 shrink-0"
         >
