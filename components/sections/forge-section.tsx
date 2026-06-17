@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo, memo, useCallback } from "react"
+import { useState, useMemo, memo, useCallback, useRef, useEffect } from "react"
 import dynamic from "next/dynamic"
 import { motion, AnimatePresence } from "framer-motion"
 import { getSkillIcon } from "@/lib/sanity/icon-map"
@@ -72,6 +72,8 @@ interface ForgeSectionProps {
 
 export function ForgeSection({ skills }: ForgeSectionProps) {
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
+  const [visible, setVisible] = useState(false)
+  const sectionRef = useRef<HTMLDivElement>(null)
 
   const grouped = useMemo(() => {
     const map: Record<string, SanitySkill[]> = {}
@@ -91,6 +93,17 @@ export function ForgeSection({ skills }: ForgeSectionProps) {
 
   const handleClearCategory = useCallback(() => {
     setActiveCategory(null)
+  }, [])
+
+  useEffect(() => {
+    const el = sectionRef.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setVisible(true); observer.disconnect() } },
+      { rootMargin: "200px" }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
   }, [])
 
   return (
@@ -147,94 +160,105 @@ export function ForgeSection({ skills }: ForgeSectionProps) {
           })}
         </motion.div>
 
-        <div className="space-y-4">
-          <AnimatePresence mode="sync">
-            {categoryIds.map((catId) => {
-              const cat = categoryDefaults[catId] ?? { heading: catId, description: "", color: "#00D9FF" }
-              const catSkills = grouped[catId]
-              const isVisible = activeCategory === null || activeCategory === catId
+        <div ref={sectionRef} className="space-y-4">
+          {visible ? (
+            <AnimatePresence mode="popLayout">
+              {categoryIds.map((catId) => {
+                const cat = categoryDefaults[catId] ?? { heading: catId, description: "", color: "#00D9FF" }
+                const catSkills = grouped[catId]
+                const show = activeCategory === null || activeCategory === catId
 
-              return (
-                <motion.div
-                  key={catId}
-                  layout
-                  initial={{ opacity: 0, y: 24 }}
-                  animate={{ opacity: isVisible ? 1 : 0.3, y: 0 }}
-                  transition={{ duration: 0.4, ease: "easeOut" }}
-                  className={`rounded-2xl border transition-all duration-300 overflow-hidden ${
-                    isVisible ? "" : "hidden"
-                  }`}
-                  style={{
-                    background: "rgba(255,255,255,0.02)",
-                    backdropFilter: "blur(16px)",
-                    WebkitBackdropFilter: "blur(16px)",
-                    borderColor: "rgba(0,217,255,0.20)",
-                    boxShadow: "0 0 0 1px rgba(0,217,255,0.06), 0 8px 40px rgba(0,217,255,0.06), inset 0 1px 0 rgba(255,255,255,0.04)",
-                    ["--cat-color" as string]: cat.color,
-                    ["--cat-color-20" as string]: `${cat.color}20`,
-                    ["--cat-color-40" as string]: `${cat.color}40`,
-                    ["--cat-color-99" as string]: `${cat.color}99`,
-                    ["--cat-color-0C" as string]: `${cat.color}0C`,
-                  }}
-                >
-                  <div
-                    className="px-6 pt-5 pb-4"
-                    style={{ borderBottom: "1px solid rgba(0,217,255,0.08)" }}
+                return (
+                  <motion.div
+                    key={catId}
+                    initial={{ opacity: 0, y: 24 }}
+                    animate={show ? { opacity: 1, y: 0 } : { opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -12 }}
+                    transition={{ duration: 0.3, ease: "easeOut" }}
+                    className={`rounded-2xl border transition-all duration-300 overflow-hidden ${
+                      show ? "" : "hidden"
+                    }`}
+                    style={{
+                      background: "rgba(255,255,255,0.02)",
+                      backdropFilter: "blur(16px)",
+                      WebkitBackdropFilter: "blur(16px)",
+                      borderColor: "rgba(0,217,255,0.20)",
+                      boxShadow: "0 0 0 1px rgba(0,217,255,0.06), 0 8px 40px rgba(0,217,255,0.06), inset 0 1px 0 rgba(255,255,255,0.04)",
+                      ["--cat-color" as string]: cat.color,
+                      ["--cat-color-20" as string]: `${cat.color}20`,
+                      ["--cat-color-40" as string]: `${cat.color}40`,
+                      ["--cat-color-99" as string]: `${cat.color}99`,
+                      ["--cat-color-0C" as string]: `${cat.color}0C`,
+                    }}
                   >
-                    <div className="flex items-center gap-3">
-                      <span
-                        className="w-2 h-2 rounded-full flex-shrink-0"
-                        style={{
-                          background: cat.color,
-                          boxShadow: `0 0 6px ${cat.color}, 0 0 12px ${cat.color}55`,
-                        }}
-                      />
-                      <div className="flex-1 min-w-0">
-                        <h2 className="text-lg font-bold text-white tracking-tight">
-                          {cat.heading}
-                        </h2>
-                        {cat.description && (
-                          <p className="text-white/50 text-[11px] font-mono leading-relaxed mt-0.5">
-                            {cat.description}
-                          </p>
-                        )}
-                      </div>
-                      <span
-                        className="text-[10px] font-mono px-2.5 py-1 rounded-full flex-shrink-0 border"
-                        style={{
-                          color: cat.color,
-                          borderColor: `${cat.color}40`,
-                          background: `${cat.color}12`,
-                        }}
-                      >
-                        {catSkills.length} skills
-                      </span>
-                    </div>
-                  </div>
-                  <div className="px-6 py-5 flex flex-wrap gap-2">
-                    {catSkills.map((skill) => {
-                      const Icon = getSkillIcon(skill.icon)
-                      return (
-                        <div
-                          key={skill.name}
-                          className="skill-pill group flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all duration-200 cursor-default"
+                    <div
+                      className="px-6 pt-5 pb-4"
+                      style={{ borderBottom: "1px solid rgba(0,217,255,0.08)" }}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span
+                          className="w-2 h-2 rounded-full flex-shrink-0"
                           style={{
-                            borderColor: "rgba(255,255,255,0.06)",
-                            background: "transparent",
+                            background: cat.color,
+                            boxShadow: `0 0 6px ${cat.color}, 0 0 12px ${cat.color}55`,
+                          }}
+                        />
+                        <div className="flex-1 min-w-0">
+                          <h2 className="text-lg font-bold text-white tracking-tight">
+                            {cat.heading}
+                          </h2>
+                          {cat.description && (
+                            <p className="text-white/50 text-[11px] font-mono leading-relaxed mt-0.5">
+                              {cat.description}
+                            </p>
+                          )}
+                        </div>
+                        <span
+                          className="text-[10px] font-mono px-2.5 py-1 rounded-full flex-shrink-0 border"
+                          style={{
+                            color: cat.color,
+                            borderColor: `${cat.color}40`,
+                            background: `${cat.color}12`,
                           }}
                         >
-                          <Icon className="skill-pill-icon w-3.5 h-3.5 transition-colors duration-200" style={{ color: "rgba(255,255,255,0.3)" }} />
-                          <span className="skill-pill-label text-xs font-mono transition-colors duration-200" style={{ color: "rgba(255,255,255,0.6)" }}>
-                            {skill.name}
-                          </span>
-                        </div>
-                      )
-                    })}
-                  </div>
-                </motion.div>
-              )
-            })}
-          </AnimatePresence>
+                          {catSkills.length} skills
+                        </span>
+                      </div>
+                    </div>
+                    <div className="px-6 py-5 flex flex-wrap gap-2">
+                      {catSkills.map((skill) => {
+                        const Icon = getSkillIcon(skill.icon)
+                        return (
+                          <div
+                            key={skill.name}
+                            className="skill-pill group flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all duration-200 cursor-default"
+                            style={{
+                              borderColor: "rgba(255,255,255,0.06)",
+                              background: "transparent",
+                            }}
+                          >
+                            <Icon className="skill-pill-icon w-3.5 h-3.5 transition-colors duration-200" style={{ color: "rgba(255,255,255,0.3)" }} />
+                            <span className="skill-pill-label text-xs font-mono transition-colors duration-200" style={{ color: "rgba(255,255,255,0.6)" }}>
+                              {skill.name}
+                            </span>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </motion.div>
+                )
+              })}
+            </AnimatePresence>
+          ) : (
+            <div className="space-y-4">
+              {categoryIds.map((catId) => (
+                <div
+                  key={catId}
+                  className="rounded-2xl border border-white/5 bg-white/[0.01] h-28 animate-pulse"
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </section>
