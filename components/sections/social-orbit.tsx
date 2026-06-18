@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
 import { Link2, X, Mail } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { getSocialLinks, getProfile } from "@/lib/sanity/fetch"
@@ -59,36 +58,55 @@ export function SocialOrbit() {
       className="relative flex items-center justify-center max-w-[320px] w-full"
       style={{ aspectRatio: "1/1" }}
     >
-      <motion.div
-        animate={{
-          rotate: 360,
+      <style>{`
+        @keyframes soc-ring-inner { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes soc-ring-outer { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+        @keyframes soc-pulse { 0%{transform:scale(1);opacity:.4} 50%{transform:scale(1.15);opacity:0} 100%{transform:scale(1);opacity:.4} }
+        @keyframes soc-tooltip { from{opacity:0;transform:translateX(-5px)} to{opacity:1;transform:translateX(0)} }
+      `}</style>
+
+      <div
+        style={{
           opacity: open ? 0.6 : 0,
           scale: open ? 1 : 0.8,
+          transition: "opacity 0.5s cubic-bezier(0.16,1,0.3,1), scale 0.5s cubic-bezier(0.16,1,0.3,1)",
         }}
-        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
         className="absolute rounded-full border border-accent/20 pointer-events-none"
-        style={{ width: 220, height: 220 }}
-      />
-      <motion.div
-        animate={{
-          rotate: -360,
+      >
+        <div
+          className="rounded-full"
+          style={{
+            width: 220, height: 220,
+            animation: "soc-ring-inner 60s linear infinite",
+          }}
+        />
+      </div>
+
+      <div
+        style={{
           opacity: open ? 0.4 : 0,
           scale: open ? 1 : 0.8,
+          transition: "opacity 0.6s cubic-bezier(0.16,1,0.3,1) 0.05s, scale 0.6s cubic-bezier(0.16,1,0.3,1) 0.05s",
         }}
-        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.05 }}
         className="absolute rounded-full border border-accent-secondary/15 pointer-events-none"
-        style={{ width: 280, height: 280 }}
-      />
+      >
+        <div
+          className="rounded-full"
+          style={{
+            width: 280, height: 280,
+            animation: "soc-ring-outer 60s linear infinite",
+          }}
+        />
+      </div>
 
-      <motion.button
+      <button
         aria-label={open ? "Close social links" : "Open social links"}
         onClick={() => setOpen(!open)}
-        whileHover={{ scale: 1.08 }}
-        whileTap={{ scale: 0.92 }}
-        animate={{
+        style={{
           boxShadow: open
             ? "0 0 30px rgba(0, 217, 255, 0.25), 0 0 60px rgba(0, 217, 255, 0.1)"
             : "0 0 0px rgba(0, 217, 255, 0)",
+          transition: "box-shadow 0.4s cubic-bezier(0.16,1,0.3,1), scale 0.2s",
         }}
         className={cn(
           "relative z-10 w-14 h-14 rounded-full",
@@ -96,93 +114,74 @@ export function SocialOrbit() {
           "border-2",
           "flex items-center justify-center",
           "transition-colors duration-300",
+          "hover:scale-105 active:scale-[0.93]",
           open
             ? "border-accent/50 bg-accent/10"
             : "border-white/10 hover:border-accent/30",
         )}
       >
-        <motion.div
-          animate={{ rotate: open ? 90 : 0 }}
-          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+        <div
+          style={{
+            rotate: open ? "90deg" : "0deg",
+            transition: "rotate 0.4s cubic-bezier(0.16,1,0.3,1)",
+          }}
           className="text-accent"
         >
           {open ? <X size={20} /> : <Link2 size={20} />}
-        </motion.div>
+        </div>
 
         {!open && (
-          <motion.span
+          <span
             className="absolute inset-0 rounded-full border border-accent/20"
-            animate={{
-              scale: [1, 1.15, 1],
-              opacity: [0.4, 0, 0.4],
-            }}
-            transition={{
-              duration: 2.5,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
+            style={{ animation: "soc-pulse 2.5s ease-in-out infinite" }}
           />
         )}
-      </motion.button>
+      </button>
 
       {allNodes.map((node, i) => {
         const angle = (i / allNodes.length) * Math.PI * 2 - Math.PI / 2
         const radius = 130
         const x = Math.cos(angle) * radius
         const y = Math.sin(angle) * radius
+        const delay = open
+          ? i * 0.04 + 0.1
+          : (allNodes.length - 1 - i) * 0.03
 
         return (
-          <motion.a
+          <a
             key={node.id}
             href={node.href}
             target="_blank"
             rel="noopener noreferrer"
-            initial={false}
-            animate={{
-              x: open ? x : 0,
-              y: open ? y : 0,
+            style={{
+              transform: `translate(${open ? x : 0}px, ${open ? y : 0}px) scale(${open ? 1 : 0.3})`,
               opacity: open ? 1 : 0,
-              scale: open ? 1 : 0.3,
+              transition: `transform ${open ? 0.4 : 0.3}s cubic-bezier(0.16,1,0.3,1) ${delay}s, opacity ${open ? 0.3 : 0.2}s ease ${delay}s`,
+              border: "1px solid rgba(255, 255, 255, 0.1)",
+              marginLeft: -22,
+              marginTop: -22,
             }}
-            transition={{
-              type: "spring",
-              stiffness: 280,
-              damping: 24,
-              delay: open
-                ? i * 0.04 + 0.1
-                : (allNodes.length - 1 - i) * 0.03,
-            }}
-            whileHover={{
-              scale: 1.15,
-              borderColor: "rgba(0, 217, 255, 0.5)",
-              boxShadow: "0 0 25px rgba(0, 217, 255, 0.15)",
-            }}
-            style={{ border: "1px solid rgba(255, 255, 255, 0.1)", marginLeft: -22, marginTop: -22 }}
             className={cn(
               "absolute w-11 h-11 rounded-full",
               "bg-[rgba(10,10,15,0.75)] backdrop-blur-[12px]",
               "flex items-center justify-center",
-              "text-white/70 hover:text-accent",
+              "text-white/70",
               "transition-colors duration-200",
+              "hover:text-accent hover:scale-110 hover:border-[rgba(0,217,255,0.5)] hover:shadow-[0_0_25px_rgba(0,217,255,0.15)]",
             )}
             title={node.label}
           >
             {node.icon}
 
-            <AnimatePresence>
-              {open && (
-                <motion.span
-                  initial={{ opacity: 0, x: -5 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -5 }}
-                  transition={{ duration: 0.15 }}
-                  className="absolute left-[calc(100%+8px)] text-xs text-muted font-body whitespace-nowrap pointer-events-none"
-                >
-                  {node.label}
-                </motion.span>
-              )}
-            </AnimatePresence>
-          </motion.a>
+            {open && (
+              <span
+                className="absolute left-[calc(100%+8px)] text-xs text-muted font-body whitespace-nowrap pointer-events-none"
+                style={{ animation: "soc-tooltip 0.15s ease-out" }}
+              >
+                {node.label}
+              </span>
+            )}
+          </a>
         )
       })}
     </div>
