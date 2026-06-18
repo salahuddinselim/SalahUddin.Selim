@@ -5,9 +5,20 @@ import { motion } from "framer-motion"
 import { ExternalLink } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { GitHubStats } from "@/components/ui/github-stats"
-import { getSocialLinks, getEducation, type SocialLinkData, type EducationData } from "@/lib/sanity/fetch"
+import {
+  getSocialLinks,
+  getEducation,
+  type SocialLinkData,
+  type EducationData,
+} from "@/lib/sanity/fetch"
 import { getSocialIcon } from "@/lib/sanity/icon-map"
-import { personaSectionCopy, personaStats, fallbackSocials, githubUsername, gitHubChartUrl } from "@/data"
+import {
+  personaSectionCopy,
+  personaStats,
+  fallbackSocials,
+  githubUsername,
+  gitHubChartUrl,
+} from "@/data"
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -27,7 +38,9 @@ export function PersonaSection() {
     getSocialLinks()
       .then(setSocials)
       .catch(() => setSocials(fallbackSocials))
-    getEducation().then(setEducation).catch(() => {})
+    getEducation()
+      .then(setEducation)
+      .catch(() => {})
   }, [])
 
   return (
@@ -39,12 +52,12 @@ export function PersonaSection() {
         transition={{ duration: 0.5, ease: "easeOut" as const }}
         className="text-center mb-14"
       >
-          <p className="text-[10px] font-mono uppercase tracking-[0.35em] text-cyan-400/50 mb-3">
-            {personaSectionCopy.eyecatch}
-          </p>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white">
-            {personaSectionCopy.heading}
-          </h1>
+        <p className="text-[10px] font-mono uppercase tracking-[0.35em] text-cyan-400/50 mb-3">
+          {personaSectionCopy.eyecatch}
+        </p>
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white">
+          {personaSectionCopy.heading}
+        </h1>
       </motion.div>
 
       {/* Two-column: Bio + Education */}
@@ -56,21 +69,18 @@ export function PersonaSection() {
       >
         {/* Bio */}
         <div>
-          <h2 className="text-xl font-bold text-white mb-4">
-            {personaSectionCopy.greeting}
-          </h2>
+          <h2 className="text-xl font-bold text-white mb-4">{personaSectionCopy.greeting}</h2>
           <div className="space-y-3 text-sm text-white/50 leading-relaxed">
             <p>
-              CSE student at{" "}
-              <span className="text-cyan-400">United International University</span>{" "}
-              &mdash; CGPA <span className="text-amber-400 font-bold">3.68 / 4.0</span>,
-              graduating 2026. I build at the intersection of full-stack development,
-              IoT systems, and algorithm design.
+              CSE student at <span className="text-cyan-400">United International University</span>{" "}
+              &mdash; CGPA <span className="text-amber-400 font-bold">3.68 / 4.0</span>, graduating
+              2026. I build at the intersection of full-stack development, IoT systems, and
+              algorithm design.
             </p>
             <p>
-              My current focus: full-stack engineering with JavaFX and PHP, IoT systems
-              with Arduino sensors, and AI-driven applications. Award-winning project at
-              UIU Spring 2025 Software Project Competition.
+              My current focus: full-stack engineering with JavaFX and PHP, IoT systems with Arduino
+              sensors, and AI-driven applications. Award-winning project at UIU Spring 2025 Software
+              Project Competition.
             </p>
           </div>
           <div className="mt-5 flex flex-wrap gap-2">
@@ -85,7 +95,9 @@ export function PersonaSection() {
 
         {/* Education */}
         <div>
-          <h2 className="text-xl font-bold text-white mb-4">{personaSectionCopy.educationHeading}</h2>
+          <h2 className="text-xl font-bold text-white mb-4">
+            {personaSectionCopy.educationHeading}
+          </h2>
           <div className="space-y-3">
             {education.length === 0 ? (
               <p className="text-xs font-mono text-white/20">No education data yet</p>
@@ -97,7 +109,8 @@ export function PersonaSection() {
                   style={{
                     background: "rgba(255,255,255,0.02)",
                     borderColor: "rgba(0,217,255,0.15)",
-                    boxShadow: "0 0 0 1px rgba(0,217,255,0.05), inset 0 1px 0 rgba(255,255,255,0.04)",
+                    boxShadow:
+                      "0 0 0 1px rgba(0,217,255,0.05), inset 0 1px 0 rgba(255,255,255,0.04)",
                   }}
                 >
                   <div className="flex items-start gap-4">
@@ -108,25 +121,38 @@ export function PersonaSection() {
                         borderColor: "rgba(0,217,255,0.20)",
                       }}
                     >
-                      <span className="text-cyan-400 font-black text-xs">{edu.abbreviation ?? "EDU"}</span>
+                      <span className="text-cyan-400 font-black text-xs">
+                        {edu.abbreviation ?? "EDU"}
+                      </span>
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <h3 className="text-white font-bold text-sm">{edu.institution}</h3>
                       </div>
                       <p className="text-cyan-400 text-xs mt-0.5">
-                        {edu.degree}{edu.field ? ` in ${edu.field}` : ""}
+                        {edu.degree}
+                        {edu.field ? ` in ${edu.field}` : ""}
                       </p>
                       <p className="text-white/50 text-xs mt-1">
-                        {edu.startYear ?? ""}{edu.startYear && edu.endYear ? " – " : ""}{edu.endYear ?? ""}
+                        {edu.startYear ?? ""}
+                        {edu.startYear && edu.endYear ? " – " : ""}
+                        {edu.endYear ?? ""}
                       </p>
                       {edu.gpa && (
                         <div className="flex items-center gap-3 mt-2.5">
-                          <span className="text-[10px] text-white/50 font-mono uppercase tracking-wider">CGPA</span>
-                          <span className="text-amber-400 font-black text-base leading-none">{edu.gpa}</span>
-                          {edu.gpaScale && <span className="text-white/40 text-xs">/{edu.gpaScale}</span>}
+                          <span className="text-[10px] text-white/50 font-mono uppercase tracking-wider">
+                            CGPA
+                          </span>
+                          <span className="text-amber-400 font-black text-base leading-none">
+                            {edu.gpa}
+                          </span>
+                          {edu.gpaScale && (
+                            <span className="text-white/40 text-xs">/{edu.gpaScale}</span>
+                          )}
                           {edu.status === "ongoing" && (
-                            <span className="ml-auto text-[10px] font-mono px-2 py-0.5 rounded-full border border-cyan-400/20 text-cyan-400/60">Ongoing</span>
+                            <span className="ml-auto text-[10px] font-mono px-2 py-0.5 rounded-full border border-cyan-400/20 text-cyan-400/60">
+                              Ongoing
+                            </span>
                           )}
                         </div>
                       )}
@@ -171,12 +197,7 @@ export function PersonaSection() {
       </motion.div>
 
       {/* GitHub Stats */}
-      <motion.div
-        variants={itemVariants}
-        initial="hidden"
-        animate="visible"
-        className="mb-10"
-      >
+      <motion.div variants={itemVariants} initial="hidden" animate="visible" className="mb-10">
         <h2 className="text-lg font-semibold text-white/80 mb-4">
           {personaSectionCopy.gitHubStatsHeading}
         </h2>
@@ -184,18 +205,14 @@ export function PersonaSection() {
       </motion.div>
 
       {/* Contribution Chart */}
-      <motion.div
-        variants={itemVariants}
-        initial="hidden"
-        animate="visible"
-        className="mb-10"
-      >
+      <motion.div variants={itemVariants} initial="hidden" animate="visible" className="mb-10">
         <div
           className="rounded-2xl border overflow-hidden transition-all duration-300"
           style={{
             background: "rgba(255,255,255,0.02)",
             borderColor: "rgba(34,197,94,0.20)",
-            boxShadow: "0 0 0 1px rgba(34,197,94,0.05), 0 8px 40px rgba(34,197,94,0.06), inset 0 1px 0 rgba(255,255,255,0.04)",
+            boxShadow:
+              "0 0 0 1px rgba(34,197,94,0.05), 0 8px 40px rgba(34,197,94,0.06), inset 0 1px 0 rgba(255,255,255,0.04)",
           }}
         >
           <div
@@ -229,7 +246,13 @@ export function PersonaSection() {
             />
             <div className="flex items-center justify-end gap-2 mt-2">
               <span className="text-[10px] font-mono text-white/30">Less</span>
-              {["rgba(34,197,94,0.15)", "rgba(34,197,94,0.35)", "rgba(34,197,94,0.60)", "rgba(34,197,94,0.85)", "#22C55E"].map((c) => (
+              {[
+                "rgba(34,197,94,0.15)",
+                "rgba(34,197,94,0.35)",
+                "rgba(34,197,94,0.60)",
+                "rgba(34,197,94,0.85)",
+                "#22C55E",
+              ].map((c) => (
                 <span key={c} className="w-2.5 h-2.5 rounded-sm" style={{ background: c }} />
               ))}
               <span className="text-[10px] font-mono text-white/30">More</span>
@@ -239,14 +262,8 @@ export function PersonaSection() {
       </motion.div>
 
       {/* Find Me On */}
-      <motion.div
-        variants={itemVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        <h2 className="text-lg font-semibold text-white/80 mb-4">
-          {personaSectionCopy.findMeOn}
-        </h2>
+      <motion.div variants={itemVariants} initial="hidden" animate="visible">
+        <h2 className="text-lg font-semibold text-white/80 mb-4">{personaSectionCopy.findMeOn}</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
           {socials.map((s) => {
             const Icon = getSocialIcon(s.icon)
@@ -267,7 +284,7 @@ export function PersonaSection() {
                   <div className="text-white/60 group-hover:text-white text-xs font-semibold transition-colors">
                     {s.name}
                   </div>
-                  <div className="text-white/30 text-[10px] font-mono mt-0.5">
+                  <div className="hidden sm:block text-white/30 text-[10px] font-mono mt-0.5 truncate">
                     {s.url.replace(/^https?:\/\//, "").replace(/\/$/, "")}
                   </div>
                 </div>
