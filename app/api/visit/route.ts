@@ -55,11 +55,6 @@ export async function POST(request: NextRequest) {
     return corsResponse(request)
   }
 
-  const contentType = request.headers.get("content-type") ?? ""
-  if (!contentType.includes("application/json")) {
-    return NextResponse.json({ error: "Unsupported media type" }, { status: 415 })
-  }
-
   const { success: allowed } = await checkRateLimit(request, "visit", {
     max: 120,
     windowMs: 3600_000,

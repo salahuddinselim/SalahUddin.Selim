@@ -51,5 +51,7 @@ lighthouserc.json
 next-env.d.ts
 
 # temp debug files
+/tmp/
 tmp-*
+!tmp/test
 !tmp/test
