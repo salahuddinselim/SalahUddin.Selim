@@ -11,8 +11,8 @@ import { LiquidRipple } from "@/components/ui/liquid-ripple"
 import { navItems, siteName, chatLabel } from "@/data"
 
 const InfernapeChat = dynamic(
-  () => import("@/components/chat/infernape-chat").then(m => m.InfernapeChat),
-  { ssr: false }
+  () => import("@/components/chat/infernape-chat").then((m) => m.InfernapeChat),
+  { ssr: false },
 )
 
 export function Navbar() {
@@ -78,9 +78,7 @@ export function Navbar() {
           "rounded-full",
           "border border-white/10 bg-[#0B1220]/80 backdrop-blur-[28px] shadow-[0_40px_120px_rgba(0,0,0,0.18)]",
           "transition-all duration-300",
-          scrolled
-            ? "py-1.5 sm:py-2 px-3 sm:px-4"
-            : "py-2 sm:py-3 px-3 sm:px-5",
+          scrolled ? "py-1.5 sm:py-2 px-3 sm:px-4" : "py-2 sm:py-3 px-3 sm:px-5",
         )}
       >
         {/* Mouse glow */}
@@ -94,7 +92,10 @@ export function Navbar() {
         <Link
           href="/"
           aria-label="SALAHUDDIN.DEV"
-          onClick={() => { if (pathname === "/") window.scrollTo({ top: 0, behavior: "smooth" }) }}
+          onClick={() => {
+            setMobileOpen(false)
+            if (pathname === "/") window.scrollTo({ top: 0, behavior: "smooth" })
+          }}
           className="flex items-center gap-2 sm:gap-3 rounded-full px-2 sm:px-3 py-2 transition-all duration-200 hover:bg-white/5 shrink-0"
         >
           <span className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-cyan-400/10 text-cyan-300 shadow-[0_0_24px_rgba(0,217,255,0.08)]">
@@ -119,9 +120,7 @@ export function Navbar() {
                     : "text-white/75 hover:bg-white/5 hover:text-white",
                 )}
               >
-                <LiquidRipple>
-                  {item.label}
-                </LiquidRipple>
+                <LiquidRipple>{item.label}</LiquidRipple>
                 {isActive && (
                   <motion.span
                     layoutId="nav-indicator"
