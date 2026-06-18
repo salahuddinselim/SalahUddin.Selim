@@ -1,14 +1,19 @@
 import { NextResponse } from "next/server"
 import { writeClient, VISITOR_DOC_ID, type VisitorStats } from "@/lib/sanity/write"
+import { corsResponse, addCorsHeaders, isSameOrigin } from "@/lib/cors"
 
 export const dynamic = "force-dynamic"
 
-export async function GET() {
+export async function GET(request: Request) {
+  if (!isSameOrigin(request)) {
+    return addCorsHeaders(request, NextResponse.json({ error: "Forbidden" }, { status: 403 }))
+  }
+
   try {
     const doc = await writeClient.getDocument<VisitorStats>(VISITOR_DOC_ID)
 
     if (!doc) {
-      return NextResponse.json({
+      const response = NextResponse.json({
         totalViews: 0,
         thisMonthViews: 0,
         thisMonth: "",
@@ -17,9 +22,10 @@ export async function GET() {
         monthlyHistory: [],
         lastUpdated: null,
       })
+      return addCorsHeaders(request, response)
     }
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       totalViews: doc.totalViews ?? 0,
       thisMonthViews: doc.thisMonthViews ?? 0,
       thisMonth: doc.thisMonth ?? "",
@@ -28,11 +34,12 @@ export async function GET() {
       monthlyHistory: doc.monthlyHistory ?? [],
       lastUpdated: doc.lastUpdated ?? null,
     })
-  } catch (err) {
-    console.error("visitors fetch error:", err)
-    return NextResponse.json(
-      { error: "Failed to fetch visitor stats" },
-      { status: 500 },
-    )
+    return addCorsHeaders(request, response)
+  } catch {
+    return NextResponse.json({ error: "Service unavailable" }, { status: 503 })
   }
+}
+
+export async function OPTIONS(request: Request) {
+  return corsResponse(request)
 }

@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from "next/server"
 import { writeClient, VISITOR_DOC_ID, type VisitorStats, type CountryStat, type DeviceStat } from "@/lib/sanity/write"
+import { checkRateLimit } from "@/lib/rate-limit"
+import { corsResponse, addCorsHeaders, isSameOrigin } from "@/lib/cors"
+
+const TIMEOUT_MS = 3500
 
 async function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
-  return await Promise.race([
+  return Promise.race([
     promise,
-    new Promise<T>((_, reject) => setTimeout(() => reject(new Error(`timeout:${ms}`)), ms)),
+    new Promise<T>((_, reject) => setTimeout(() => reject(new Error("timeout")), ms)),
   ])
 }
 
@@ -15,11 +19,10 @@ function getDevice(userAgent: string): string {
   if (ua.includes("mac")) return "macOS"
   if (ua.includes("windows")) return "Windows"
   if (ua.includes("linux")) return "Linux"
-  if (ua.includes("ubuntu")) return "Ubuntu"
   return "Other"
 }
 
-async function lookupCountry(ip: string): Promise<{ name: string; code: string; flag: string } | null> {
+async function lookupCountry(ip: string) {
   try {
     const res = await fetch(`https://ip-api.com/json/${ip}?fields=status,country,countryCode`, {
       signal: AbortSignal.timeout(3000),
@@ -27,7 +30,8 @@ async function lookupCountry(ip: string): Promise<{ name: string; code: string; 
     const data = await res.json()
     if (data.status !== "success") return null
     const code = data.countryCode as string
-    const flag = String.fromCodePoint(code.codePointAt(0)! - 0x41 + 0x1f1e6) + String.fromCodePoint(code.codePointAt(1)! - 0x41 + 0x1f1e6)
+    const flag = String.fromCodePoint(code.codePointAt(0)! - 0x41 + 0x1f1e6) +
+      String.fromCodePoint(code.codePointAt(1)! - 0x41 + 0x1f1e6)
     return { name: data.country as string, code, flag }
   } catch {
     return null
@@ -35,6 +39,27 @@ async function lookupCountry(ip: string): Promise<{ name: string; code: string; 
 }
 
 export async function POST(request: NextRequest) {
+  if (!isSameOrigin(request)) {
+    return addCorsHeaders(request, NextResponse.json({ ok: false }, { status: 403 }))
+  }
+
+  if (request.method === "OPTIONS") {
+    return corsResponse(request)
+  }
+
+  const contentType = request.headers.get("content-type") ?? ""
+  if (!contentType.includes("application/json")) {
+    return NextResponse.json({ error: "Unsupported media type" }, { status: 415 })
+  }
+
+  const { success: allowed } = await checkRateLimit(request, "visit", {
+    max: 120,
+    windowMs: 3600_000,
+  })
+  if (!allowed) {
+    return NextResponse.json({ ok: true }, { status: 200 })
+  }
+
   try {
     const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
       ?? request.headers.get("x-real-ip")
@@ -101,13 +126,16 @@ export async function POST(request: NextRequest) {
       lastUpdated: now.toISOString(),
     }
 
-    await withTimeout(writeClient.createOrReplace(payload), 3500)
+    await withTimeout(writeClient.createOrReplace(payload), TIMEOUT_MS)
 
-    return NextResponse.json({ ok: true })
-  } catch (err) {
-    const message = err instanceof Error ? err.message : "unknown"
-    console.warn("visit write skipped:", message)
-    // Keep analytics endpoint non-blocking for UX; failures are expected during network outages.
-    return NextResponse.json({ ok: true, persisted: false }, { status: 202 })
+    const response = NextResponse.json({ ok: true })
+    return addCorsHeaders(request, response)
+  } catch {
+    const response = NextResponse.json({ ok: true, persisted: false }, { status: 202 })
+    return addCorsHeaders(request, response)
   }
+}
+
+export async function OPTIONS(request: Request) {
+  return corsResponse(request)
 }

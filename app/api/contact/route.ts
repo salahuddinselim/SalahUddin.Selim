@@ -1,30 +1,47 @@
 import { NextResponse } from "next/server"
+import { z } from "zod"
+import { checkRateLimit } from "@/lib/rate-limit"
+import { corsResponse, addCorsHeaders, isSameOrigin } from "@/lib/cors"
 
-const rateLimit = new Map<string, { count: number; resetAt: number }>()
-const RATE_LIMIT = 3
-const RATE_WINDOW = 60_000
+export const runtime = "nodejs"
 
-function getIP(request: Request): string {
-  return request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
-    || request.headers.get("x-real-ip")
-    || "unknown"
-}
+const contactSchema = z.object({
+  name: z
+    .string()
+    .min(1, "Name is required")
+    .max(100, "Name must be under 100 characters")
+    .trim(),
+  email: z
+    .string()
+    .min(1, "Email is required")
+    .max(254, "Email must be under 254 characters")
+    .email("Invalid email address")
+    .trim()
+    .toLowerCase(),
+  subject: z
+    .string()
+    .min(1, "Subject is required")
+    .max(200, "Subject must be under 200 characters")
+    .trim(),
+  message: z
+    .string()
+    .min(10, "Message must be at least 10 characters")
+    .max(5000, "Message must be under 5000 characters")
+    .trim(),
+})
 
-function isRateLimited(ip: string): boolean {
-  const now = Date.now()
-  const entry = rateLimit.get(ip)
-  if (!entry || now > entry.resetAt) {
-    rateLimit.set(ip, { count: 1, resetAt: now + RATE_WINDOW })
-    return false
-  }
-  entry.count++
-  if (entry.count > RATE_LIMIT) return true
-  return false
+function esc(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;")
 }
 
 async function verifyTurnstile(token: string): Promise<boolean> {
   const secret = process.env.TURNSTILE_SECRET_KEY
-  if (!secret) return true
+  if (!secret) return false
   try {
     const res = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
       method: "POST",
@@ -39,89 +56,109 @@ async function verifyTurnstile(token: string): Promise<boolean> {
 }
 
 export async function POST(request: Request) {
+  if (!isSameOrigin(request)) {
+    return addCorsHeaders(request, NextResponse.json({ error: "Forbidden" }, { status: 403 }))
+  }
+
+  if (request.method === "OPTIONS") {
+    return corsResponse(request)
+  }
+
+  const contentType = request.headers.get("content-type") ?? ""
+  if (!contentType.includes("application/json")) {
+    return NextResponse.json({ error: "Unsupported media type" }, { status: 415 })
+  }
+
+  const { success: allowed, remaining } = await checkRateLimit(request, "contact", {
+    max: 5,
+    windowMs: 3600_000,
+  })
+  if (!allowed) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again later." },
+      {
+        status: 429,
+        headers: {
+          "Retry-After": "3600",
+          "X-RateLimit-Remaining": String(remaining),
+        },
+      },
+    )
+  }
+
+  let body: Record<string, unknown>
   try {
-    const ip = getIP(request)
-    if (isRateLimited(ip)) {
-      return NextResponse.json(
-        { error: "Too many requests. Please try again later." },
-        { status: 429 },
-      )
-    }
+    body = await request.json()
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 })
+  }
 
-    const { name, email, subject, message, website, turnstileToken } = await request.json()
+  const website = body.website as string | undefined
+  if (website) {
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 })
+  }
 
-    if (website) {
-      return NextResponse.json(
-        { error: "Something went wrong. Please try again." },
-        { status: 400 },
-      )
-    }
+  const result = contactSchema.safeParse(body)
+  if (!result.success) {
+    const fieldErrors = result.error.flatten().fieldErrors
+    const firstError = Object.values(fieldErrors).flat()[0] ?? "Validation failed"
+    return NextResponse.json({ error: firstError }, { status: 422 })
+  }
 
-    if (!name || !email || !subject || !message) {
-      return NextResponse.json(
-        { error: "All fields are required" },
-        { status: 400 },
-      )
-    }
+  const { name, email, subject, message } = result.data
 
-    if (!turnstileToken) {
-      return NextResponse.json(
-        { error: "Please complete the security check." },
-        { status: 400 },
-      )
-    }
+  const turnstileToken = body.turnstileToken as string | undefined
+  if (!turnstileToken) {
+    return NextResponse.json({ error: "Please complete the security check" }, { status: 400 })
+  }
 
-    const isValid = await verifyTurnstile(turnstileToken)
-    if (!isValid) {
-      return NextResponse.json(
-        { error: "Security check failed. Please try again." },
-        { status: 400 },
-      )
-    }
+  const isValid = await verifyTurnstile(turnstileToken)
+  if (!isValid) {
+    return NextResponse.json({ error: "Security check failed. Please try again." }, { status: 400 })
+  }
 
-    const apiKey = process.env.RESEND_API_KEY
-    if (!apiKey) {
-      console.log("[Contact] No RESEND_API_KEY configured. Logging message instead.")
-      console.log({ name, email, subject, message })
-      return NextResponse.json(
-        { success: true, message: "Message received! (Email sending not configured)" },
-        { status: 200 },
-      )
-    }
+  const apiKey = process.env.RESEND_API_KEY
+  if (!apiKey) {
+    console.log("[Contact] Fallback — email not configured. Logging:", { name, email, subject })
+    const response = NextResponse.json(
+      { success: true, message: "Message received" },
+      { status: 200 },
+    )
+    return addCorsHeaders(request, response)
+  }
 
+  try {
     const { Resend } = await import("resend")
     const resend = new Resend(apiKey)
 
-    const esc = (s: string) =>
-      s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;")
-
-    const { data, error } = await resend.emails.send({
+    const { error } = await resend.emails.send({
       from: "Portfolio Contact <onboarding@resend.dev>",
-      to: process.env.CONTACT_EMAIL || "salahuddin@example.com",
+      to: process.env.CONTACT_EMAIL || "sselim223512@bscse.uiu.ac.bd",
       subject: `[Portfolio] ${esc(subject)}`,
-      html: `
-        <h3>New Contact Message</h3>
-        <p><strong>Name:</strong> ${esc(name)}</p>
-        <p><strong>Email:</strong> ${esc(email)}</p>
-        <p><strong>Subject:</strong> ${esc(subject)}</p>
-        <p><strong>Turnstile:</strong> Passed</p>
-        <p><strong>Message:</strong></p>
-        <p>${esc(message)}</p>
-      `,
+      html: [
+        "<h3>New Contact Message</h3>",
+        `<p><strong>Name:</strong> ${esc(name)}</p>`,
+        `<p><strong>Email:</strong> ${esc(email)}</p>`,
+        `<p><strong>Subject:</strong> ${esc(subject)}</p>`,
+        "<p><strong>Turnstile:</strong> Passed</p>",
+        `<p><strong>Message:</strong></p><p>${esc(message)}</p>`,
+      ].join("\n"),
     })
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json({ error: "Failed to send message" }, { status: 500 })
     }
 
-    return NextResponse.json(
-      { success: true, message: "Message sent successfully!", data },
+    const response = NextResponse.json(
+      { success: true, message: "Message sent successfully!" },
       { status: 200 },
     )
+    return addCorsHeaders(request, response)
   } catch {
-    return NextResponse.json(
-      { error: "Something went wrong. Please try again." },
-      { status: 500 },
-    )
+    return NextResponse.json({ error: "Something went wrong. Please try again." }, { status: 500 })
   }
+}
+
+export async function OPTIONS(request: Request) {
+  return corsResponse(request)
 }

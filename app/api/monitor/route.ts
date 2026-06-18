@@ -1,10 +1,14 @@
 import { NextResponse } from "next/server"
 import { getProjects, getCredentials, getSkills } from "@/lib/sanity/fetch"
-import pkg from "@/package.json"
+import { corsResponse, addCorsHeaders, isSameOrigin } from "@/lib/cors"
 
 export const dynamic = "force-dynamic"
 
-export async function GET() {
+export async function GET(request: Request) {
+  if (!isSameOrigin(request)) {
+    return addCorsHeaders(request, NextResponse.json({ error: "Forbidden" }, { status: 403 }))
+  }
+
   const start = Date.now()
 
   const [projects, credentials, skills] = await Promise.all([
@@ -13,32 +17,19 @@ export async function GET() {
     getSkills().catch(() => []),
   ])
 
-  const dbLatency = Date.now() - start
-
-  const deps = pkg.dependencies ?? {}
-  const devDeps = pkg.devDependencies ?? {}
-
-  return NextResponse.json({
-    dbLatency,
+  const response = NextResponse.json({
+    status: "ok",
+    dbLatency: Date.now() - start,
     contentMetrics: {
       projects: projects.length,
       credentials: credentials.length,
       skills: skills.length,
     },
-    techStack: {
-      next: deps.next ?? "—",
-      react: deps.react ?? "—",
-      node: process.version,
-      env: process.env.VERCEL_ENV ?? "development",
-    },
-    seo: {
-      score: 100,
-      items: [
-        { label: "Robots", status: "ACTIVE" as const },
-        { label: "Sitemap", status: "ACTIVE" as const },
-        { label: "Favicon", status: "ACTIVE" as const },
-        { label: "OG Image", status: "ACTIVE" as const },
-      ],
-    },
   })
+
+  return addCorsHeaders(request, response)
+}
+
+export async function OPTIONS(request: Request) {
+  return corsResponse(request)
 }

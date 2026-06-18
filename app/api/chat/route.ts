@@ -1,12 +1,17 @@
 import { NextResponse } from "next/server"
 import { GoogleGenAI } from "@google/genai"
+import { checkRateLimit } from "@/lib/rate-limit"
+import { corsResponse, addCorsHeaders, isSameOrigin } from "@/lib/cors"
+
+export const runtime = "nodejs"
+export const maxDuration = 30
 
 const PORTFOLIO_DATA = `
 ABOUT SALAH UDDIN SELIM:
 - Name: Salah Uddin Selim
 - Title: CSE Student & Software Engineer
 - Location: Dhaka, Bangladesh
-- Email: ${['sselim223512', 'bscse.uiu.ac.bd'].join('@')}
+- Email: sselim223512@bscse.uiu.ac.bd
 - GitHub: github.com/salahuddinselim
 - Education: B.Sc. in Computer Science & Engineering at United International University (GPA 3.68/4.00, 112/137 credits, 2022 — Present)
 - HSC: Pirganj Govt. College, Thakurgaon — GPA 5.00/5.00 (2018-2020)
@@ -33,43 +38,79 @@ PROJECTS:
 5. Player Information System — Bangladesh Cricket Team — C, File I/O. CLI for player stats with search/sort. github.com/salahuddinselim/Player-Information-System
 `
 
-const SYSTEM_INSTRUCTION = `You are Infernape, an AI assistant for Salah Uddin Selim's portfolio website.
+const SYSTEM_INSTRUCTION = [
+  `You are Infernape, an AI assistant for Salah Uddin Selim's portfolio website.`,
+  ``,
+  `YOUR PURPOSE:`,
+  `- Answer questions about Salah Uddin Selim — his skills, projects, education, achievements, and contact info.`,
+  `- Provide recommendations on which projects are relevant based on what the visitor is looking for.`,
+  `- Be helpful, concise (2-4 sentences), friendly, and professional.`,
+  ``,
+  `Here is Salah's complete portfolio data — use it to answer questions accurately:`,
+  ``,
+  PORTFOLIO_DATA,
+  ``,
+  `STRICT RULES:`,
+  `- ONLY answer questions about Salah Uddin Selim. If asked about anything else, say: "I'm only here to help you learn about Salah Uddin Selim. Feel free to ask me about his work, skills, or experience!"`,
+  `- Do NOT write code, solve problems, give advice, or answer anything unrelated to Salah.`,
+  `- Keep responses concise and natural.`,
+  `- You are Infernape — an AI guide, not Salah himself. Refer to him in third person.`,
+].join("\n")
 
-YOUR PURPOSE:
-- Answer questions about Salah Uddin Selim — his skills, projects, education, achievements, and contact info.
-- Provide recommendations on which projects are relevant based on what the visitor is looking for.
-- Be helpful, concise (2-4 sentences), friendly, and professional.
+export async function POST(request: Request) {
+  if (!isSameOrigin(request)) {
+    return addCorsHeaders(request, NextResponse.json({ error: "Forbidden" }, { status: 403 }))
+  }
 
-Here is Salah's complete portfolio data — use it to answer questions accurately:
+  if (request.method === "OPTIONS") {
+    return corsResponse(request)
+  }
 
-${PORTFOLIO_DATA}
+  const contentType = request.headers.get("content-type") ?? ""
+  if (!contentType.includes("application/json")) {
+    return NextResponse.json({ error: "Unsupported media type" }, { status: 415 })
+  }
 
-STRICT RULES:
-- ONLY answer questions about Salah Uddin Selim. If asked about anything else (general knowledge, coding help, opinions, math, writing, etc.), say: "I'm only here to help you learn about Salah Uddin Selim. Feel free to ask me about his work, skills, or experience!"
-- Do NOT write code, solve problems, give advice, or answer anything unrelated to Salah.
-- If asked about recommendations, suggest projects based on what the visitor is interested in (e.g., "If you're interested in IoT, check out his Automated Fish Pond Monitoring System").
-- Keep responses concise and natural.
-- You are Infernape — an AI guide, not Salah himself. Refer to him in third person.`
+  const { success: allowed } = await checkRateLimit(request, "chat", {
+    max: 30,
+    windowMs: 3600_000,
+  })
+  if (!allowed) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again later." },
+      { status: 429, headers: { "Retry-After": "3600" } },
+    )
+  }
 
-export async function POST(req: Request) {
+  let body: { messages?: unknown }
   try {
-    const apiKey = process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY
-    if (!apiKey) {
-      return NextResponse.json(
-        { error: "Chat is not configured — missing API key", detail: "Contact the site owner to set up GEMINI_API_KEY" },
-        { status: 500 },
-      )
+    body = await request.json()
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 })
+  }
+
+  if (!Array.isArray(body.messages) || body.messages.length === 0) {
+    return NextResponse.json({ error: "Messages array is required" }, { status: 422 })
+  }
+
+  for (const msg of body.messages) {
+    if (typeof msg.content !== "string" || msg.content.length > 4000) {
+      return NextResponse.json({ error: "Invalid message content" }, { status: 422 })
     }
+  }
+
+  const apiKey = process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY
+  if (!apiKey) {
+    return NextResponse.json({ error: "Service unavailable" }, { status: 503 })
+  }
+
+  try {
     const genAI = new GoogleGenAI({ apiKey })
-    const { messages } = await req.json()
+    const { messages } = body
 
     let historyMessages = messages.slice(0, -1)
     const firstUserIdx = historyMessages.findIndex((m: { role: string }) => m.role === "user")
-    if (firstUserIdx === -1) {
-      historyMessages = []
-    } else if (firstUserIdx > 0) {
-      historyMessages = historyMessages.slice(firstUserIdx)
-    }
+    historyMessages = firstUserIdx === -1 ? [] : historyMessages.slice(firstUserIdx)
 
     const contents = historyMessages.map((m: { role: string; content: string }) => ({
       role: m.role === "assistant" ? "model" : "user",
@@ -84,22 +125,16 @@ export async function POST(req: Request) {
     const response = await genAI.models.generateContent({
       model: "gemini-2.0-flash",
       contents,
-      config: {
-        systemInstruction: SYSTEM_INSTRUCTION,
-      },
+      config: { systemInstruction: SYSTEM_INSTRUCTION },
     })
 
-    return NextResponse.json({ role: "assistant", content: response.text })
-  } catch (error: unknown) {
-    console.error("Infernape chat error:", error)
-    const msg = error instanceof Error ? error.message : String(error)
-    const isQuota = msg.includes("429") || msg.includes("quota") || msg.includes("RESOURCE_EXHAUSTED")
-    return NextResponse.json(
-      {
-        error: "Failed to get response from Infernape",
-        detail: isQuota ? "API quota exceeded — try again in a minute" : msg.slice(0, 300),
-      },
-      { status: 500 },
-    )
+    const resp = NextResponse.json({ role: "assistant", content: response.text })
+    return addCorsHeaders(request, resp)
+  } catch {
+    return NextResponse.json({ error: "Service unavailable" }, { status: 503 })
   }
+}
+
+export async function OPTIONS(request: Request) {
+  return corsResponse(request)
 }
