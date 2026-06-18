@@ -1,226 +1,213 @@
 "use client"
 
-import { useRef, useState, useEffect } from "react"
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import { GraduationCap } from "lucide-react"
+import { Briefcase, GraduationCap, CheckCircle2, Sparkles } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { getExperience, getEducation } from "@/lib/sanity/fetch"
 import type { SanityExperience } from "@/types"
 import type { EducationData } from "@/lib/sanity/fetch"
 
-function useScrollProgress(ref: React.RefObject<HTMLDivElement | null>) {
-  const [progress, setProgress] = useState(0)
-
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          const update = () => {
-            if (!el) return
-            const rect = el.getBoundingClientRect()
-            const total = rect.height
-            const visible = window.innerHeight - rect.top
-            const pct = Math.min(Math.max(visible / total, 0), 1)
-            setProgress(pct)
-          }
-          update()
-          window.addEventListener("scroll", update, { passive: true })
-          return () => window.removeEventListener("scroll", update)
-        }
-      },
-      { threshold: 0 },
-    )
-
-    observer.observe(el)
-    return () => observer.disconnect()
-  }, [ref])
-
-  return progress
+interface ExperienceCardProps {
+  item: SanityExperience
+  index: number
 }
 
-interface TimelineItem {
-  type: "experience" | "education"
-  date: string
-  data: SanityExperience | EducationData
+function ExperienceCard({ item, index }: ExperienceCardProps) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-40px" }}
+      transition={{ duration: 0.5, ease: "easeOut", delay: index * 0.1 }}
+      whileHover={{ y: -3 }}
+      className="group relative overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.02] transition-all duration-300 hover:border-cyan-400/20 hover:shadow-[0_0_40px_-8px_rgba(0,217,255,0.08)]"
+    >
+      <div className="absolute inset-y-6 left-0 w-0.5 rounded-full bg-gradient-to-b from-cyan-400 via-cyan-400/60 to-transparent opacity-60 group-hover:opacity-100 transition-opacity" />
+      <div className="p-5 pl-7">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-cyan-400/10 px-2.5 py-0.5 text-[10px] font-mono font-medium text-cyan-300/90 mb-3">
+          <Sparkles size={10} />
+          {item.period}
+        </span>
+        <h3 className="text-base font-semibold text-white mb-0.5">{item.role}</h3>
+        <p className="text-sm text-cyan-400/70 font-medium mb-3">{item.company}</p>
+        <p className="text-sm text-white/50 leading-relaxed mb-3">{item.description}</p>
+        {item.achievements && item.achievements.length > 0 && (
+          <ul className="space-y-1.5 mb-3">
+            {item.achievements.map((a, i) => (
+              <li key={i} className="flex items-start gap-2 text-xs text-white/40">
+                <CheckCircle2 size={12} className="mt-0.5 shrink-0 text-cyan-400/50" />
+                <span>{a}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+        {item.technologies && item.technologies.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {item.technologies.map((tech) => (
+              <span
+                key={tech}
+                className="rounded-full border border-white/[0.06] bg-white/[0.03] px-2 py-0.5 text-[10px] font-mono text-white/40 transition-colors group-hover:border-cyan-400/10 group-hover:text-cyan-300/60"
+              >
+                {tech}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+    </motion.div>
+  )
+}
+
+interface EducationCardProps {
+  item: EducationData
+  index: number
+}
+
+function EducationCard({ item, index }: EducationCardProps) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-40px" }}
+      transition={{ duration: 0.5, ease: "easeOut", delay: index * 0.1 }}
+      whileHover={{ y: -3 }}
+      className="group relative overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.02] transition-all duration-300 hover:border-amber-400/20 hover:shadow-[0_0_40px_-8px_rgba(251,191,36,0.08)]"
+    >
+      <div className="absolute inset-y-6 left-0 w-0.5 rounded-full bg-gradient-to-b from-amber-400 via-amber-400/60 to-transparent opacity-60 group-hover:opacity-100 transition-opacity" />
+      <div className="p-5 pl-7">
+        <span className="inline-flex items-center gap-1.5 text-[10px] font-mono text-amber-300/70 mb-2">
+          {item.startYear ?? ""}
+          {item.startYear && item.endYear ? " — " : ""}
+          {item.endYear ?? ""}
+        </span>
+        <h3 className="text-base font-semibold text-white mb-0.5">
+          {item.degree}
+          {item.field ? ` in ${item.field}` : ""}
+        </h3>
+        <p className="text-sm text-amber-400/70 font-medium mb-3">{item.institution}</p>
+        {item.description && (
+          <p className="text-sm text-white/50 leading-relaxed mb-3">{item.description}</p>
+        )}
+        {item.gpa && (
+          <div className="flex items-center gap-2 rounded-lg bg-amber-400/5 border border-amber-400/10 px-3 py-2">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-white/30">
+              CGPA
+            </span>
+            <span className="text-amber-400 font-bold text-sm leading-none">{item.gpa}</span>
+            {item.gpaScale && <span className="text-white/30 text-xs">/{item.gpaScale}</span>}
+            {item.status === "ongoing" && (
+              <span className="ml-auto rounded-full border border-amber-400/20 px-2 py-0.5 text-[10px] font-mono text-amber-400/60">
+                Ongoing
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+    </motion.div>
+  )
+}
+
+function SectionHeader({
+  icon,
+  label,
+  count,
+  color,
+}: {
+  icon: React.ReactNode
+  label: string
+  count: number
+  color: string
+}) {
+  return (
+    <div className="flex items-center gap-2 mb-5">
+      <div
+        className="flex h-8 w-8 items-center justify-center rounded-lg"
+        style={{ background: `${color}12` }}
+      >
+        <div className="text-sm" style={{ color }}>
+          {icon}
+        </div>
+      </div>
+      <h3 className="text-sm font-semibold text-white/80">{label}</h3>
+      <span
+        className="ml-auto rounded-full px-2 py-0.5 text-[10px] font-mono"
+        style={{ background: `${color}10`, color: `${color}80` }}
+      >
+        {count}
+      </span>
+    </div>
+  )
+}
+
+function EmptyState({ label }: { label: string }) {
+  return (
+    <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-white/[0.06] px-6 py-12 text-center">
+      <p className="text-xs font-mono text-white/20">No {label} entries yet</p>
+    </div>
+  )
 }
 
 export function ExperienceSection() {
-  const [timeline, setTimeline] = useState<TimelineItem[]>([])
-  const lineRef = useRef<HTMLDivElement>(null)
-  const progress = useScrollProgress(lineRef)
+  const [experience, setExperience] = useState<SanityExperience[]>([])
+  const [education, setEducation] = useState<EducationData[]>([])
 
   useEffect(() => {
     Promise.all([
       getExperience().catch(() => [] as SanityExperience[]),
       getEducation().catch(() => [] as EducationData[]),
     ]).then(([exp, edu]) => {
-      const items: TimelineItem[] = [
-        ...exp.map((e) => ({
-          type: "experience" as const,
-          date: e.period ?? "",
-          data: e,
-        })),
-        ...edu.map((e) => ({
-          type: "education" as const,
-          date: e.endYear ?? "",
-          data: e,
-        })),
-      ]
-      items.sort((a, b) => b.date.localeCompare(a.date))
-      setTimeline(items)
+      setExperience(exp)
+      setEducation(edu)
     })
   }, [])
 
   return (
     <section id="experience" className="relative w-full py-24 sm:py-32 px-4">
-      <div className="mx-auto max-w-4xl">
+      <div className="mx-auto max-w-5xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="flex items-center gap-3 mb-10"
+          className="text-center mb-14"
         >
-          <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
-            <GraduationCap size={20} className="text-accent" />
-          </div>
-          <h2 className="text-2xl sm:text-3xl font-heading font-semibold text-foreground">
-            Experience & Education
+          <p className="text-[10px] font-mono uppercase tracking-[0.35em] text-cyan-400/50 mb-3">
+            CAREER & ACADEMIC
+          </p>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white">
+            Experience <span className="text-cyan-400/60">&</span> Education
           </h2>
         </motion.div>
 
-        <div ref={lineRef} className="relative">
-          {/* Timeline Line */}
-          <div className="absolute left-[19px] md:left-1/2 md:-translate-x-px top-0 bottom-0 w-[2px]">
-            <div className="absolute inset-0 bg-white/5 rounded-full" />
-            <motion.div
-              className="absolute top-0 left-0 w-full bg-gradient-to-b from-accent via-accent-secondary to-accent rounded-full"
-              style={{ height: `${progress * 100}%` }}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
+          <div>
+            <SectionHeader
+              icon={<Briefcase size={14} />}
+              label="Experience"
+              count={experience.length}
+              color="#00D9FF"
             />
+            <div className="space-y-4">
+              {experience.length === 0 && <EmptyState label="experience" />}
+              {experience.map((item, i) => (
+                <ExperienceCard key={item._id ?? i} item={item} index={i} />
+              ))}
+            </div>
           </div>
-
-          <div className="space-y-12 md:space-y-20">
-            {timeline.length === 0 && (
-              <p className="text-center text-sm font-mono text-white/20">No entries yet</p>
-            )}
-            {timeline.map((item, i) => {
-              const isLeft = i % 2 === 0
-              const isEdu = item.type === "education"
-              const eduData = isEdu ? (item.data as EducationData) : null
-              const expData = !isEdu ? (item.data as SanityExperience) : null
-              const variants = (() => {
-                const style = i % 3
-                if (style === 0) return { hidden: { opacity: 0, y: 40 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" as const } } }
-                if (style === 1) return { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } } }
-                return { hidden: { opacity: 0, x: isLeft ? -30 : 30 }, visible: { opacity: 1, x: 0, transition: { duration: 0.55, ease: "easeOut" as const } } }
-              })()
-
-              return (
-                  <motion.div
-                    key={i}
-                    initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true, margin: "-80px" }}
-                  variants={variants}
-                  className={cn(
-                    "relative flex md:items-start gap-6",
-                    isLeft ? "md:flex-row" : "md:flex-row-reverse",
-                  )}
-                >
-                  {/* Node */}
-                  <div className="relative z-10 shrink-0 md:absolute md:left-1/2 md:-translate-x-1/2">
-                    <motion.div
-                      initial={{ scale: 0, rotate: i * 120 }}
-                      whileInView={{ scale: 1, rotate: 0 }}
-                      viewport={{ once: true }}
-                      transition={{
-                        type: "spring",
-                        stiffness: 350 - i * 50,
-                        damping: 15,
-                        delay: 0.25,
-                      }}
-                      className={cn(
-                        "w-10 h-10 rounded-full border-2 flex items-center justify-center bg-bg shadow-[0_0_15px_rgba(0,217,255,0.15)]",
-                        isEdu ? "border-amber-400" : "border-accent",
-                      )}
-                    >
-                      <motion.div
-                        className={cn("w-2 h-2 rounded-full", isEdu ? "bg-amber-400" : "bg-accent")}
-                        animate={{ opacity: [0.4, 1, 0.4] }}
-                        transition={{ duration: 2 + i * 0.5, repeat: Infinity, ease: "easeInOut", delay: i * 0.3 }}
-                      />
-                    </motion.div>
-                  </div>
-
-                  {/* Card */}
-                  <div className={cn("flex-1 md:w-[calc(50%-2rem)]", isLeft ? "md:pr-8 md:text-right" : "md:pl-8")}>
-                    <motion.div
-                      whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                      className={cn(
-                        "group rounded-2xl p-5 cursor-default bg-[rgba(17,24,39,0.65)] backdrop-blur-[16px] border transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,217,255,0.06)]",
-                        isEdu
-                          ? "border-amber-400/20 hover:border-amber-400/30"
-                          : "border-[rgba(255,255,255,0.06)] hover:border-accent/20",
-                      )}
-                    >
-                      {isEdu ? (
-                        <>
-                          <span className="inline-block text-xs font-mono text-amber-400 mb-2">
-                            {eduData!.startYear ?? ""}{eduData!.startYear && eduData!.endYear ? " – " : ""}{eduData!.endYear ?? ""}
-                          </span>
-                          <h3 className="text-lg font-heading font-semibold text-foreground mb-1">
-                            {eduData!.degree}{eduData!.field ? ` in ${eduData!.field}` : ""}
-                          </h3>
-                          <p className="text-sm text-amber-400/80 font-body font-medium mb-3">
-                            {eduData!.institution}
-                          </p>
-                          {eduData!.description && (
-                            <p className="text-sm text-muted font-body leading-relaxed">{eduData!.description}</p>
-                          )}
-                          {eduData!.gpa && (
-                            <div className="flex items-center gap-2 mt-3">
-                              <span className="text-[10px] text-white/40 font-mono uppercase tracking-wider">CGPA</span>
-                              <span className="text-amber-400 font-bold text-sm">{eduData!.gpa}</span>
-                              {eduData!.gpaScale && <span className="text-white/30 text-xs">/{eduData!.gpaScale}</span>}
-                              {eduData!.status === "ongoing" && (
-                                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full border border-amber-400/20 text-amber-400/60 ml-auto">Ongoing</span>
-                              )}
-                            </div>
-                          )}
-                        </>
-                      ) : (
-                        <>
-                          <span className="inline-block text-xs font-mono text-accent mb-2">
-                            {expData!.period}
-                          </span>
-                          <h3 className="text-lg font-heading font-semibold text-foreground mb-1">
-                            {expData!.role}
-                          </h3>
-                          <p className="text-sm text-accent/80 font-body font-medium mb-3">
-                            {expData!.company}
-                          </p>
-                          <p className="text-sm text-muted font-body leading-relaxed">
-                            {expData!.description}
-                          </p>
-                          {expData!.technologies && expData!.technologies.length > 0 && (
-                            <div className="flex flex-wrap gap-1.5 mt-3">
-                              {expData!.technologies.map((tech) => (
-                                <span key={tech} className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-accent/8 text-accent/70 border border-accent/8">
-                                  {tech}
-                                </span>
-                              ))}
-                            </div>
-                          )}
-                        </>
-                      )}
-                    </motion.div>
-                  </div>
-                </motion.div>
-              )
-            })}
+          <div>
+            <SectionHeader
+              icon={<GraduationCap size={14} />}
+              label="Education"
+              count={education.length}
+              color="#FBBF24"
+            />
+            <div className="space-y-4">
+              {education.length === 0 && <EmptyState label="education" />}
+              {education.map((item, i) => (
+                <EducationCard key={item.institution + (item.degree ?? "")} item={item} index={i} />
+              ))}
+            </div>
           </div>
         </div>
       </div>
