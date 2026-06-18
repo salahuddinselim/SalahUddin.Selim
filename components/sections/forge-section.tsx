@@ -5,6 +5,7 @@ import dynamic from "next/dynamic"
 import { motion, AnimatePresence } from "framer-motion"
 import { getSkillIcon } from "@/lib/sanity/icon-map"
 import type { SanitySkill } from "@/types"
+import { categoryDefaults, forgeSectionCopy } from "@/data"
 
 const SkillCloud = dynamic(
   () => import("./skill-cloud").then((mod) => mod.SkillCloud),
@@ -15,15 +16,6 @@ const SkillCloud = dynamic(
     ),
   },
 )
-
-const categoryDefaults: Record<string, { heading: string; description: string; color: string }> = {
-  languages: { heading: "Languages", description: "Proficient in multiple programming languages across systems, web, and application development.", color: "#00D9FF" },
-  frontend: { heading: "Frontend", description: "Web and desktop GUI frameworks for building user interfaces.", color: "#8B5CF6" },
-  backend: { heading: "Backend", description: "Server-side, databases, and API development.", color: "#22C55E" },
-  iot: { heading: "Hardware & IoT", description: "Embedded systems, sensor integration, and motor control for automated physical systems.", color: "#F97316" },
-  tools: { heading: "Tools & Concepts", description: "Version control, IDEs, and software engineering concepts used across projects.", color: "#EAB308" },
-  design: { heading: "Design", description: "UI/UX design and prototyping tools.", color: "#EC4899" },
-}
 
 interface FilterButtonProps {
   catId: string | null
@@ -116,10 +108,10 @@ export function ForgeSection({ skills }: ForgeSectionProps) {
           className="text-center mb-12"
         >
           <p className="text-[#00d9ff] text-sm font-semibold tracking-widest mb-3">
-            EXPERTISE
+            {forgeSectionCopy.eyecatch}
           </p>
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-white tracking-tight">
-            Technical Expertise
+            {forgeSectionCopy.heading}
           </h1>
         </motion.div>
 
@@ -141,7 +133,7 @@ export function ForgeSection({ skills }: ForgeSectionProps) {
           <FilterButton
             catId={null}
             isActive={activeCategory === null}
-            label="All"
+            label={forgeSectionCopy.allLabel}
             color="#00D9FF"
             onClick={handleClearCategory}
           />

@@ -64,7 +64,7 @@ export function AboutPreview() {
                 </div>
               </div>
               <Image
-                src="/hero.png"
+                src="/hero.webp"
                 alt="Salah Uddin Selim"
                 fill
                 priority={true}

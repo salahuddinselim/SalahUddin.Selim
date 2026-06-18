@@ -1,18 +1,9 @@
 import type { Metadata } from "next"
 import { ForgeSection } from "@/components/sections/forge-section"
 import { getSkills } from "@/lib/sanity/fetch"
+import { pageMeta } from "@/data"
 
-export const metadata: Metadata = {
-  title: "Forge",
-  description:
-    "Technical expertise and skill set of Salah Uddin Selim — languages, frameworks, IoT, tools, and design.",
-  openGraph: {
-    title: "Forge | Salah Uddin Selim",
-    description:
-      "Technical expertise and skill set of Salah Uddin Selim — languages, frameworks, IoT, tools, and design.",
-  },
-  alternates: { canonical: "/forge" },
-}
+export const metadata: Metadata = pageMeta.forge
 
 export default async function ForgePage() {
   let skills: import("@/types").SanitySkill[] = []

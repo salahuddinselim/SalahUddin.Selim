@@ -7,13 +7,7 @@ import Link from "next/link"
 import { ArrowLeft, MapPin, Image as ImageIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { getGalleryImages, type GalleryImageData } from "@/lib/sanity/fetch"
-
-const spanClasses: Record<string, string> = {
-  square: "col-span-1 row-span-1",
-  vertical: "col-span-1 row-span-2",
-  horizontal: "col-span-2 row-span-1",
-  large: "col-span-2 row-span-2",
-}
+import { gallerySectionCopy, spanClasses } from "@/data"
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -53,7 +47,7 @@ export function GallerySection() {
           className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-[0.25em] text-white/20 transition-all duration-200 hover:text-cyan-400/60"
         >
           <ArrowLeft size={12} />
-          Back to Home
+          {gallerySectionCopy.backLabel}
         </Link>
       </motion.div>
 
@@ -65,13 +59,13 @@ export function GallerySection() {
         className="mb-10"
       >
         <p className="text-[11px] font-mono uppercase tracking-[0.35em] text-cyan-400/40 mb-3">
-          VISUAL ARCHIVE
+          {gallerySectionCopy.eyecatch}
         </p>
         <div className="flex items-center gap-4 mb-2">
           <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-white">
             My{" "}
             <span className="text-cyan-300 drop-shadow-[0_0_20px_rgba(0,217,255,0.3)]">
-              Gallery
+              {gallerySectionCopy.heading}
             </span>
           </h1>
           <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] font-mono text-white/40">
@@ -80,7 +74,7 @@ export function GallerySection() {
           </span>
         </div>
         <p className="text-sm font-mono text-white/25 tracking-[0.15em]">
-          Academics · Creations · Moments
+          {gallerySectionCopy.subtitle}
         </p>
       </motion.div>
 

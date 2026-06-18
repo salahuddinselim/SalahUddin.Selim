@@ -6,6 +6,7 @@ import { Send, Loader2, CheckCircle2, AlertCircle, Mail } from "lucide-react"
 import { SocialOrbit } from "@/components/sections/social-orbit"
 import { cn } from "@/lib/utils"
 import { Turnstile, resetTurnstile } from "@/components/ui/turnstile"
+import { contactSectionCopy, contactFormFields, contactApiEndpoint } from "@/data"
 
 interface FormFields {
   name: string
@@ -57,7 +58,7 @@ export function ContactSection() {
     setErrorMsg("")
 
     try {
-      const res = await fetch("/api/contact", {
+      const res = await fetch(contactApiEndpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(fields),
@@ -93,7 +94,7 @@ export function ContactSection() {
             <Mail size={20} className="text-accent" />
           </div>
           <h2 className="text-2xl sm:text-3xl font-heading font-semibold text-foreground">
-            Get In Touch
+            {contactSectionCopy.heading}
           </h2>
         </motion.div>
 
@@ -111,38 +112,38 @@ export function ContactSection() {
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <InputField
-                label="Name"
+                label={contactFormFields.name.label}
                 value={fields.name}
                 onChange={(v) => updateField("name", v)}
-                placeholder="John Doe"
+                placeholder={contactFormFields.name.placeholder}
                 disabled={state === "loading"}
                 required
               />
               <InputField
-                label="Email"
-                type="email"
+                label={contactFormFields.email.label}
+                type={contactFormFields.email.type}
                 value={fields.email}
                 onChange={(v) => updateField("email", v)}
-                placeholder="john@example.com"
+                placeholder={contactFormFields.email.placeholder}
                 disabled={state === "loading"}
                 required
               />
             </div>
 
             <InputField
-              label="Subject"
+              label={contactFormFields.subject.label}
               value={fields.subject}
               onChange={(v) => updateField("subject", v)}
-              placeholder="What's this about?"
+              placeholder={contactFormFields.subject.placeholder}
               disabled={state === "loading"}
               required
             />
 
             <TextareaField
-              label="Message"
+              label={contactFormFields.message.label}
               value={fields.message}
               onChange={(v) => updateField("message", v)}
-              placeholder="Tell me about your project, idea, or just say hi..."
+              placeholder={contactFormFields.message.placeholder}
               disabled={state === "loading"}
               required
             />
@@ -190,25 +191,25 @@ export function ContactSection() {
               {state === "idle" && (
                 <>
                   <Send size={16} />
-                  Send Message
+                  {contactSectionCopy.sendLabel}
                 </>
               )}
               {state === "loading" && (
                 <>
                   <Loader2 size={16} className="animate-spin" />
-                  Sending...
+                  {contactSectionCopy.sendingLabel}
                 </>
               )}
               {state === "success" && (
                 <>
                   <CheckCircle2 size={16} />
-                  Message Sent!
+                  {contactSectionCopy.sentLabel}
                 </>
               )}
               {state === "error" && (
                 <>
                   <AlertCircle size={16} />
-                  {errorMsg || "Failed to send"}
+                  {errorMsg || contactSectionCopy.failedLabel}
                 </>
               )}
             </motion.button>
@@ -223,10 +224,10 @@ export function ContactSection() {
             className="lg:col-span-2 flex flex-col items-center justify-center"
           >
             <h3 className="text-lg font-heading font-semibold text-foreground mb-2">
-              Connect With Me
+              {contactSectionCopy.connectHeading}
             </h3>
             <p className="text-sm text-muted font-body text-center mb-6 max-w-xs">
-              Click the center button to expand my social links
+              {contactSectionCopy.connectDescription}
             </p>
             <SocialOrbit />
           </motion.div>

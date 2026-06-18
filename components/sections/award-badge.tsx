@@ -1,4 +1,5 @@
 import { Award } from "lucide-react"
+import { awardBadge } from "@/data"
 
 export function AwardBadge() {
   return (
@@ -11,10 +12,10 @@ export function AwardBadge() {
             </div>
             <div className="text-left">
               <p className="text-sm font-semibold text-amber-300 leading-tight">
-                6th Runner-Up — UIU Spring 2025
+                {awardBadge.title}
               </p>
               <p className="text-[11px] text-amber-400/60 font-mono leading-tight">
-                Multilevel Puzzle Solving Game · Team-Based Java Desktop App
+                {awardBadge.description}
               </p>
             </div>
           </div>

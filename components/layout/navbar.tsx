@@ -8,18 +8,12 @@ import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import dynamic from "next/dynamic"
 import { LiquidRipple } from "@/components/ui/liquid-ripple"
+import { navItems, siteName, chatLabel } from "@/data"
 
 const InfernapeChat = dynamic(
   () => import("@/components/chat/infernape-chat").then(m => m.InfernapeChat),
   { ssr: false }
 )
-
-const navItems = [
-  { label: "PROJECTS", href: "/projects" },
-  { label: "CREDENTIALS", href: "/credentials" },
-  { label: "FORGE", href: "/forge" },
-  { label: "PERSONA", href: "/persona" },
-]
 
 export function Navbar() {
   const pathname = usePathname()
@@ -107,7 +101,7 @@ export function Navbar() {
             <Home size={16} />
           </span>
           <span className="text-xs sm:text-sm font-semibold uppercase tracking-[0.32em] text-white/90 hidden sm:inline">
-            salahuddin.dev
+            {siteName}
           </span>
         </Link>
 
@@ -147,7 +141,7 @@ export function Navbar() {
             className="hidden lg:inline-flex items-center justify-center gap-2 rounded-full border border-cyan-400/20 bg-white/5 px-4 py-2 text-sm font-semibold uppercase tracking-[0.20em] text-cyan-200 transition-all duration-200 hover:border-cyan-300/30 hover:bg-cyan-400/10"
           >
             <MessageCircle size={14} />
-            INFERNAPE
+            {chatLabel}
           </button>
 
           <button

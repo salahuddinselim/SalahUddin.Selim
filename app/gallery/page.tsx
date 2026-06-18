@@ -1,17 +1,8 @@
 import type { Metadata } from "next"
 import { GallerySection } from "@/components/sections/gallery-section"
+import { pageMeta } from "@/data"
 
-export const metadata: Metadata = {
-  title: "Gallery",
-  description:
-    "Visual archive of Salah Uddin Selim's academic life, creations, and memorable moments.",
-  openGraph: {
-    title: "Gallery | Salah Uddin Selim",
-    description:
-      "Visual archive of Salah Uddin Selim's academic life, creations, and memorable moments.",
-  },
-  alternates: { canonical: "/gallery" },
-}
+export const metadata: Metadata = pageMeta.gallery
 
 export default function GalleryPage() {
   return (

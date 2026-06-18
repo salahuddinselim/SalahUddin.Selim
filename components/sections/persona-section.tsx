@@ -7,20 +7,7 @@ import { cn } from "@/lib/utils"
 import { GitHubStats } from "@/components/ui/github-stats"
 import { getSocialLinks, getEducation, type SocialLinkData, type EducationData } from "@/lib/sanity/fetch"
 import { getSocialIcon } from "@/lib/sanity/icon-map"
-
-const stats = [
-  { value: "5+", label: "Projects Built", color: "#00D9FF" },
-  { value: "5+", label: "GitHub Repos", color: "#8B5CF6" },
-  { value: "3.68", label: "CGPA / 4.0", color: "#22C55E" },
-  { value: "112+", label: "Credits Earned", color: "#F97316" },
-  { value: "2x", label: "Perfect GPA", color: "#EAB308" },
-]
-
-const fallbackSocials = [
-  { name: "GitHub", url: "https://github.com/salahuddinselim", icon: "github" },
-  { name: "Kaggle", url: "https://kaggle.com/salahuddinselim", icon: "kaggle" },
-  { name: "X (Twitter)", url: "https://x.com/salahuddinselim", icon: "twitter" },
-]
+import { personaSectionCopy, personaStats, fallbackSocials, githubUsername, gitHubChartUrl } from "@/data"
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -52,12 +39,12 @@ export function PersonaSection() {
         transition={{ duration: 0.5, ease: "easeOut" as const }}
         className="text-center mb-14"
       >
-        <p className="text-[10px] font-mono uppercase tracking-[0.35em] text-cyan-400/50 mb-3">
-          WHO I AM
-        </p>
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white">
-          Persona
-        </h1>
+          <p className="text-[10px] font-mono uppercase tracking-[0.35em] text-cyan-400/50 mb-3">
+            {personaSectionCopy.eyecatch}
+          </p>
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white">
+            {personaSectionCopy.heading}
+          </h1>
       </motion.div>
 
       {/* Two-column: Bio + Education */}
@@ -70,7 +57,7 @@ export function PersonaSection() {
         {/* Bio */}
         <div>
           <h2 className="text-xl font-bold text-white mb-4">
-            Hi, I&apos;m Salah Uddin
+            {personaSectionCopy.greeting}
           </h2>
           <div className="space-y-3 text-sm text-white/50 leading-relaxed">
             <p>
@@ -88,17 +75,17 @@ export function PersonaSection() {
           </div>
           <div className="mt-5 flex flex-wrap gap-2">
             <span className="text-[11px] font-mono text-white/50 px-3 py-1 rounded-full border border-white/[0.06] bg-white/[0.02]">
-              Dhaka, Bangladesh
+              {personaSectionCopy.location}
             </span>
             <span className="text-[11px] font-mono text-white/50 px-3 py-1 rounded-full border border-white/[0.06] bg-white/[0.02]">
-              UIU · 2026
+              {personaSectionCopy.graduation}
             </span>
           </div>
         </div>
 
         {/* Education */}
         <div>
-          <h2 className="text-xl font-bold text-white mb-4">Education</h2>
+          <h2 className="text-xl font-bold text-white mb-4">{personaSectionCopy.educationHeading}</h2>
           <div className="space-y-3">
             {education.length === 0 ? (
               <p className="text-xs font-mono text-white/20">No education data yet</p>
@@ -159,7 +146,7 @@ export function PersonaSection() {
         animate="visible"
         className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 mb-10"
       >
-        {stats.map((stat) => (
+        {personaStats.map((stat) => (
           <motion.div
             key={stat.label}
             variants={itemVariants}
@@ -191,7 +178,7 @@ export function PersonaSection() {
         className="mb-10"
       >
         <h2 className="text-lg font-semibold text-white/80 mb-4">
-          GitHub Stats
+          {personaSectionCopy.gitHubStatsHeading}
         </h2>
         <GitHubStats />
       </motion.div>
@@ -221,21 +208,21 @@ export function PersonaSection() {
                 style={{ background: "#22C55E", boxShadow: "0 0 6px #22C55E" }}
               />
               <span className="text-[10px] font-mono text-white/50 tracking-widest uppercase">
-                Daily Contributions
+                {personaSectionCopy.dailyContributions}
               </span>
             </div>
             <a
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-1 text-[10px] font-mono text-white/40 hover:text-green-400 transition-colors"
-              href="https://github.com/salahuddinselim"
+              href={`https://github.com/${githubUsername}`}
             >
-              salahuddinselim <ExternalLink className="w-2.5 h-2.5" />
+              {githubUsername} <ExternalLink className="w-2.5 h-2.5" />
             </a>
           </div>
           <div className="px-5 py-4">
             <img
-              src="https://ghchart.rshah.org/00d9ff/salahuddinselim"
+              src={gitHubChartUrl}
               alt="GitHub contribution chart"
               className="w-full rounded-lg opacity-90"
               style={{ filter: "brightness(1.1) contrast(1.05)" }}
@@ -258,7 +245,7 @@ export function PersonaSection() {
         animate="visible"
       >
         <h2 className="text-lg font-semibold text-white/80 mb-4">
-          Find me on
+          {personaSectionCopy.findMeOn}
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
           {socials.map((s) => {
