@@ -1,0 +1,29 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "entry": [
+    "app/**/*.{ts,tsx}",
+    "lib/**/*.ts",
+    "components/**/*.tsx",
+    "proxy.ts",
+    "next.config.ts",
+    "sanity.config.ts",
+    "sanity.cli.ts"
+  ],
+  "project": [
+    "app/**/*.{ts,tsx}",
+    "lib/**/*.ts",
+    "components/**/*.tsx",
+    "types/**/*.ts",
+    "proxy.ts",
+    "next.config.ts"
+  ],
+  "ignoreDependencies": [
+    "tailwindcss",
+    "@tailwindcss/postcss",
+    "tw-animate-css",
+    "@lhci/cli",
+    "@next/bundle-analyzer",
+    "@commitlint/cli"
+  ],
+  "ignoreBinaries": ["lhci"]
+}

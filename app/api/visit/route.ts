@@ -1,5 +1,12 @@
-import { NextRequest, NextResponse } from "next/server"
-import { writeClient, VISITOR_DOC_ID, type VisitorStats, type CountryStat, type DeviceStat } from "@/lib/sanity/write"
+import type { NextRequest } from "next/server"
+import { NextResponse } from "next/server"
+import {
+  writeClient,
+  VISITOR_DOC_ID,
+  type VisitorStats,
+  type CountryStat,
+  type DeviceStat,
+} from "@/lib/sanity/write"
 import { checkRateLimit } from "@/lib/rate-limit"
 import { corsResponse, addCorsHeaders, isSameOrigin } from "@/lib/cors"
 
@@ -30,7 +37,8 @@ async function lookupCountry(ip: string) {
     const data = await res.json()
     if (data.status !== "success") return null
     const code = data.countryCode as string
-    const flag = String.fromCodePoint(code.codePointAt(0)! - 0x41 + 0x1f1e6) +
+    const flag =
+      String.fromCodePoint(code.codePointAt(0)! - 0x41 + 0x1f1e6) +
       String.fromCodePoint(code.codePointAt(1)! - 0x41 + 0x1f1e6)
     return { name: data.country as string, code, flag }
   } catch {
@@ -61,9 +69,10 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
-      ?? request.headers.get("x-real-ip")
-      ?? "127.0.0.1"
+    const ip =
+      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+      request.headers.get("x-real-ip") ??
+      "127.0.0.1"
 
     const ua = request.headers.get("user-agent") ?? "Unknown"
     const now = new Date()

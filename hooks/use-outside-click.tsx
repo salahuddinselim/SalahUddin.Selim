@@ -1,4 +1,5 @@
-import { useEffect, useRef } from "react";
+import type { useRef } from "react"
+import { useEffect } from "react"
 
 export function useOutsideClick(
   ref: ReturnType<typeof useRef<HTMLDivElement | null>>,
