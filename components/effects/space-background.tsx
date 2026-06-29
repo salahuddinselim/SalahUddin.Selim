@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useMemo, useRef, useEffect, useState, useCallback } from "react"
+import React, { useMemo, useRef, useEffect, useState, useCallback, startTransition } from "react"
 import { motion, useSpring, useTransform, useMotionValue } from "framer-motion"
 import { ShootingStars } from "@/components/ui/shooting-stars"
 
@@ -60,11 +60,7 @@ interface BigStar {
   twinkleDelay: number
 }
 
-function generateConstellationStars(
-  width: number,
-  height: number,
-  count: number,
-): BigStar[] {
+function generateConstellationStars(width: number, height: number, count: number): BigStar[] {
   const stars: BigStar[] = []
   for (let i = 0; i < count; i++) {
     stars.push({
@@ -88,7 +84,7 @@ function buildConstellations(
 ) {
   const lines: Array<[number, number, number, number]> = []
   const n = stars.length
-  
+
   for (let i = 0; i < n; i++) {
     const s = stars[i]
     let firstMinDist = connectionDistance
@@ -124,10 +120,13 @@ function buildConstellations(
 }
 
 export function SpaceBackground() {
+  const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [size, setSize] = useState({ width: 0, height: 0 })
   const [isReducedMotion, setIsReducedMotion] = useState(false)
   const [isLowPower, setIsLowPower] = useState(false)
+  const [isInView, setIsInView] = useState(true)
+  const [isTabVisible, setIsTabVisible] = useState(true)
 
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
@@ -137,9 +136,7 @@ export function SpaceBackground() {
   const offsetY = useTransform(smoothY, [-1, 1], [-8, 8])
 
   const [bigStars, setBigStars] = useState<BigStar[]>([])
-  const [constellations, setConstellations] = useState<
-    Array<[number, number, number, number]>
-  >([])
+  const [constellations, setConstellations] = useState<Array<[number, number, number, number]>>([])
 
   const nebulaPositions = useMemo(
     () => [
@@ -182,13 +179,40 @@ export function SpaceBackground() {
   useEffect(() => {
     const w = window.innerWidth
     const h = window.innerHeight
-    setSize({ width: w, height: h })
+    startTransition(() => setSize({ width: w, height: h }))
     const isMobile = w < 768
     const starCount = isMobile || isReducedMotion || isLowPower ? 40 : 120
     const stars = generateConstellationStars(w, h, starCount)
-    setBigStars(stars)
-    setConstellations(isMobile || isReducedMotion || isLowPower ? [] : buildConstellations(stars, w, h, 200))
+    startTransition(() => {
+      setBigStars(stars)
+      setConstellations(
+        isMobile || isReducedMotion || isLowPower ? [] : buildConstellations(stars, w, h, 200),
+      )
+    })
   }, [isReducedMotion, isLowPower])
+
+  useEffect(() => {
+    const node = containerRef.current
+    if (!node) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        startTransition(() => setIsInView(entry.isIntersecting))
+      },
+      { threshold: 0.01 },
+    )
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    const handleVisibility = () => {
+      startTransition(() => setIsTabVisible(document.visibilityState === "visible"))
+    }
+    handleVisibility()
+    document.addEventListener("visibilitychange", handleVisibility)
+    return () => document.removeEventListener("visibilitychange", handleVisibility)
+  }, [])
 
   const draw = useCallback(
     (ctx: CanvasRenderingContext2D, offX: number, offY: number) => {
@@ -210,12 +234,7 @@ export function SpaceBackground() {
       const now = Date.now() / 1000
       for (const star of bigStars) {
         const twinkle =
-          0.35 +
-          Math.abs(
-            Math.sin(
-              now / star.twinkleSpeed + star.twinkleDelay,
-            ) * 0.65,
-          )
+          0.35 + Math.abs(Math.sin(now / star.twinkleSpeed + star.twinkleDelay) * 0.65)
         const alpha = star.opacity * twinkle
         const x = star.x + offX
         const y = star.y + offY
@@ -230,9 +249,7 @@ export function SpaceBackground() {
         ctx.beginPath()
         ctx.arc(x, y, star.radius, 0, Math.PI * 2)
         const color =
-          star.hue > 0
-            ? `hsla(${star.hue}, 80%, 85%, ${alpha})`
-            : `rgba(255, 255, 255, ${alpha})`
+          star.hue > 0 ? `hsla(${star.hue}, 80%, 85%, ${alpha})` : `rgba(255, 255, 255, ${alpha})`
         ctx.fillStyle = color
         ctx.fill()
 
@@ -253,18 +270,23 @@ export function SpaceBackground() {
     const ctx = canvas.getContext("2d")
     if (!ctx) return
 
+    const shouldAnimate = isInView && isTabVisible
+    if (!shouldAnimate) {
+      draw(ctx, offsetX.get(), offsetY.get())
+      return
+    }
+
     let animId: number
     const render = () => {
-      ctx.clearRect(0, 0, size.width, size.height)
       draw(ctx, offsetX.get(), offsetY.get())
       animId = requestAnimationFrame(render)
     }
     render()
     return () => cancelAnimationFrame(animId)
-  }, [draw, size, offsetX, offsetY])
+  }, [draw, size, offsetX, offsetY, isInView, isTabVisible])
 
   return (
-    <div className="fixed inset-0 overflow-hidden pointer-events-none">
+    <div ref={containerRef} className="fixed inset-0 overflow-hidden pointer-events-none">
       {/* Layer 1: Deep dark gradient background */}
       <div
         className="absolute inset-0"
@@ -309,20 +331,21 @@ export function SpaceBackground() {
       )}
 
       {/* Layer 5: Nebula glows */}
-      {!(isReducedMotion || isLowPower) && nebulaPositions.map((pos, i) => (
-        <NebulaGlow
-          key={i}
-          index={i}
-          className={pos.className}
-          color={
-            i === 0
-              ? "radial-gradient(circle, rgba(0, 217, 255, 0.1), transparent 70%)"
-              : i === 1
-                ? "radial-gradient(circle, rgba(139, 92, 246, 0.08), transparent 70%)"
-                : "radial-gradient(circle, rgba(0, 217, 255, 0.06), transparent 70%)"
-          }
-        />
-      ))}
+      {!(isReducedMotion || isLowPower) &&
+        nebulaPositions.map((pos, i) => (
+          <NebulaGlow
+            key={i}
+            index={i}
+            className={pos.className}
+            color={
+              i === 0
+                ? "radial-gradient(circle, rgba(0, 217, 255, 0.1), transparent 70%)"
+                : i === 1
+                  ? "radial-gradient(circle, rgba(139, 92, 246, 0.08), transparent 70%)"
+                  : "radial-gradient(circle, rgba(0, 217, 255, 0.06), transparent 70%)"
+            }
+          />
+        ))}
 
       {/* Layer 6: Dust particles */}
       {dust.map((d) => (

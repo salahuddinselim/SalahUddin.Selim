@@ -92,7 +92,6 @@ export function MonitorSection() {
   }
 
   const dbLatency = data?.dbLatency ?? 0
-  const serverLatency = 0
   const contentMetrics = data?.contentMetrics ?? { projects: 0, credentials: 0, skills: 0 }
   const techStack = data?.techStack ?? { next: "—", react: "—", node: "—", env: "development" }
   const seo = data?.seo ?? { score: 100, items: [] }

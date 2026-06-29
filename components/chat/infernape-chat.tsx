@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { X, User, Loader2, Sparkles } from "lucide-react"
+import Image from "next/image"
 
 interface Message {
   role: "user" | "assistant"
@@ -60,7 +61,12 @@ export function InfernapeChat({ open, onClose }: InfernapeChatProps) {
       const detail = e instanceof Error ? e.message : "Something went wrong"
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: detail.includes("quota") ? "API quota hit — try again in a minute!" : `Sorry, I'm having trouble: ${detail}` },
+        {
+          role: "assistant",
+          content: detail.includes("quota")
+            ? "API quota hit — try again in a minute!"
+            : `Sorry, I'm having trouble: ${detail}`,
+        },
       ])
     } finally {
       setLoading(false)
@@ -88,7 +94,15 @@ export function InfernapeChat({ open, onClose }: InfernapeChatProps) {
             <div className="flex items-center justify-between px-5 py-4 border-b border-white/10 shrink-0">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-full overflow-hidden bg-[#0B1220] border border-white/10">
-                  <img src="/infernape-icon.png" alt="Infernape" className="w-full h-full object-cover" />
+                  <Image
+                    src="/infernape-icon.png"
+                    alt="Infernape"
+                    width={32}
+                    height={32}
+                    loading="lazy"
+                    decoding="async"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <div>
                   <span className="text-sm font-semibold text-white/90">Infernape</span>
@@ -108,7 +122,15 @@ export function InfernapeChat({ open, onClose }: InfernapeChatProps) {
                 <div key={i} className={`flex gap-3 ${msg.role === "user" ? "justify-end" : ""}`}>
                   {msg.role === "assistant" && (
                     <div className="w-7 h-7 rounded-full overflow-hidden shrink-0 mt-1 border border-white/10">
-                      <img src="/infernape-icon.png" alt="Infernape" className="w-full h-full object-cover" />
+                      <Image
+                        src="/infernape-icon.png"
+                        alt="Infernape"
+                        width={28}
+                        height={28}
+                        loading="lazy"
+                        decoding="async"
+                        className="w-full h-full object-cover"
+                      />
                     </div>
                   )}
                   <div
@@ -130,7 +152,15 @@ export function InfernapeChat({ open, onClose }: InfernapeChatProps) {
               {loading && (
                 <div className="flex gap-3">
                   <div className="w-7 h-7 rounded-full overflow-hidden shrink-0 border border-white/10">
-                    <img src="/infernape-icon.png" alt="Infernape" className="w-full h-full object-cover" />
+                    <Image
+                      src="/infernape-icon.png"
+                      alt="Infernape"
+                      width={28}
+                      height={28}
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                   <div className="bg-white/5 rounded-2xl px-4 py-3 border border-white/5">
                     <Loader2 size={16} className="text-white/40 animate-spin" />
@@ -145,7 +175,9 @@ export function InfernapeChat({ open, onClose }: InfernapeChatProps) {
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 mb-2">
                     <Sparkles size={12} className="text-cyan-400" />
-                    <span className="text-xs font-mono text-white/40 uppercase tracking-wider">Choose a question</span>
+                    <span className="text-xs font-mono text-white/40 uppercase tracking-wider">
+                      Choose a question
+                    </span>
                   </div>
                   {QUESTIONS.map((q) => (
                     <motion.button

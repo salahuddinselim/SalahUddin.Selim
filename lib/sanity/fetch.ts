@@ -1,11 +1,8 @@
 import { client } from "./client"
 import { groq } from "next-sanity"
-import type {
-  SanityProfile,
-  SanitySkill,
-  SanityProject,
-  SanityExperience,
-} from "@/types"
+import type { SanityProfile, SanitySkill, SanityProject, SanityExperience } from "@/types"
+
+const SANITY_REVALIDATE_SECONDS = 3600
 
 const profileQuery = groq`*[_type == "profile"][0]{
   name,
@@ -64,28 +61,30 @@ export interface SocialLinkData {
 }
 
 export function getProfile(): Promise<SanityProfile> {
-  return client.fetch(profileQuery)
+  return client.fetch(profileQuery, {}, { next: { revalidate: SANITY_REVALIDATE_SECONDS } })
 }
 
 export function getSkills(): Promise<SanitySkill[]> {
-  return client.fetch(skillsQuery)
+  return client.fetch(skillsQuery, {}, { next: { revalidate: SANITY_REVALIDATE_SECONDS } })
 }
 
 export function getProjects(): Promise<SanityProject[]> {
-  return client.fetch(projectsQuery)
+  return client.fetch(projectsQuery, {}, { next: { revalidate: SANITY_REVALIDATE_SECONDS } })
 }
 
 export function getExperience(): Promise<SanityExperience[]> {
-  return client.fetch(experienceQuery)
+  return client.fetch(experienceQuery, {}, { next: { revalidate: SANITY_REVALIDATE_SECONDS } })
 }
 
 export function getSocialLinks(): Promise<SocialLinkData[]> {
-  return client.fetch(socialLinksQuery)
+  return client.fetch(socialLinksQuery, {}, { next: { revalidate: SANITY_REVALIDATE_SECONDS } })
 }
 
 const galleryQuery = groq`*[_type == "gallery"] | order(order asc) {
   title,
   "image": image.asset->url,
+  "width": image.asset->metadata.dimensions.width,
+  "height": image.asset->metadata.dimensions.height,
   caption,
   location,
   span
@@ -94,13 +93,15 @@ const galleryQuery = groq`*[_type == "gallery"] | order(order asc) {
 export interface GalleryImageData {
   title: string
   image: string
+  width?: number
+  height?: number
   caption?: string
   location?: string
   span?: "square" | "vertical" | "horizontal" | "large"
 }
 
 export function getGalleryImages(): Promise<GalleryImageData[]> {
-  return client.fetch(galleryQuery)
+  return client.fetch(galleryQuery, {}, { next: { revalidate: SANITY_REVALIDATE_SECONDS } })
 }
 
 const credentialsQuery = groq`*[_type == "credential"] | order(year desc, order asc) {
@@ -124,7 +125,7 @@ export interface CredentialData {
 }
 
 export function getCredentials(): Promise<CredentialData[]> {
-  return client.fetch(credentialsQuery)
+  return client.fetch(credentialsQuery, {}, { next: { revalidate: SANITY_REVALIDATE_SECONDS } })
 }
 
 const educationQuery = groq`*[_type == "education"] | order(order asc) {
@@ -154,5 +155,5 @@ export interface EducationData {
 }
 
 export function getEducation(): Promise<EducationData[]> {
-  return client.fetch(educationQuery)
+  return client.fetch(educationQuery, {}, { next: { revalidate: SANITY_REVALIDATE_SECONDS } })
 }

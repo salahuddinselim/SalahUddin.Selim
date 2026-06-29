@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { Briefcase, GraduationCap, CheckCircle2, Sparkles } from "lucide-react"
-import { cn } from "@/lib/utils"
 import { getExperience, getEducation } from "@/lib/sanity/fetch"
 import type { SanityExperience } from "@/types"
 import type { EducationData } from "@/lib/sanity/fetch"
@@ -31,11 +30,13 @@ function ExperienceCard({ item, index }: ExperienceCardProps) {
         </span>
         <h3 className="text-base font-semibold text-white mb-0.5">{item.role}</h3>
         <p className="text-sm text-cyan-400/70 font-medium mb-3">{item.company}</p>
-        <p className="text-sm text-white/50 leading-relaxed mb-3">{item.description}</p>
+        <p className="text-base text-white/50 leading-relaxed max-w-prose mb-3">
+          {item.description}
+        </p>
         {item.achievements && item.achievements.length > 0 && (
           <ul className="space-y-1.5 mb-3">
             {item.achievements.map((a, i) => (
-              <li key={i} className="flex items-start gap-2 text-xs text-white/40">
+              <li key={i} className="flex items-start gap-2 text-xs text-white/50">
                 <CheckCircle2 size={12} className="mt-0.5 shrink-0 text-cyan-400/50" />
                 <span>{a}</span>
               </li>
@@ -47,7 +48,7 @@ function ExperienceCard({ item, index }: ExperienceCardProps) {
             {item.technologies.map((tech) => (
               <span
                 key={tech}
-                className="rounded-full border border-white/[0.06] bg-white/[0.03] px-2 py-0.5 text-[10px] font-mono text-white/40 transition-colors group-hover:border-cyan-400/10 group-hover:text-cyan-300/60"
+                className="rounded-full border border-white/[0.06] bg-white/[0.03] px-2 py-0.5 text-[10px] font-mono text-white/50 transition-colors group-hover:border-cyan-400/10 group-hover:text-cyan-300/60"
               >
                 {tech}
               </span>
@@ -87,7 +88,9 @@ function EducationCard({ item, index }: EducationCardProps) {
         </h3>
         <p className="text-sm text-amber-400/70 font-medium mb-3">{item.institution}</p>
         {item.description && (
-          <p className="text-sm text-white/50 leading-relaxed mb-3">{item.description}</p>
+          <p className="text-base text-white/60 leading-relaxed max-w-prose mb-3">
+            {item.description}
+          </p>
         )}
         {item.gpa && (
           <div className="flex items-center gap-2 rounded-lg bg-amber-400/5 border border-amber-400/10 px-3 py-2">
@@ -175,7 +178,7 @@ export function ExperienceSection() {
           <p className="text-[10px] font-mono uppercase tracking-[0.35em] text-cyan-400/50 mb-3">
             CAREER & ACADEMIC
           </p>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white">
+          <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-white">
             Experience <span className="text-cyan-400/60">&</span> Education
           </h2>
         </motion.div>

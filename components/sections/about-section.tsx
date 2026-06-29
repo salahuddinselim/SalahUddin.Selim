@@ -75,7 +75,7 @@ export function AboutSection() {
           <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
             <Info size={20} className="text-accent" />
           </div>
-          <h2 className="text-3xl sm:text-4xl font-heading font-semibold text-foreground">
+          <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
             About Me
           </h2>
         </motion.div>
@@ -101,12 +101,12 @@ export function AboutSection() {
                 <Image
                   src={aboutData.avatar}
                   alt={aboutData.name}
-                  fill
-                  priority={true}
-                  className="object-cover"
+                  width={900}
+                  height={1200}
+                  loading="lazy"
+                  className="h-full w-full object-cover"
                   sizes="(max-width: 390px) 390px, (max-width: 768px) 768px, 1440px"
                   quality={75}
-                  fetchPriority="high"
                   placeholder="blur"
                   blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mN8/+F9PQAI8wNPvd7POQAAAABJRU5ErkJggg=="
                 />
@@ -130,7 +130,7 @@ export function AboutSection() {
               </div>
 
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-6 pt-16">
-                <h3 className="text-xl font-heading font-semibold text-foreground mb-1">
+                <h3 className="text-lg font-semibold tracking-tight text-foreground mb-1">
                   {aboutData.name}
                 </h3>
                 <p className="text-sm text-accent font-body font-medium">{aboutData.role}</p>
@@ -167,10 +167,12 @@ export function AboutSection() {
                   <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center mb-3 group-hover:bg-accent/20 transition-colors duration-300">
                     <Icon size={18} className="text-accent" />
                   </div>
-                  <h3 className="text-base font-heading font-semibold text-foreground mb-2">
+                  <h3 className="text-lg font-semibold tracking-tight text-foreground mb-2">
                     {card.title}
                   </h3>
-                  <p className="text-sm text-muted font-body leading-relaxed">{card.description}</p>
+                  <p className="text-base text-muted font-body leading-relaxed max-w-prose">
+                    {card.description}
+                  </p>
                 </motion.div>
               )
             })}

@@ -1,5 +1,3 @@
-import { FolderKanban } from "lucide-react"
-
 export default function ProjectsLoading() {
   return (
     <main className="min-h-screen pt-28">

@@ -2,11 +2,13 @@ import type { Metadata } from "next"
 import { ForgeSection } from "@/components/sections/forge-section"
 import { getSkills } from "@/lib/sanity/fetch"
 import { pageMeta } from "@/data"
+import type { SanitySkill } from "@/types"
 
 export const metadata: Metadata = pageMeta.forge
+export const dynamic = "force-static"
 
 export default async function ForgePage() {
-  let skills: import("@/types").SanitySkill[] = []
+  let skills: SanitySkill[] = []
   try {
     skills = await getSkills()
   } catch (error) {

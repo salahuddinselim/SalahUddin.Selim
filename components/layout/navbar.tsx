@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, startTransition } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Home, Menu, X, MessageCircle } from "lucide-react"
 import Link from "next/link"
@@ -23,14 +23,30 @@ export function Navbar() {
   const headerRef = useRef<HTMLElement>(null)
   const [glow, setGlow] = useState({ x: 50, y: 50, opacity: 0 })
   const [headerHeight, setHeaderHeight] = useState(72)
+  const scrollDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const scrolledRef = useRef(false)
+  const glowFrameRef = useRef<number | null>(null)
+  const glowPendingRef = useRef<{ x: number; y: number; opacity: number } | null>(null)
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 80)
+      if (scrollDebounceRef.current) {
+        clearTimeout(scrollDebounceRef.current)
+      }
+      scrollDebounceRef.current = setTimeout(() => {
+        const next = window.scrollY > 80
+        if (next === scrolledRef.current) return
+        scrolledRef.current = next
+        startTransition(() => setScrolled(next))
+      }, 80)
     }
 
+    handleScroll()
     window.addEventListener("scroll", handleScroll, { passive: true })
-    return () => window.removeEventListener("scroll", handleScroll)
+    return () => {
+      window.removeEventListener("scroll", handleScroll)
+      if (scrollDebounceRef.current) clearTimeout(scrollDebounceRef.current)
+    }
   }, [])
 
   useEffect(() => {
@@ -55,6 +71,14 @@ export function Navbar() {
     }
   }, [mobileOpen])
 
+  useEffect(() => {
+    return () => {
+      if (glowFrameRef.current !== null) {
+        cancelAnimationFrame(glowFrameRef.current)
+      }
+    }
+  }, [])
+
   return (
     <>
       <motion.header
@@ -62,13 +86,29 @@ export function Navbar() {
         onMouseMove={(e) => {
           const rect = headerRef.current?.getBoundingClientRect()
           if (!rect) return
-          setGlow({
+          glowPendingRef.current = {
             x: ((e.clientX - rect.left) / rect.width) * 100,
             y: ((e.clientY - rect.top) / rect.height) * 100,
             opacity: 1,
+          }
+          if (glowFrameRef.current !== null) return
+          glowFrameRef.current = requestAnimationFrame(() => {
+            glowFrameRef.current = null
+            const next = glowPendingRef.current
+            if (!next) return
+            startTransition(() => setGlow(next))
           })
         }}
-        onMouseLeave={() => setGlow((g) => ({ ...g, opacity: 0 }))}
+        onMouseLeave={() => {
+          glowPendingRef.current = { ...glow, opacity: 0 }
+          if (glowFrameRef.current !== null) return
+          glowFrameRef.current = requestAnimationFrame(() => {
+            glowFrameRef.current = null
+            const next = glowPendingRef.current
+            if (!next) return
+            startTransition(() => setGlow(next))
+          })
+        }}
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.55, ease: "easeOut" }}
@@ -116,20 +156,21 @@ export function Navbar() {
               <Link
                 key={item.href}
                 href={item.href}
-                title={item.description}
+                title={`${item.label}: ${item.description}`}
+                aria-label={item.label}
                 aria-current={isActive ? "page" : undefined}
                 className={cn(
                   "relative rounded-full px-3 lg:px-4 py-2 lg:py-2 text-xs lg:text-sm font-semibold uppercase tracking-[0.15em] lg:tracking-[0.20em] transition-all duration-200 overflow-hidden whitespace-nowrap",
                   isActive
-                    ? "text-cyan-300 bg-cyan-400/10"
-                    : "text-white/75 hover:bg-white/5 hover:text-white",
+                    ? "text-white/90 bg-white/[0.06] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)]"
+                    : "text-white/50 hover:bg-white/5 hover:text-white/80",
                 )}
               >
                 <LiquidRipple>{item.label}</LiquidRipple>
                 {isActive && (
                   <motion.span
                     layoutId="nav-indicator"
-                    className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_6px_rgba(0,217,255,0.6)]"
+                    className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-cyan-400/60"
                     transition={{ type: "spring", stiffness: 380, damping: 30 }}
                   />
                 )}
@@ -142,6 +183,7 @@ export function Navbar() {
           <button
             type="button"
             onClick={() => setChatOpen(true)}
+            aria-label="Open chat"
             className="hidden lg:inline-flex items-center justify-center gap-2 rounded-full border border-cyan-400/20 bg-white/5 px-4 py-2 text-sm font-semibold uppercase tracking-[0.20em] text-cyan-200 transition-all duration-200 hover:border-cyan-300/30 hover:bg-cyan-400/10"
           >
             <MessageCircle size={14} />
@@ -206,7 +248,7 @@ export function Navbar() {
           >
             <nav
               id="mobile-menu"
-              className="rounded-3xl border border-white/10 bg-[#0B1220]/95 p-4 backdrop-blur-2xl shadow-2xl"
+              className="rounded-3xl border border-white/10 bg-[#0B1220]/95 p-4 backdrop-blur-2xl shadow-2xl max-h-[75dvh] overflow-y-auto"
               aria-label="Mobile navigation"
             >
               <div className="flex items-center justify-between mb-2 px-1">
@@ -231,13 +273,14 @@ export function Navbar() {
                       key={item.href}
                       href={item.href}
                       onClick={() => setMobileOpen(false)}
-                      title={item.description}
+                      title={`${item.label}: ${item.description}`}
+                      aria-label={item.label}
                       aria-current={isActive ? "page" : undefined}
                       className={cn(
-                        "rounded-2xl px-4 py-3 text-sm font-semibold uppercase tracking-wider transition-all duration-200",
+                        "rounded-2xl px-4 min-h-[44px] flex items-center text-sm font-semibold uppercase tracking-wider transition-all duration-200",
                         isActive
-                          ? "text-cyan-300 bg-cyan-400/10"
-                          : "text-white/75 hover:bg-white/5 hover:text-white",
+                          ? "text-white/90 bg-white/[0.06] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)]"
+                          : "text-white/50 hover:bg-white/5 hover:text-white/80",
                       )}
                     >
                       <span className="flex items-center gap-2.5">

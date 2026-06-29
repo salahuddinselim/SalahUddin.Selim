@@ -35,7 +35,7 @@ export function AboutPreview() {
           <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
             <User size={20} className="text-accent" />
           </div>
-          <h2 className="text-2xl sm:text-3xl font-heading font-semibold text-foreground">
+          <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
             About Me
           </h2>
         </motion.div>
@@ -66,12 +66,12 @@ export function AboutPreview() {
               <Image
                 src="/hero.webp"
                 alt="Salah Uddin Selim"
-                fill
-                priority={true}
-                className="object-cover"
+                width={768}
+                height={768}
+                loading="lazy"
+                className="h-full w-full object-cover"
                 sizes="(max-width: 390px) 390px, (max-width: 768px) 768px, 1440px"
                 quality={75}
-                fetchPriority="high"
                 placeholder="blur"
                 blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mN8/+F9PQAI8wNPvd7POQAAAABJRU5ErkJggg=="
               />
@@ -87,23 +87,22 @@ export function AboutPreview() {
             variants={fadeUp}
             className="lg:col-span-3 space-y-5"
           >
-            <h3 className="text-2xl sm:text-3xl font-heading font-semibold text-foreground">
+            <h3 className="text-lg font-semibold tracking-tight text-foreground">
               Salah Uddin Selim
             </h3>
             <p className="text-lg text-accent font-body font-medium">
               CSE Student & Software Engineer
             </p>
-            <p className="text-muted font-body leading-relaxed max-w-xl">
+            <p className="text-base text-muted font-body leading-relaxed max-w-prose">
               CSE student at United International University, Dhaka (GPA 3.68/4.00) with
-              demonstrated experience in full-stack web development, IoT systems, and
-              algorithm design. Proficient in Java, Python, PHP, C/C++, JavaScript,
-              Node.js, Express, SQL, and Arduino. Built 5 production-quality projects
-              spanning desktop applications, embedded IoT telemetry systems, web
-              platforms, and AI-powered tools. Awarded 6th Runner-Up at UIU Software
-              Project Competition, Spring 2025 for a JavaFX-based multilevel puzzle
-              game with real-time Socket Programming chat. Seeking software engineering
-              and research opportunities where I can apply systems thinking and
-              full-stack skills to solve real-world problems.
+              demonstrated experience in full-stack web development, IoT systems, and algorithm
+              design. Proficient in Java, Python, PHP, C/C++, JavaScript, Node.js, Express, SQL, and
+              Arduino. Built 5 production-quality projects spanning desktop applications, embedded
+              IoT telemetry systems, web platforms, and AI-powered tools. Awarded 6th Runner-Up at
+              UIU Software Project Competition, Spring 2025 for a JavaFX-based multilevel puzzle
+              game with real-time Socket Programming chat. Seeking software engineering and research
+              opportunities where I can apply systems thinking and full-stack skills to solve
+              real-world problems.
             </p>
 
             <div className="flex flex-wrap gap-4 text-sm text-muted font-body">
@@ -121,11 +120,8 @@ export function AboutPreview() {
               </span>
             </div>
 
-            <a
-              href="/persona"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium font-body bg-accent/10 text-accent border border-accent/20 hover:bg-accent/20 hover:shadow-[0_0_25px_rgba(0,217,255,0.12)] transition-all duration-300"
-            >
-              Visit Persona
+            <a href="/persona" className="btn-secondary">
+              View Profile
               <ArrowUpRight size={16} />
             </a>
           </motion.div>

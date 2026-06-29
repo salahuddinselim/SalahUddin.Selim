@@ -106,7 +106,7 @@ export function SkillsSection() {
           <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
             <Sparkles size={20} className="text-accent" />
           </div>
-          <h2 className="text-3xl sm:text-4xl font-heading font-semibold text-foreground">
+          <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
             Skills & Expertise
           </h2>
         </motion.div>
@@ -131,7 +131,7 @@ export function SkillsSection() {
                   <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
                     <CatIcon size={20} className="text-accent" />
                   </div>
-                  <h3 className="text-xl font-heading font-semibold text-foreground">
+                  <h3 className="text-lg font-semibold tracking-tight text-foreground">
                     {category.title}
                   </h3>
                 </div>

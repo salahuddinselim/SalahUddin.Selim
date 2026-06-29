@@ -1,12 +1,22 @@
 "use client"
 
 import { useState, type FormEvent } from "react"
+import dynamic from "next/dynamic"
 import { motion } from "framer-motion"
 import { Send, Loader2, CheckCircle2, AlertCircle, Mail } from "lucide-react"
-import { SocialOrbit } from "@/components/sections/social-orbit"
 import { cn } from "@/lib/utils"
 import { Turnstile, resetTurnstile } from "@/components/ui/turnstile"
 import { contactSectionCopy, contactFormFields, contactApiEndpoint } from "@/data"
+
+const SocialOrbit = dynamic(
+  () => import("@/components/sections/social-orbit").then((mod) => mod.SocialOrbit),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="w-[320px] h-[320px] rounded-full bg-white/[0.03] border border-white/10" />
+    ),
+  },
+)
 
 interface FormFields {
   name: string
@@ -131,7 +141,7 @@ export function ContactSection() {
           <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
             <Mail size={20} className="text-accent" />
           </div>
-          <h2 className="text-3xl sm:text-4xl font-heading font-semibold text-foreground">
+          <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
             {contactSectionCopy.heading}
           </h2>
         </motion.div>
@@ -234,19 +244,10 @@ export function ContactSection() {
               whileHover={state === "idle" ? { scale: 1.02 } : {}}
               whileTap={state === "idle" ? { scale: 0.98 } : {}}
               className={cn(
-                "w-full sm:w-auto inline-flex items-center justify-center gap-2",
-                "px-6 py-3 rounded-xl text-sm font-semibold font-body",
-                "transition-all duration-300",
-                state === "idle" && [
-                  "bg-accent text-white border border-accent",
-                  "hover:bg-accent/90 hover:shadow-[0_0_25px_rgba(0,217,255,0.25)]",
-                ],
-                state === "loading" && [
-                  "bg-accent/60 text-white/70 border border-accent/40",
-                  "cursor-not-allowed",
-                ],
-                state === "success" && ["bg-success text-white border border-success"],
-                state === "error" && ["bg-error/10 text-error border border-error/20"],
+                "btn-primary w-full sm:w-auto justify-center min-h-[48px]",
+                state === "loading" && ["opacity-60 cursor-not-allowed"],
+                state === "success" && ["!bg-success !border-success"],
+                state === "error" && ["!bg-error/10 !text-error !border-error/20"],
               )}
             >
               {state === "idle" && (

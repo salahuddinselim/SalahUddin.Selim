@@ -75,12 +75,13 @@ export function VisitorPanel({ open, onClose }: VisitorPanelProps) {
 
   useEffect(() => {
     if (!open) return
-    setLoading(true)
+    const loadingTimer = window.setTimeout(() => setLoading(true), 0)
     fetch("/api/visitors")
       .then((r) => r.json())
       .then(setStats)
       .catch(() => {})
       .finally(() => setLoading(false))
+    return () => window.clearTimeout(loadingTimer)
   }, [open])
 
   const totalViews = stats?.totalViews ?? 0
@@ -237,12 +238,7 @@ export function VisitorPanel({ open, onClose }: VisitorPanelProps) {
               </motion.div>
 
               {/* Devices & OS */}
-              <motion.div
-                custom={3}
-                variants={itemVariants}
-                initial="hidden"
-                animate="visible"
-              >
+              <motion.div custom={3} variants={itemVariants} initial="hidden" animate="visible">
                 <div className="flex items-center gap-2 mb-4">
                   <Monitor size={13} className="text-white/40" />
                   <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/30">

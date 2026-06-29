@@ -23,7 +23,7 @@ export function ProjectsSection({ projects: initialProjects }: { projects: Sanit
           <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
             <FolderKanban size={20} className="text-accent" />
           </div>
-          <h1 className="text-2xl sm:text-3xl font-heading font-semibold text-foreground">
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
             Projects
           </h1>
         </motion.div>

@@ -3,6 +3,7 @@ import { CredentialsSection } from "@/components/sections/credentials-section"
 import { pageMeta } from "@/data"
 
 export const metadata: Metadata = pageMeta.credentials
+export const dynamic = "force-static"
 
 export default function CredentialsPage() {
   return (

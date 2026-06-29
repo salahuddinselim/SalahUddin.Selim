@@ -3,7 +3,6 @@
 import { useRef, useState, useEffect } from "react"
 import { GitFork, Star, BookOpen, Users } from "lucide-react"
 import { motion } from "framer-motion"
-import { cn } from "@/lib/utils"
 
 interface GitHubUser {
   public_repos: number
@@ -58,9 +57,7 @@ function StatCard({ label, value, icon, index }: StatItem & { index: number }) {
           {icon}
         </div>
         <div>
-          <p className="text-xs font-medium uppercase tracking-wider text-white/40">
-            {label}
-          </p>
+          <p className="text-xs font-medium uppercase tracking-wider text-white/50">{label}</p>
           <p className="mt-0.5 text-2xl font-semibold tracking-tight text-white/90">
             {value.toLocaleString()}
           </p>
@@ -107,10 +104,9 @@ export function GitHubStats() {
         fetch(`https://api.github.com/users/${GITHUB_USERNAME}`, {
           next: { revalidate: 3600 },
         }),
-        fetch(
-          `https://api.github.com/users/${GITHUB_USERNAME}/repos?per_page=100&sort=updated`,
-          { next: { revalidate: 3600 } },
-        ),
+        fetch(`https://api.github.com/users/${GITHUB_USERNAME}/repos?per_page=100&sort=updated`, {
+          next: { revalidate: 3600 },
+        }),
       ])
 
       if (!userRes.ok || !reposRes.ok) throw new Error("GitHub API error")
@@ -118,14 +114,8 @@ export function GitHubStats() {
       const userData: GitHubUser = await userRes.json()
       const reposData: GitHubRepo[] = await reposRes.json()
 
-      const total_stars = reposData.reduce(
-        (acc, repo) => acc + repo.stargazers_count,
-        0,
-      )
-      const total_forks = reposData.reduce(
-        (acc, repo) => acc + repo.forks_count,
-        0,
-      )
+      const total_stars = reposData.reduce((acc, repo) => acc + repo.stargazers_count, 0)
+      const total_forks = reposData.reduce((acc, repo) => acc + repo.forks_count, 0)
 
       const result: GitHubStats = {
         public_repos: userData.public_repos,
@@ -174,16 +164,13 @@ export function GitHubStats() {
 
   return (
     <div className="grid grid-cols-2 gap-3 sm:gap-4">
-      {loading &&
-        Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)}
+      {loading && Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)}
 
       {error && <ErrorCard onRetry={fetchStats} />}
 
       {stats &&
         !error &&
-        statItems.map((item, i) => (
-          <StatCard key={item.label} {...item} index={i} />
-        ))}
+        statItems.map((item, i) => <StatCard key={item.label} {...item} index={i} />)}
     </div>
   )
 }

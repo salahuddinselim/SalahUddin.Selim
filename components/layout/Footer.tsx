@@ -3,7 +3,6 @@
 import { motion } from "framer-motion"
 import Link from "next/link"
 import { Eye, Image, Activity } from "lucide-react"
-import { cn } from "@/lib/utils"
 import { useVisitorPanel } from "@/components/analytics/visitor-context"
 import { LiquidRipple } from "@/components/ui/liquid-ripple"
 
@@ -57,8 +56,8 @@ export function Footer() {
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan-400/75" />
             <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(0,217,255,0.6)]" />
           </span>
-          <span className="font-mono text-xs uppercase tracking-[0.3em] text-white/40">
-            SYSTEM ONLINE — {new Date().getFullYear()} &copy; Salah Uddin Selim
+          <span className="font-mono text-xs text-white/50">
+            &copy; {new Date().getFullYear()} Salah Uddin Selim
           </span>
         </motion.div>
 
@@ -67,8 +66,9 @@ export function Footer() {
             const Icon = pill.icon
             const body = (
               <LiquidRipple className="transition-transform duration-200 ease-[cubic-bezier(.34,1.56,.64,1)] hover:-translate-y-0.5 active:scale-[0.97]">
-                <span className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold uppercase tracking-[0.18em] transition-all duration-200 border bg-cyan-400/[0.04] text-cyan-300/90 shadow-[inset_0_1px_0_rgba(0,217,255,0.1)] hover:shadow-[0_0_25px_rgba(0,217,255,0.2),inset_0_0_20px_rgba(0,217,255,0.06)]"
-                  style={{ borderColor: 'rgba(0,217,255,0.30)' }}
+                <span
+                  className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold uppercase tracking-[0.18em] transition-all duration-200 border bg-cyan-400/[0.04] text-cyan-300/90 shadow-[inset_0_1px_0_rgba(0,217,255,0.1)] hover:shadow-[0_0_25px_rgba(0,217,255,0.2),inset_0_0_20px_rgba(0,217,255,0.06)]"
+                  style={{ borderColor: "rgba(0,217,255,0.30)" }}
                 >
                   <Icon size={13} />
                   {pill.label}
@@ -77,13 +77,13 @@ export function Footer() {
             )
 
             return (
-              <motion.div
-                key={pill.label}
-                custom={i}
-                variants={pillVariants}
-              >
+              <motion.div key={pill.label} custom={i} variants={pillVariants}>
                 {pill.action === "panel" ? (
-                  <button type="button" onClick={openPanel} className="p-0 border-0 bg-transparent cursor-pointer">
+                  <button
+                    type="button"
+                    onClick={openPanel}
+                    className="p-0 border-0 bg-transparent cursor-pointer"
+                  >
                     {body}
                   </button>
                 ) : (

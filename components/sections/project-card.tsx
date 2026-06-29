@@ -119,7 +119,7 @@ export const ProjectCard = memo(function ProjectCard({
                   transition={{ delay: 0.1 }}
                   className="space-y-4"
                 >
-                  <p className="text-sm text-muted font-body leading-relaxed">
+                  <p className="text-base text-muted font-body leading-relaxed max-w-prose">
                     {project.longDescription}
                   </p>
 
@@ -145,11 +145,11 @@ export const ProjectCard = memo(function ProjectCard({
                         href={project.githubUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium font-body bg-white/5 text-muted hover:text-foreground hover:bg-white/10 border border-white/10 transition-colors"
+                        className="btn-secondary text-xs px-3 py-1.5"
                         whileHover={{ scale: 1.03 }}
                         whileTap={{ scale: 0.97 }}
                       >
-                        <GitBranch size={16} />
+                        <GitBranch size={14} />
                         GitHub
                       </motion.a>
                     )}
@@ -158,11 +158,11 @@ export const ProjectCard = memo(function ProjectCard({
                         href={project.liveUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium font-body bg-accent/10 text-accent hover:bg-accent/20 border border-accent/20 transition-colors"
+                        className="btn-primary text-xs px-3 py-1.5"
                         whileHover={{ scale: 1.03 }}
                         whileTap={{ scale: 0.97 }}
                       >
-                        <ExternalLink size={16} />
+                        <ExternalLink size={14} />
                         Live Demo
                       </motion.a>
                     )}
@@ -187,9 +187,8 @@ export const ProjectCard = memo(function ProjectCard({
         tabIndex={0}
         aria-expanded={active}
         aria-label={`View details for ${project.title}`}
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-50px" }}
+        initial={false}
+        animate={{ opacity: 1, y: 0 }}
         transition={{
           delay: index * 0.08,
           duration: 0.5,
@@ -246,7 +245,7 @@ export const ProjectCard = memo(function ProjectCard({
 
           <motion.button
             layoutId={`button-${project.title}-${id}`}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-medium font-body bg-accent/10 text-accent hover:bg-accent/20 border border-accent/20 transition-colors"
+            className="btn-secondary text-xs px-3 py-1.5"
           >
             View Project
           </motion.button>

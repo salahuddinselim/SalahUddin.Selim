@@ -30,7 +30,9 @@ export function GallerySection() {
   const [images, setImages] = useState<GalleryImageData[]>([])
 
   useEffect(() => {
-    getGalleryImages().then(setImages).catch(() => {})
+    getGalleryImages()
+      .then(setImages)
+      .catch(() => {})
   }, [])
 
   return (
@@ -44,7 +46,7 @@ export function GallerySection() {
       >
         <Link
           href="/"
-          className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-[0.25em] text-white/20 transition-all duration-200 hover:text-cyan-400/60"
+          className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-[0.25em] text-white/40 transition-all duration-200 hover:text-cyan-400/60"
         >
           <ArrowLeft size={12} />
           {gallerySectionCopy.backLabel}
@@ -52,12 +54,7 @@ export function GallerySection() {
       </motion.div>
 
       {/* Header */}
-      <motion.div
-        variants={headerVariants}
-        initial="hidden"
-        animate="visible"
-        className="mb-10"
-      >
+      <motion.div variants={headerVariants} initial="hidden" animate="visible" className="mb-10">
         <p className="text-[11px] font-mono uppercase tracking-[0.35em] text-cyan-400/40 mb-3">
           {gallerySectionCopy.eyecatch}
         </p>
@@ -68,7 +65,7 @@ export function GallerySection() {
               {gallerySectionCopy.heading}
             </span>
           </h1>
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] font-mono text-white/40">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] font-mono text-white/50">
             <ImageIcon size={12} />
             {images.length}
           </span>
@@ -108,7 +105,8 @@ export function GallerySection() {
               <Image
                 src={img.image}
                 alt={img.caption ?? img.title}
-                fill
+                width={img.width ?? 1200}
+                height={img.height ?? 900}
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                 quality={65}
                 loading="lazy"

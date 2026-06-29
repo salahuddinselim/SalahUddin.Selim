@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { ExternalLink } from "lucide-react"
 import { cn } from "@/lib/utils"
+import Image from "next/image"
 import { GitHubStats } from "@/components/ui/github-stats"
 import {
   getSocialLinks,
@@ -69,8 +70,10 @@ export function PersonaSection() {
       >
         {/* Bio */}
         <div>
-          <h2 className="text-xl font-bold text-white mb-4">{personaSectionCopy.greeting}</h2>
-          <div className="space-y-3 text-sm text-white/50 leading-relaxed">
+          <h2 className="text-lg font-semibold tracking-tight text-white mb-4">
+            {personaSectionCopy.greeting}
+          </h2>
+          <div className="space-y-3 text-base text-white/50 leading-relaxed max-w-prose">
             <p>
               CSE student at <span className="text-cyan-400">United International University</span>{" "}
               &mdash; CGPA <span className="text-amber-400 font-bold">3.68 / 4.0</span>, graduating
@@ -95,7 +98,7 @@ export function PersonaSection() {
 
         {/* Education */}
         <div>
-          <h2 className="text-xl font-bold text-white mb-4">
+          <h2 className="text-lg font-semibold tracking-tight text-white mb-4">
             {personaSectionCopy.educationHeading}
           </h2>
           <div className="space-y-3">
@@ -238,9 +241,12 @@ export function PersonaSection() {
             </a>
           </div>
           <div className="px-5 py-4">
-            <img
+            <Image
               src={gitHubChartUrl}
               alt="GitHub contribution chart"
+              width={900}
+              height={220}
+              loading="lazy"
               className="w-full rounded-lg opacity-90"
               style={{ filter: "brightness(1.1) contrast(1.05)" }}
             />

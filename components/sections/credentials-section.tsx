@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { ChevronDown, Award, GraduationCap } from "lucide-react"
+import { ChevronDown, Award } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { getCredentials, type CredentialData } from "@/lib/sanity/fetch"
 import { credentialsSectionCopy, categoryColors } from "@/data"
@@ -41,7 +41,7 @@ function CardDetail({ cert }: { cert: CredentialData }) {
         initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1, duration: 0.2 }}
-        className="mt-3 pt-3 border-t border-white/[0.06] text-sm text-white/40 leading-relaxed"
+        className="mt-3 pt-3 border-t border-white/[0.06] text-base text-white/60 leading-relaxed max-w-prose"
       >
         {cert.description}
       </motion.p>
@@ -55,7 +55,9 @@ export function CredentialsSection() {
   const [expandedId, setExpandedId] = useState<string | null>(null)
 
   useEffect(() => {
-    getCredentials().then(setCredentials).catch(() => {})
+    getCredentials()
+      .then(setCredentials)
+      .catch(() => {})
   }, [])
 
   const filtered = useMemo(() => {
@@ -108,7 +110,8 @@ export function CredentialsSection() {
           </span>
         </h1>
         <p className="mt-2 text-xs font-mono tracking-[0.15em] text-white/30">
-          {credentials.length} achievement{credentials.length !== 1 ? "s" : ""} · click any entry to expand
+          {credentials.length} achievement{credentials.length !== 1 ? "s" : ""} · click any entry to
+          expand
         </p>
       </motion.div>
 
@@ -127,7 +130,10 @@ export function CredentialsSection() {
               key={cat.id}
               variants={itemVariants}
               type="button"
-              onClick={() => { setActiveCategory(cat.id); setExpandedId(null) }}
+              onClick={() => {
+                setActiveCategory(cat.id)
+                setExpandedId(null)
+              }}
               className={cn(
                 "inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[10px] font-mono font-semibold uppercase tracking-[0.15em] transition-all duration-200",
                 isActive
@@ -202,9 +208,7 @@ export function CredentialsSection() {
                           </div>
 
                           <div className="flex-1 min-w-0">
-                            <h3 className="text-sm font-semibold text-white">
-                              {cert.title}
-                            </h3>
+                            <h3 className="text-sm font-semibold text-white">{cert.title}</h3>
                             <p
                               className="mt-0.5 text-xs font-mono"
                               style={{ color: getCategoryColor(cert.category) }}

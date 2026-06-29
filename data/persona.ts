@@ -1,6 +1,6 @@
 export const personaSectionCopy = {
   eyecatch: "WHO I AM",
-  heading: "Persona",
+  heading: "Personal",
   greeting: "Hi, I'm Salah Uddin",
   bioP1:
     "CSE student at United International University — CGPA 3.68 / 4.0, graduating 2026. I build at the intersection of full-stack development, IoT systems, and algorithm design.",

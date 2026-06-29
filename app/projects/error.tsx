@@ -1,8 +1,13 @@
 "use client"
 
-import { FolderKanban, AlertCircle, RefreshCw } from "lucide-react"
+import { AlertCircle, RefreshCw } from "lucide-react"
 
-export default function ProjectsError({ reset }: { error: Error & { digest?: string }; reset: () => void }) {
+export default function ProjectsError({
+  reset,
+}: {
+  error: Error & { digest?: string }
+  reset: () => void
+}) {
   return (
     <main className="min-h-screen pt-28">
       <section className="relative w-full py-24 sm:py-32 px-4">

@@ -7,25 +7,26 @@ import { getSkillIcon } from "@/lib/sanity/icon-map"
 import type { SanitySkill } from "@/types"
 import { categoryDefaults, forgeSectionCopy } from "@/data"
 
-const SkillCloud = dynamic(
-  () => import("./skill-cloud").then((mod) => mod.SkillCloud),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="h-full w-full rounded-2xl border border-cyan-300/20 bg-black/20 animate-pulse" />
-    ),
-  },
-)
+const SkillCloud = dynamic(() => import("./skill-cloud").then((mod) => mod.SkillCloud), {
+  ssr: false,
+  loading: () => (
+    <div className="h-full w-full rounded-2xl border border-cyan-300/20 bg-black/20 animate-pulse" />
+  ),
+})
 
 interface FilterButtonProps {
-  catId: string | null
   isActive: boolean
   label: string
   color: string
   onClick: () => void
 }
 
-const FilterButton = memo(function FilterButton({ catId, isActive, label, color, onClick }: FilterButtonProps) {
+const FilterButton = memo(function FilterButton({
+  isActive,
+  label,
+  color,
+  onClick,
+}: FilterButtonProps) {
   return (
     <button
       onClick={onClick}
@@ -91,8 +92,13 @@ export function ForgeSection({ skills }: ForgeSectionProps) {
     const el = sectionRef.current
     if (!el) return
     const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { setVisible(true); observer.disconnect() } },
-      { rootMargin: "200px" }
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true)
+          observer.disconnect()
+        }
+      },
+      { rootMargin: "200px" },
     )
     observer.observe(el)
     return () => observer.disconnect()
@@ -131,18 +137,20 @@ export function ForgeSection({ skills }: ForgeSectionProps) {
           className="flex flex-wrap gap-2 mb-6"
         >
           <FilterButton
-            catId={null}
             isActive={activeCategory === null}
             label={forgeSectionCopy.allLabel}
             color="#00D9FF"
             onClick={handleClearCategory}
           />
           {categoryIds.map((catId) => {
-            const cat = categoryDefaults[catId] ?? { heading: catId, description: "", color: "#00D9FF" }
+            const cat = categoryDefaults[catId] ?? {
+              heading: catId,
+              description: "",
+              color: "#00D9FF",
+            }
             return (
               <FilterButton
                 key={catId}
-                catId={catId}
                 isActive={activeCategory === catId}
                 label={cat.heading}
                 color={cat.color}
@@ -156,7 +164,11 @@ export function ForgeSection({ skills }: ForgeSectionProps) {
           {visible ? (
             <AnimatePresence mode="popLayout">
               {categoryIds.map((catId) => {
-                const cat = categoryDefaults[catId] ?? { heading: catId, description: "", color: "#00D9FF" }
+                const cat = categoryDefaults[catId] ?? {
+                  heading: catId,
+                  description: "",
+                  color: "#00D9FF",
+                }
                 const catSkills = grouped[catId]
                 const show = activeCategory === null || activeCategory === catId
 
@@ -175,7 +187,8 @@ export function ForgeSection({ skills }: ForgeSectionProps) {
                       backdropFilter: "blur(16px)",
                       WebkitBackdropFilter: "blur(16px)",
                       borderColor: "rgba(0,217,255,0.20)",
-                      boxShadow: "0 0 0 1px rgba(0,217,255,0.06), 0 8px 40px rgba(0,217,255,0.06), inset 0 1px 0 rgba(255,255,255,0.04)",
+                      boxShadow:
+                        "0 0 0 1px rgba(0,217,255,0.06), 0 8px 40px rgba(0,217,255,0.06), inset 0 1px 0 rgba(255,255,255,0.04)",
                       ["--cat-color" as string]: cat.color,
                       ["--cat-color-20" as string]: `${cat.color}20`,
                       ["--cat-color-40" as string]: `${cat.color}40`,
@@ -229,8 +242,14 @@ export function ForgeSection({ skills }: ForgeSectionProps) {
                               background: "transparent",
                             }}
                           >
-                            <Icon className="skill-pill-icon w-3.5 h-3.5 transition-colors duration-200" style={{ color: "rgba(255,255,255,0.3)" }} />
-                            <span className="skill-pill-label text-xs font-mono transition-colors duration-200" style={{ color: "rgba(255,255,255,0.6)" }}>
+                            <Icon
+                              className="skill-pill-icon w-3.5 h-3.5 transition-colors duration-200"
+                              style={{ color: "rgba(255,255,255,0.3)" }}
+                            />
+                            <span
+                              className="skill-pill-label text-xs font-mono transition-colors duration-200"
+                              style={{ color: "rgba(255,255,255,0.6)" }}
+                            >
                               {skill.name}
                             </span>
                           </div>

@@ -29,12 +29,10 @@ export function IconCloud({
   images,
   width: customWidth,
   height: customHeight,
-  containerRef,
 }: IconCloudProps) {
   const w = customWidth ?? 400
   const h = customHeight ?? 400
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const [iconPositions, setIconPositions] = useState<Icon[]>([])
   const [isDragging, setIsDragging] = useState(false)
   const [lastMousePos, setLastMousePos] = useState({ x: 0, y: 0 })
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
@@ -105,7 +103,7 @@ export function IconCloud({
   }, [icons, images])
 
   // Generate initial icon positions on a sphere
-  useEffect(() => {
+  const generatedIconPositions = React.useMemo(() => {
     const items = icons ?? images ?? []
     const newIcons: Icon[] = []
     const numIcons = items.length || 20
@@ -131,7 +129,7 @@ export function IconCloud({
         id: i,
       })
     }
-    setIconPositions(newIcons)
+    return newIcons
   }, [icons, images])
 
   // Handle mouse events
@@ -145,7 +143,7 @@ export function IconCloud({
     const ctx = canvasRef.current.getContext("2d")
     if (!ctx) return
 
-    iconPositions.forEach((icon) => {
+    generatedIconPositions.forEach((icon) => {
       const cosX = Math.cos(rotationRef.current.x)
       const sinX = Math.sin(rotationRef.current.x)
       const cosY = Math.cos(rotationRef.current.y)
@@ -164,16 +162,13 @@ export function IconCloud({
       const dy = y - screenY
 
       if (dx * dx + dy * dy < radius * radius) {
-        const targetX = -Math.atan2(
-          icon.y,
-          Math.sqrt(icon.x * icon.x + icon.z * icon.z)
-        )
+        const targetX = -Math.atan2(icon.y, Math.sqrt(icon.x * icon.x + icon.z * icon.z))
         const targetY = Math.atan2(icon.x, icon.z)
 
         const currentX = rotationRef.current.x
         const currentY = rotationRef.current.y
         const distance = Math.sqrt(
-          Math.pow(targetX - currentX, 2) + Math.pow(targetY - currentY, 2)
+          Math.pow(targetX - currentX, 2) + Math.pow(targetY - currentY, 2),
         )
 
         const duration = Math.min(2000, Math.max(800, distance * 1000))
@@ -242,12 +237,8 @@ export function IconCloud({
           const easedProgress = easeOutCubic(progress)
 
           rotationRef.current = {
-            x:
-              targetRotation.startX +
-              (targetRotation.x - targetRotation.startX) * easedProgress,
-            y:
-              targetRotation.startY +
-              (targetRotation.y - targetRotation.startY) * easedProgress,
+            x: targetRotation.startX + (targetRotation.x - targetRotation.startX) * easedProgress,
+            y: targetRotation.startY + (targetRotation.y - targetRotation.startY) * easedProgress,
           }
 
           if (progress >= 1) {
@@ -260,7 +251,7 @@ export function IconCloud({
           }
         }
 
-        iconPositions.forEach((icon, index) => {
+        generatedIconPositions.forEach((icon, index) => {
           const cosX = Math.cos(rotationRef.current.x)
           const sinX = Math.sin(rotationRef.current.x)
           const cosY = Math.cos(rotationRef.current.y)
@@ -274,19 +265,13 @@ export function IconCloud({
           const opacity = Math.max(0.2, Math.min(1, (rotatedZ + 150) / 200))
 
           ctx.save()
-          ctx.translate(
-            canvas.width / 2 + rotatedX,
-            canvas.height / 2 + rotatedY
-          )
+          ctx.translate(canvas.width / 2 + rotatedX, canvas.height / 2 + rotatedY)
           ctx.scale(scale, scale)
           ctx.globalAlpha = opacity
 
           if (icons || images) {
             // Only try to render icons/images if they exist
-            if (
-              iconCanvasesRef.current[index] &&
-              imagesLoadedRef.current[index]
-            ) {
+            if (iconCanvasesRef.current[index] && imagesLoadedRef.current[index]) {
               ctx.drawImage(iconCanvasesRef.current[index], -20, -20, 40, 40)
             }
           } else {
@@ -315,7 +300,7 @@ export function IconCloud({
         cancelAnimationFrame(animationFrameRef.current)
       }
     }
-  }, [icons, images, iconPositions, isDragging, mousePos, targetRotation])
+  }, [icons, images, generatedIconPositions, isDragging, mousePos, targetRotation])
 
   return (
     <canvas

@@ -1,5 +1,3 @@
-import { Image } from "lucide-react"
-
 export default function GalleryLoading() {
   return (
     <main className="min-h-screen pt-28">

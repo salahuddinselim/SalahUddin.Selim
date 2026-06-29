@@ -3,6 +3,7 @@ import { GallerySection } from "@/components/sections/gallery-section"
 import { pageMeta } from "@/data"
 
 export const metadata: Metadata = pageMeta.gallery
+export const dynamic = "force-static"
 
 export default function GalleryPage() {
   return (

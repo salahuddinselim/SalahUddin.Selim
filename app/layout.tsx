@@ -12,7 +12,7 @@ import { ShowOnMainSite } from "@/components/layout/shell-provider"
 import { siteUrl, siteConfig, jsonLd } from "@/data"
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL("https://salah-uddin-selim.vercel.app"),
   title: {
     default: siteConfig.title,
     template: siteConfig.titleTemplate,
@@ -56,6 +56,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link rel="preconnect" href="https://id5e9a8v.apicdn.sanity.io" />
         <link rel="preconnect" href="https://challenges.cloudflare.com" />
         <link rel="dns-prefetch" href="https://id5e9a8v.apicdn.sanity.io" />
+        <link rel="dns-prefetch" href="https://cdn.sanity.io" />
         <link rel="dns-prefetch" href="https://challenges.cloudflare.com" />
       </head>
       <body className="min-h-screen bg-[#050816] text-foreground antialiased relative overflow-x-hidden">
@@ -65,14 +66,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         >
           Skip to main content
         </a>
-        <script
-          nonce={nonce}
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
         <style>{`html{background:#050816;color:#fff;scroll-behavior:smooth;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}body{margin:0;font-family:var(--font-body-family),system-ui,sans-serif;line-height:1.5;background:#050816;color:#fff;min-height:100vh}body,button,textarea,input,select{font:inherit}a{color:#00d9ff;text-decoration:none}img{max-width:100%;display:block}button{font:inherit}.animate-role-in{animation:heroRoleIn .3s ease-out}.animate-large-role-in{animation:heroLargeRoleIn .5s ease-out}.animate-dropdown-in{animation:dropdownIn .15s ease-out}@keyframes heroRoleIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}@keyframes heroLargeRoleIn{from{opacity:0;transform:translateY(40px);filter:blur(8px)}to{opacity:1;transform:translateY(0);filter:blur(0)}}@keyframes dropdownIn{from{opacity:0;transform:translateY(-8px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}@keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}`}</style>
         <SpaceBackgroundWrapper />
-        <AnalyticsWrapper />
         <div className="relative z-10" id="main-content">
           <VisitorPanelProvider>
             <ShowOnMainSite>
@@ -85,6 +80,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             </ShowOnMainSite>
           </VisitorPanelProvider>
         </div>
+        <AnalyticsWrapper />
+        <script
+          nonce={nonce}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
       </body>
     </html>
   )

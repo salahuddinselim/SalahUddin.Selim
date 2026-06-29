@@ -49,6 +49,7 @@ export function Turnstile({ onVerify, onExpire, theme = "dark" }: TurnstileProps
   }, [onVerify, onExpire, theme])
 
   useEffect(() => {
+    const container = containerRef.current
     if (window.turnstile) {
       renderWidget()
       return
@@ -60,12 +61,11 @@ export function Turnstile({ onVerify, onExpire, theme = "dark" }: TurnstileProps
     s.defer = true
     document.head.appendChild(s)
     return () => {
-      const el = containerRef.current
-      if (el) {
-        const wid = widgetIds.get(el)
+      if (container) {
+        const wid = widgetIds.get(container)
         if (wid && window.turnstile) {
           window.turnstile.remove(wid)
-          widgetIds.delete(el)
+          widgetIds.delete(container)
         }
       }
       widgetIdRef.current = null
