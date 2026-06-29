@@ -10,7 +10,7 @@ export default function middleware(request: NextRequest) {
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob: https:",
     "font-src 'self' data:",
-    "connect-src 'self' https://id5e9a8v.apicdn.sanity.io https://cdn.sanity.io https://api.resend.com https://va.vercel-scripts.com https://challenges.cloudflare.com https://ghchart.rshah.org",
+    "connect-src 'self' https://id5e9a8v.apicdn.sanity.io https://id5e9a8v.api.sanity.io https://cdn.sanity.io https://api.resend.com https://va.vercel-scripts.com https://challenges.cloudflare.com https://ghchart.rshah.org",
     "frame-src 'self' https://challenges.cloudflare.com",
     "object-src 'none'",
     "base-uri 'self'",
@@ -33,7 +33,10 @@ export default function middleware(request: NextRequest) {
   response.headers.set("X-Frame-Options", "DENY")
   response.headers.set("X-Content-Type-Options", "nosniff")
   response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin")
-  response.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=(), interest-cohort=()")
+  response.headers.set(
+    "Permissions-Policy",
+    "camera=(), microphone=(), geolocation=(), interest-cohort=()",
+  )
   response.headers.set("X-DNS-Prefetch-Control", "on")
   response.headers.set("Cross-Origin-Opener-Policy", "same-origin")
   response.headers.set("Cross-Origin-Resource-Policy", "same-origin")
