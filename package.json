@@ -54,7 +54,7 @@
     "@commitlint/cli": "^19.8.0",
     "@commitlint/config-conventional": "^19.8.0",
     "@lhci/cli": "^0.10.0",
-    "@next/bundle-analyzer": "^15.3.2",
+    "@next/bundle-analyzer": "^16.2.7",
     "@playwright/test": "^1.52.0",
     "@tailwindcss/postcss": "^4",
     "@testing-library/dom": "^10.4.0",

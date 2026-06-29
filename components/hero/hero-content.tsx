@@ -3,11 +3,7 @@
 import { useState, useEffect, useCallback } from "react"
 import type { SanityProfile } from "@/types"
 
-const roles = [
-  "CSE Student & Software Engineer",
-  "Full Stack Developer",
-  "JavaFX & IoT Developer",
-]
+const roles = ["CSE Student & Software Engineer", "Full Stack Developer", "JavaFX & IoT Developer"]
 
 const largeRoles = [
   { text: "DEVELOPER", width: "100%" },
@@ -66,7 +62,7 @@ export function HeroContent({ profile }: { profile: SanityProfile | null }) {
         {profile?.name ?? "Salah Uddin Selim"}
       </h1>
 
-      <div className="hero-role-wrapper stagger-item relative h-8 mb-10">
+      <div className="hero-role-wrapper stagger-item relative h-8 mb-4">
         <span
           key={roleIndex}
           className={`hero-role text-base sm:text-lg text-accent font-medium font-body absolute left-1/2 -translate-x-1/2 whitespace-nowrap ${reducedMotion ? "" : "animate-role-in"}`}
@@ -75,7 +71,15 @@ export function HeroContent({ profile }: { profile: SanityProfile | null }) {
         </span>
       </div>
 
-      <div className="hero-large-role-wrapper stagger-item relative h-[clamp(3rem,12vw,140px)] mb-8" style={{ width: "100%" }}>
+      {/* Value proposition tagline */}
+      <p className="stagger-item text-sm sm:text-base text-muted/80 font-body mb-8 max-w-[600px] leading-relaxed italic">
+        Building intelligent systems — from full-stack web apps to IoT &amp; AI
+      </p>
+
+      <div
+        className="hero-large-role-wrapper stagger-item relative h-[clamp(3rem,12vw,140px)] mb-8"
+        style={{ width: "100%" }}
+      >
         <span
           key={largeIndex}
           className={`hero-large-role font-heading font-black leading-none absolute left-1/2 -translate-x-1/2 whitespace-nowrap ${reducedMotion ? "" : "animate-large-role-in"}`}
@@ -87,9 +91,7 @@ export function HeroContent({ profile }: { profile: SanityProfile | null }) {
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
             backgroundClip: "text",
-            animation: reducedMotion
-              ? "none"
-              : "gradientShift 4s ease infinite",
+            animation: reducedMotion ? "none" : "gradientShift 4s ease infinite",
           }}
         >
           {largeRoles[largeIndex].text}
@@ -97,7 +99,8 @@ export function HeroContent({ profile }: { profile: SanityProfile | null }) {
       </div>
 
       <p className="hero-copy stagger-item text-base sm:text-lg text-muted leading-relaxed font-body max-w-[700px]">
-        {profile?.bio ?? "CSE student at UIU \u00B7 Building intelligent systems with full-stack engineering, IoT, and AI."}
+        {profile?.bio ??
+          "CSE student at UIU \u00B7 Building intelligent systems with full-stack engineering, IoT, and AI."}
       </p>
     </section>
   )

@@ -138,10 +138,7 @@ export function MonitorSection() {
             )}
             style={{ borderRadius: 9999 }}
           >
-            <RefreshCw
-              size={12}
-              className={cn(diagnosticsRunning && "animate-spin")}
-            />
+            <RefreshCw size={12} className={cn(diagnosticsRunning && "animate-spin")} />
             {diagnosticsRunning ? "Scanning..." : "Refresh"}
           </button>
         </div>
@@ -259,9 +256,7 @@ export function MonitorSection() {
                 <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/30">
                   {item.label}
                 </p>
-                <p className="mt-1.5 text-sm font-mono font-semibold text-white/80">
-                  {item.value}
-                </p>
+                <p className="mt-1.5 text-sm font-mono font-semibold text-white/80">{item.value}</p>
               </div>
             ))}
           </div>
@@ -362,16 +357,18 @@ export function MonitorSection() {
             </span>
           </div>
           <div className="space-y-3">
-            {seo.items.map((item) => (
+            {[
+              { label: "Robots", icon: Search, status: "Online" },
+              { label: "Sitemap", icon: Globe, status: "Online" },
+              { label: "Favicon", icon: ImageIcon, status: "Online" },
+              { label: "OG Image", icon: ImageIcon, status: "Online" },
+            ].map((item) => (
               <div
                 key={item.label}
                 className="flex items-center justify-between rounded-xl border border-white/[0.04] bg-white/[0.02] px-4 py-2.5"
               >
                 <div className="flex items-center gap-2.5">
-                  {item.label === "Robots" && <Search size={13} className="text-white/30" />}
-                  {item.label === "Sitemap" && <Globe size={13} className="text-white/30" />}
-                  {item.label === "Favicon" && <ImageIcon size={13} className="text-white/30" />}
-                  {item.label === "OG Image" && <ImageIcon size={13} className="text-white/30" />}
+                  <item.icon size={13} className="text-white/30" />
                   <span className="text-xs font-mono text-white/60">{item.label}</span>
                 </div>
                 <span className="flex items-center gap-1.5 text-[10px] font-mono text-blue-300/70">

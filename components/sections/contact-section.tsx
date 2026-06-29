@@ -52,8 +52,45 @@ export function ContactSection() {
     setFields((prev) => ({ ...prev, [field]: value }))
   }
 
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+
+  const validateField = (name: keyof FormFields, value: string): string | null => {
+    if (name === "name" && !value.trim()) return "Name is required"
+    if (name === "email" && !value.trim()) return "Email is required"
+    if (name === "email" && value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value))
+      return "Enter a valid email"
+    if (name === "subject" && !value.trim()) return "Subject is required"
+    if (name === "message" && !value.trim()) return "Message is required"
+    if (name === "message" && value.trim().length < 10)
+      return "Message must be at least 10 characters"
+    return null
+  }
+
+  const handleBlur = (name: keyof FormFields, value: string) => {
+    if (name === "website" || name === "turnstileToken") return
+    const error = validateField(name, value)
+    setFieldErrors((prev) => {
+      const next = { ...prev }
+      if (error) next[name] = error
+      else delete next[name]
+      return next
+    })
+  }
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
+
+    // Validate all fields
+    const errors: Record<string, string> = {}
+    for (const field of ["name", "email", "subject", "message"] as const) {
+      const error = validateField(field, fields[field])
+      if (error) errors[field] = error
+    }
+    if (!fields.turnstileToken) errors.turnstileToken = "Please complete the security check"
+    setFieldErrors(errors)
+
+    if (Object.keys(errors).length > 0) return
+
     setState("loading")
     setErrorMsg("")
 
@@ -72,12 +109,13 @@ export function ContactSection() {
 
       setState("success")
       setFields({ name: "", email: "", subject: "", message: "", website: "", turnstileToken: "" })
+      setFieldErrors({})
       resetTurnstile()
       setTimeout(() => setState("idle"), 4000)
     } catch (err) {
       setState("error")
       setErrorMsg(err instanceof Error ? err.message : "Something went wrong")
-      setTimeout(() => setState("idle"), 4000)
+      setTimeout(() => setState("idle"), 6000)
     }
   }
 
@@ -93,7 +131,7 @@ export function ContactSection() {
           <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
             <Mail size={20} className="text-accent" />
           </div>
-          <h2 className="text-2xl sm:text-3xl font-heading font-semibold text-foreground">
+          <h2 className="text-3xl sm:text-4xl font-heading font-semibold text-foreground">
             {contactSectionCopy.heading}
           </h2>
         </motion.div>
@@ -110,23 +148,43 @@ export function ContactSection() {
             className="lg:col-span-3 space-y-5"
             noValidate
           >
+            {/* Error banner */}
+            {state === "error" && errorMsg && (
+              <div className="flex items-start gap-3 rounded-xl bg-error/10 border border-error/20 px-4 py-3">
+                <AlertCircle size={16} className="text-error shrink-0 mt-0.5" />
+                <p className="text-sm text-error/90 font-body">{errorMsg}</p>
+              </div>
+            )}
+            {/* Success banner */}
+            {state === "success" && (
+              <div className="flex items-start gap-3 rounded-xl bg-success/10 border border-success/20 px-4 py-3">
+                <CheckCircle2 size={16} className="text-success shrink-0 mt-0.5" />
+                <p className="text-sm text-success/90 font-body">
+                  Message sent successfully! I'll get back to you soon.
+                </p>
+              </div>
+            )}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <InputField
                 label={contactFormFields.name.label}
                 value={fields.name}
                 onChange={(v) => updateField("name", v)}
+                onBlur={(v) => handleBlur("name", v)}
                 placeholder={contactFormFields.name.placeholder}
                 disabled={state === "loading"}
                 required
+                error={fieldErrors.name}
               />
               <InputField
                 label={contactFormFields.email.label}
                 type={contactFormFields.email.type}
                 value={fields.email}
                 onChange={(v) => updateField("email", v)}
+                onBlur={(v) => handleBlur("email", v)}
                 placeholder={contactFormFields.email.placeholder}
                 disabled={state === "loading"}
                 required
+                error={fieldErrors.email}
               />
             </div>
 
@@ -134,18 +192,22 @@ export function ContactSection() {
               label={contactFormFields.subject.label}
               value={fields.subject}
               onChange={(v) => updateField("subject", v)}
+              onBlur={(v) => handleBlur("subject", v)}
               placeholder={contactFormFields.subject.placeholder}
               disabled={state === "loading"}
               required
+              error={fieldErrors.subject}
             />
 
             <TextareaField
               label={contactFormFields.message.label}
               value={fields.message}
               onChange={(v) => updateField("message", v)}
+              onBlur={(v) => handleBlur("message", v)}
               placeholder={contactFormFields.message.placeholder}
               disabled={state === "loading"}
               required
+              error={fieldErrors.message}
             />
 
             <div className="absolute opacity-0 pointer-events-none -z-10" aria-hidden="true">
@@ -162,6 +224,9 @@ export function ContactSection() {
             </div>
 
             <Turnstile onVerify={handleTurnstileVerify} onExpire={handleTurnstileExpire} />
+            {fieldErrors.turnstileToken && (
+              <p className="text-xs text-error font-body mt-1">{fieldErrors.turnstileToken}</p>
+            )}
 
             <motion.button
               type="submit"
@@ -170,22 +235,18 @@ export function ContactSection() {
               whileTap={state === "idle" ? { scale: 0.98 } : {}}
               className={cn(
                 "w-full sm:w-auto inline-flex items-center justify-center gap-2",
-                "px-6 py-3 rounded-xl text-sm font-medium font-body",
+                "px-6 py-3 rounded-xl text-sm font-semibold font-body",
                 "transition-all duration-300",
                 state === "idle" && [
-                  "bg-accent/10 text-accent border border-accent/20",
-                  "hover:bg-accent/20 hover:shadow-[0_0_25px_rgba(0,217,255,0.12)]",
+                  "bg-accent text-white border border-accent",
+                  "hover:bg-accent/90 hover:shadow-[0_0_25px_rgba(0,217,255,0.25)]",
                 ],
                 state === "loading" && [
-                  "bg-accent/10 text-accent/60 border border-accent/10",
+                  "bg-accent/60 text-white/70 border border-accent/40",
                   "cursor-not-allowed",
                 ],
-                state === "success" && [
-                  "bg-success/10 text-success border border-success/20",
-                ],
-                state === "error" && [
-                  "bg-error/10 text-error border border-error/20",
-                ],
+                state === "success" && ["bg-success text-white border border-success"],
+                state === "error" && ["bg-error/10 text-error border border-error/20"],
               )}
             >
               {state === "idle" && (
@@ -209,7 +270,7 @@ export function ContactSection() {
               {state === "error" && (
                 <>
                   <AlertCircle size={16} />
-                  {errorMsg || contactSectionCopy.failedLabel}
+                  {contactSectionCopy.failedLabel}
                 </>
               )}
             </motion.button>
@@ -241,18 +302,22 @@ function InputField({
   label,
   value,
   onChange,
+  onBlur,
   placeholder,
   disabled,
   type = "text",
   required,
+  error,
 }: {
   label: string
   value: string
   onChange: (v: string) => void
+  onBlur?: (v: string) => void
   placeholder: string
   disabled?: boolean
   type?: string
   required?: boolean
+  error?: string
 }) {
   const id = `field-${label.toLowerCase().replace(/\s+/g, "-")}`
   return (
@@ -266,19 +331,30 @@ function InputField({
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        onBlur={() => onBlur?.(value)}
         placeholder={placeholder}
         disabled={disabled}
         required={required}
         suppressHydrationWarning
+        aria-invalid={!!error}
+        aria-describedby={error ? `${id}-error` : undefined}
         className={cn(
-          "w-full px-4 py-3 rounded-xl text-sm font-body text-foreground placeholder:text-muted/50",
+          "w-full px-4 py-3 rounded-xl text-sm font-body text-foreground placeholder:text-muted",
           "bg-[rgba(17,24,39,0.65)] backdrop-blur-[12px]",
-          "border border-[rgba(255,255,255,0.06)]",
-          "focus:outline-none focus:border-accent/40 focus:shadow-[0_0_20px_rgba(0,217,255,0.06)]",
+          "border",
+          error
+            ? "border-error/50 focus:border-error"
+            : "border-[rgba(255,255,255,0.06)] focus:border-accent/40",
+          "focus:outline-none focus:shadow-[0_0_20px_rgba(0,217,255,0.06)]",
           "transition-all duration-200",
           "disabled:opacity-50 disabled:cursor-not-allowed",
         )}
       />
+      {error && (
+        <p id={`${id}-error`} role="alert" className="text-xs text-error font-body mt-1">
+          {error}
+        </p>
+      )}
     </div>
   )
 }
@@ -287,16 +363,20 @@ function TextareaField({
   label,
   value,
   onChange,
+  onBlur,
   placeholder,
   disabled,
   required,
+  error,
 }: {
   label: string
   value: string
   onChange: (v: string) => void
+  onBlur?: (v: string) => void
   placeholder: string
   disabled?: boolean
   required?: boolean
+  error?: string
 }) {
   const id = `field-${label.toLowerCase().replace(/\s+/g, "-")}`
   return (
@@ -309,19 +389,30 @@ function TextareaField({
         id={id}
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        onBlur={() => onBlur?.(value)}
         placeholder={placeholder}
         disabled={disabled}
         required={required}
         rows={5}
+        aria-invalid={!!error}
+        aria-describedby={error ? `${id}-error` : undefined}
         className={cn(
-          "w-full px-4 py-3 rounded-xl text-sm font-body text-foreground placeholder:text-muted/50 resize-none",
+          "w-full px-4 py-3 rounded-xl text-sm font-body text-foreground placeholder:text-muted resize-none",
           "bg-[rgba(17,24,39,0.65)] backdrop-blur-[12px]",
-          "border border-[rgba(255,255,255,0.06)]",
-          "focus:outline-none focus:border-accent/40 focus:shadow-[0_0_20px_rgba(0,217,255,0.06)]",
+          "border",
+          error
+            ? "border-error/50 focus:border-error"
+            : "border-[rgba(255,255,255,0.06)] focus:border-accent/40",
+          "focus:outline-none focus:shadow-[0_0_20px_rgba(0,217,255,0.06)]",
           "transition-all duration-200",
           "disabled:opacity-50 disabled:cursor-not-allowed",
         )}
       />
+      {error && (
+        <p id={`${id}-error`} role="alert" className="text-xs text-error font-body mt-1">
+          {error}
+        </p>
+      )}
     </div>
   )
 }

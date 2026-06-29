@@ -11,12 +11,15 @@ interface TurnstileProps {
 declare global {
   interface Window {
     turnstile?: {
-      render: (container: string | HTMLElement, opts: {
-        sitekey: string
-        callback: (token: string) => void
-        "expired-callback"?: () => void
-        theme?: string
-      }) => string
+      render: (
+        container: string | HTMLElement,
+        opts: {
+          sitekey: string
+          callback: (token: string) => void
+          "expired-callback"?: () => void
+          theme?: string
+        },
+      ) => string
       reset: (widgetId: string) => void
       remove: (widgetId: string) => void
     }
@@ -24,21 +27,25 @@ declare global {
   }
 }
 
-let globalWidgetId: string | null = null
+// Per-instance widget tracking — no shared global state
+const widgetIds = new WeakMap<HTMLDivElement, string>()
 
 export function Turnstile({ onVerify, onExpire, theme = "dark" }: TurnstileProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const loadedRef = useRef(false)
+  const widgetIdRef = useRef<string | null>(null)
 
   const renderWidget = useCallback(() => {
     if (!window.turnstile || !containerRef.current || loadedRef.current) return
     loadedRef.current = true
-    globalWidgetId = window.turnstile.render(containerRef.current, {
+    const id = window.turnstile.render(containerRef.current, {
       sitekey: process.env.NEXT_PUBLIC_TURNSTILE_SITEKEY!,
       callback: onVerify,
       "expired-callback": onExpire,
       theme,
     })
+    widgetIdRef.current = id
+    widgetIds.set(containerRef.current, id)
   }, [onVerify, onExpire, theme])
 
   useEffect(() => {
@@ -53,20 +60,29 @@ export function Turnstile({ onVerify, onExpire, theme = "dark" }: TurnstileProps
     s.defer = true
     document.head.appendChild(s)
     return () => {
-      if (globalWidgetId && window.turnstile) {
-        window.turnstile.remove(globalWidgetId)
-        globalWidgetId = null
+      const el = containerRef.current
+      if (el) {
+        const wid = widgetIds.get(el)
+        if (wid && window.turnstile) {
+          window.turnstile.remove(wid)
+          widgetIds.delete(el)
+        }
       }
+      widgetIdRef.current = null
       loadedRef.current = false
       window.onTurnstileLoad = undefined
     }
   }, [renderWidget])
 
-  return <div ref={containerRef} />
+  return <div ref={containerRef} data-turnstile-widget />
 }
 
 export function resetTurnstile() {
-  if (globalWidgetId && window.turnstile) {
-    window.turnstile.reset(globalWidgetId)
+  // Find any active widget by scanning the DOM — no global state needed
+  const container = document.querySelector("[data-turnstile-widget]")
+  if (!container) return
+  const wid = widgetIds.get(container as HTMLDivElement)
+  if (wid && window.turnstile) {
+    window.turnstile.reset(wid)
   }
 }

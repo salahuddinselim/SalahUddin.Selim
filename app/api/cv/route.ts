@@ -9,8 +9,24 @@ export async function GET(request: Request) {
   }
 
   try {
-    const filePath = join(process.cwd(), "cv", "Salah_Uddin_Selim.pdf")
-    const file = await readFile(filePath)
+    // Look for CV in public directory first, then fall back to cv/ directory
+    const paths = [
+      join(process.cwd(), "public", "Salah_Uddin_Selim.pdf"),
+      join(process.cwd(), "cv", "Salah_Uddin_Selim.pdf"),
+    ]
+
+    let file: Blob | null = null
+    for (const p of paths) {
+      try {
+        const data = await readFile(p)
+        file = new Blob([data], { type: "application/pdf" })
+        break
+      } catch {}
+    }
+
+    if (!file) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 })
+    }
 
     return new NextResponse(file, {
       headers: {

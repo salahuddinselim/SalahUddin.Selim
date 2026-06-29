@@ -3,6 +3,7 @@ export interface NavItem {
   _key?: string
   label: string
   href: string
+  description?: string
 }
 
 // ── Social ────────────────────────────────────
@@ -81,7 +82,7 @@ export interface PortfolioData {
 // ── Sanity document types (for GROQ queries) ──
 export interface SanityProfile {
   _id: string
-  _type: 'profile'
+  _type: "profile"
   name: string
   title: string
   tagline: string
@@ -95,7 +96,7 @@ export interface SanityProfile {
 
 export interface SanityProject {
   _id: string
-  _type: 'project'
+  _type: "project"
   title: string
   slug: string
   description: string
@@ -111,7 +112,7 @@ export interface SanityProject {
 
 export interface SanitySkill {
   _id: string
-  _type: 'skill'
+  _type: "skill"
   name: string
   icon?: string
   category: string
@@ -120,7 +121,7 @@ export interface SanitySkill {
 
 export interface SanityExperience {
   _id: string
-  _type: 'experience'
+  _type: "experience"
   company: string
   role: string
   period: string
@@ -131,7 +132,7 @@ export interface SanityExperience {
 
 export interface SanityTestimonial {
   _id: string
-  _type: 'testimonial'
+  _type: "testimonial"
   name: string
   role: string
   company: string
@@ -141,7 +142,7 @@ export interface SanityTestimonial {
 
 export interface SanitySocialLink {
   _id: string
-  _type: 'socialLink'
+  _type: "socialLink"
   name: string
   url: string
   icon: string

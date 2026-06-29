@@ -14,7 +14,12 @@ interface ProjectCardProps {
   setActiveProject: (project: Project | null) => void
 }
 
-export const ProjectCard = memo(function ProjectCard({ project, index, activeProject, setActiveProject }: ProjectCardProps) {
+export const ProjectCard = memo(function ProjectCard({
+  project,
+  index,
+  activeProject,
+  setActiveProject,
+}: ProjectCardProps) {
   const ref = useRef<HTMLDivElement>(null)
   const id = useId()
   const active = activeProject?.title === project.title
@@ -28,8 +33,19 @@ export const ProjectCard = memo(function ProjectCard({ project, index, activePro
   }, [setActiveProject])
 
   useEffect(() => {
-    document.body.style.overflow = activeProject ? "hidden" : "auto"
-    return () => { document.body.style.overflow = "auto" }
+    if (activeProject) {
+      document.body.style.overflow = "hidden"
+    } else {
+      // Only restore if no other component is locking scroll
+      if (document.body.style.overflow === "hidden") {
+        document.body.style.overflow = ""
+      }
+    }
+    return () => {
+      if (document.body.style.overflow === "hidden") {
+        document.body.style.overflow = ""
+      }
+    }
   }, [activeProject])
 
   useOutsideClick(ref, () => setActiveProject(null))
@@ -161,6 +177,16 @@ export const ProjectCard = memo(function ProjectCard({ project, index, activePro
       <motion.div
         layoutId={`card-${project.title}-${id}`}
         onClick={() => setActiveProject(active ? null : project)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault()
+            setActiveProject(active ? null : project)
+          }
+        }}
+        role="button"
+        tabIndex={0}
+        aria-expanded={active}
+        aria-label={`View details for ${project.title}`}
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-50px" }}
@@ -177,18 +203,16 @@ export const ProjectCard = memo(function ProjectCard({ project, index, activePro
           "hover:border-accent/20",
           "transition-all duration-300",
           "hover:shadow-[0_0_30px_rgba(0,217,255,0.06)]",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050816]",
         )}
       >
-          <motion.div
-            layoutId={`image-${project.title}-${id}`}
-            className="relative overflow-hidden"
-          >
-            <div className="aspect-video bg-gradient-to-br from-accent/20 via-accent-secondary/10 to-bg-secondary overflow-hidden flex items-center justify-center transition-transform duration-500 group-hover:scale-105">
-              <span className="text-3xl font-heading font-bold text-accent/20 select-none">
-                {project.title.charAt(0)}
-              </span>
-            </div>
-          </motion.div>
+        <motion.div layoutId={`image-${project.title}-${id}`} className="relative overflow-hidden">
+          <div className="aspect-video bg-gradient-to-br from-accent/20 via-accent-secondary/10 to-bg-secondary overflow-hidden flex items-center justify-center transition-transform duration-500 group-hover:scale-105">
+            <span className="text-3xl font-heading font-bold text-accent/20 select-none">
+              {project.title.charAt(0)}
+            </span>
+          </div>
+        </motion.div>
 
         <div className="p-4 space-y-3">
           <motion.h3

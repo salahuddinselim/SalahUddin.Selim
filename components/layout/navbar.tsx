@@ -106,15 +106,20 @@ export function Navbar() {
           </span>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-0.5 lg:gap-1 overflow-x-auto scrollbar-none">
+        <nav
+          className="hidden md:flex items-center gap-0.5 lg:gap-1 overflow-x-auto scrollbar-none"
+          aria-label="Main navigation"
+        >
           {navItems.map((item) => {
             const isActive = pathname === item.href
             return (
               <Link
                 key={item.href}
                 href={item.href}
+                title={item.description}
+                aria-current={isActive ? "page" : undefined}
                 className={cn(
-                  "relative rounded-full px-3 lg:px-4 py-1.5 lg:py-2 text-xs lg:text-sm font-semibold uppercase tracking-[0.15em] lg:tracking-[0.20em] transition-all duration-200 overflow-hidden whitespace-nowrap",
+                  "relative rounded-full px-3 lg:px-4 py-2 lg:py-2 text-xs lg:text-sm font-semibold uppercase tracking-[0.15em] lg:tracking-[0.20em] transition-all duration-200 overflow-hidden whitespace-nowrap",
                   isActive
                     ? "text-cyan-300 bg-cyan-400/10"
                     : "text-white/75 hover:bg-white/5 hover:text-white",
@@ -166,7 +171,9 @@ export function Navbar() {
             onClick={() => setMobileOpen(!mobileOpen)}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            aria-label="Toggle menu"
+            aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-menu"
           >
             {mobileOpen ? <X size={18} /> : <Menu size={18} />}
           </motion.button>
@@ -197,7 +204,25 @@ export function Navbar() {
             style={{ top: headerHeight + 16 }}
             className="fixed left-1/2 -translate-x-1/2 z-40 w-[90%] max-w-[1100px]"
           >
-            <nav className="rounded-3xl border border-white/10 bg-[#0B1220]/95 p-4 backdrop-blur-2xl shadow-2xl">
+            <nav
+              id="mobile-menu"
+              className="rounded-3xl border border-white/10 bg-[#0B1220]/95 p-4 backdrop-blur-2xl shadow-2xl"
+              aria-label="Mobile navigation"
+            >
+              <div className="flex items-center justify-between mb-2 px-1">
+                <span className="text-[10px] font-mono uppercase tracking-[0.3em] text-white/30">
+                  Navigation
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-1.5 text-xs text-white/50 hover:text-white transition-colors"
+                  aria-label="Close menu"
+                >
+                  <X size={14} />
+                  <span className="text-[10px] font-mono">Close</span>
+                </button>
+              </div>
               <div className="flex flex-col gap-2">
                 {navItems.map((item) => {
                   const isActive = pathname === item.href
@@ -206,6 +231,8 @@ export function Navbar() {
                       key={item.href}
                       href={item.href}
                       onClick={() => setMobileOpen(false)}
+                      title={item.description}
+                      aria-current={isActive ? "page" : undefined}
                       className={cn(
                         "rounded-2xl px-4 py-3 text-sm font-semibold uppercase tracking-wider transition-all duration-200",
                         isActive
@@ -217,7 +244,12 @@ export function Navbar() {
                         {isActive && (
                           <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_6px_rgba(0,217,255,0.6)] shrink-0" />
                         )}
-                        {item.label}
+                        <span className="flex flex-col items-start">
+                          <span>{item.label}</span>
+                          <span className="text-[9px] font-mono font-normal tracking-normal text-white/30 uppercase">
+                            {item.description}
+                          </span>
+                        </span>
                       </span>
                     </Link>
                   )

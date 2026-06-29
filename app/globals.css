@@ -7,6 +7,15 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ── Utilities ──────────────────────────────── */
+@utility scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 /* ═══════════════════════════════════════════════════
    1. CUSTOM PROPERTIES (Design Tokens)
    ═══════════════════════════════════════════════════ */
@@ -14,17 +23,17 @@
 :root {
   /* ── Colors ───────────────────────────────────── */
   --bg-primary: #050816;
-  --bg-secondary: #0B1120;
+  --bg-secondary: #0b1120;
   --bg-card: rgba(17, 24, 39, 0.65);
 
-  --text-primary: #FFFFFF;
-  --text-muted: #94A3B8;
+  --text-primary: #ffffff;
+  --text-muted: #b0c4de;
 
-  --accent-primary: #00D9FF;
-  --accent-secondary: #8B5CF6;
-  --accent-success: #22C55E;
-  --accent-warning: #EAB308;
-  --accent-error: #EF4444;
+  --accent-primary: #00d9ff;
+  --accent-secondary: #8b5cf6;
+  --accent-success: #22c55e;
+  --accent-warning: #eab308;
+  --accent-error: #ef4444;
 
   /* ── Surfaces & Borders ───────────────────────── */
   --border-primary: rgba(255, 255, 255, 0.06);
@@ -32,9 +41,9 @@
   --border-secondary: rgba(139, 92, 246, 0.2);
 
   /* ── Typography ───────────────────────────────── */
-  --font-heading-family: var(--font-heading), 'Poppins', system-ui, sans-serif;
-  --font-body-family: var(--font-body), 'Inter', system-ui, sans-serif;
-  --font-code-family: var(--font-code), 'JetBrains Mono', monospace;
+  --font-heading-family: var(--font-heading), "Poppins", system-ui, sans-serif;
+  --font-body-family: var(--font-body), "Inter", system-ui, sans-serif;
+  --font-code-family: var(--font-code), "JetBrains Mono", monospace;
 
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
@@ -100,6 +109,10 @@
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
   --shadow-2xl: 0 40px 50px -12px rgba(0, 0, 0, 0.5);
+
+  /* ── Focus ────────────────────────────────────── */
+  --focus-ring-color: rgba(0, 217, 255, 0.5);
+  --focus-ring-offset: 2px;
 
   /* ── Glassmorphism ────────────────────────────── */
   --glass-badge-bg: rgba(10, 15, 30, 0.6);
@@ -218,14 +231,22 @@
   }
 
   /* ── Typography defaults ─────────────────────── */
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-heading-family);
     font-weight: var(--font-weight-semibold);
     line-height: var(--leading-tight);
     color: var(--text-primary);
   }
 
-  code, pre, kbd, samp {
+  code,
+  pre,
+  kbd,
+  samp {
     font-family: var(--font-code-family);
   }
 
@@ -296,7 +317,10 @@
 }
 
 .skill-pill {
-  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  transition:
+    border-color 0.2s,
+    background 0.2s,
+    box-shadow 0.2s;
 }
 .skill-pill:hover {
   border-color: var(--cat-color-99) !important;
@@ -323,5 +347,93 @@
   }
   to {
     transform: rotate(-360deg);
+  }
+}
+
+/* ── Hero section classes ───────────────────── */
+.hero-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  max-width: 900px;
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+
+.hero-subtitle {
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  margin-bottom: 1.5rem;
+  color: #94a3b8;
+}
+
+.hero-title {
+  font-weight: 800;
+  color: #fff;
+  line-height: 1;
+  letter-spacing: 0;
+  max-width: 100%;
+  word-break: break-word;
+}
+
+.hero-role {
+  font-size: 1rem;
+  color: #00d9ff;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.hero-copy {
+  font-size: 1rem;
+  color: #94a3b8;
+  line-height: 1.75;
+  max-width: 700px;
+  margin-inline: auto;
+}
+
+.hero-stagger > .stagger-item {
+  opacity: 0;
+  animation: heroFadeUp 0.6s ease-out forwards;
+}
+
+.hero-stagger > .stagger-item:nth-child(1) {
+  animation-delay: 0.3s;
+}
+.hero-stagger > .stagger-item:nth-child(2) {
+  animation-delay: 0.45s;
+}
+.hero-stagger > .stagger-item:nth-child(3) {
+  animation-delay: 0.6s;
+}
+.hero-stagger > .stagger-item:nth-child(4) {
+  animation-delay: 0.75s;
+}
+.hero-stagger > .stagger-item:nth-child(5) {
+  animation-delay: 0.9s;
+}
+
+.hero-actions-stagger > .hero-btn-group {
+  opacity: 0;
+  animation: heroFadeUp 0.5s ease-out forwards;
+}
+
+.hero-actions-stagger > .hero-btn-group:nth-child(1) {
+  animation-delay: 0.8s;
+}
+.hero-actions-stagger > .hero-btn-group:nth-child(2) {
+  animation-delay: 0.92s;
+}
+
+@keyframes heroFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

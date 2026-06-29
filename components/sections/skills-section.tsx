@@ -2,20 +2,9 @@
 
 import { useRef, useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import {
-  Code2,
-  Server,
-  Database,
-  Cpu,
-  Wrench,
-  Sparkles,
-} from "lucide-react"
+import { Code2, Server, Database, Cpu, Wrench, Sparkles } from "lucide-react"
 import { cn } from "@/lib/utils"
-import {
-  PythonIcon,
-  JavaIcon,
-  GitIcon,
-} from "@/lib/tech-icons"
+import { PythonIcon, JavaIcon, GitIcon } from "@/lib/tech-icons"
 
 const skillCategories = [
   {
@@ -92,10 +81,7 @@ function SkillBar({ level }: { level: number }) {
   }, [])
 
   return (
-    <div
-      ref={ref}
-      className="w-full h-1.5 rounded-full bg-white/5 overflow-hidden"
-    >
+    <div ref={ref} className="w-full h-1.5 rounded-full bg-white/5 overflow-hidden">
       <motion.div
         className="h-full rounded-full bg-gradient-to-r from-accent to-accent-secondary"
         initial={{ width: 0 }}
@@ -120,7 +106,7 @@ export function SkillsSection() {
           <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
             <Sparkles size={20} className="text-accent" />
           </div>
-          <h2 className="text-2xl sm:text-3xl font-heading font-semibold text-foreground">
+          <h2 className="text-3xl sm:text-4xl font-heading font-semibold text-foreground">
             Skills & Expertise
           </h2>
         </motion.div>
@@ -158,6 +144,9 @@ export function SkillsSection() {
                         key={skill.name}
                         whileHover={{ scale: 1.03, y: -3 }}
                         whileTap={{ scale: 0.98 }}
+                        tabIndex={0}
+                        role="article"
+                        aria-label={`${skill.name}: ${skill.level}% proficiency`}
                         className={cn(
                           "group rounded-2xl p-4 cursor-default",
                           "bg-[rgba(17,24,39,0.65)] backdrop-blur-[16px]",
@@ -165,16 +154,13 @@ export function SkillsSection() {
                           "hover:border-accent/20",
                           "transition-all duration-300",
                           "hover:shadow-[0_0_30px_rgba(0,217,255,0.06)]",
+                          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050816]",
                         )}
                       >
                         <div className="flex items-center gap-3 mb-3">
                           <div className="w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center shrink-0 group-hover:bg-accent/20 transition-colors">
                             {SkillIcon ? (
-                              <SkillIcon
-                                width={20}
-                                height={20}
-                                className="text-accent"
-                              />
+                              <SkillIcon width={20} height={20} className="text-accent" />
                             ) : (
                               <div className="w-5 h-5 rounded bg-white/10" />
                             )}

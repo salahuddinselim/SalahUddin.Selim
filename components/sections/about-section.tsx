@@ -56,10 +56,7 @@ const cardVariants = {
 
 export function AboutSection() {
   return (
-    <section
-      id="about"
-      className="relative w-full py-24 sm:py-32 px-4"
-    >
+    <section id="about" className="relative w-full py-24 sm:py-32 px-4">
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -78,7 +75,7 @@ export function AboutSection() {
           <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
             <Info size={20} className="text-accent" />
           </div>
-          <h2 className="text-2xl sm:text-3xl font-heading font-semibold text-foreground">
+          <h2 className="text-3xl sm:text-4xl font-heading font-semibold text-foreground">
             About Me
           </h2>
         </motion.div>
@@ -91,10 +88,7 @@ export function AboutSection() {
           className="grid grid-cols-1 lg:grid-cols-5 gap-6"
         >
           {/* Left — Profile Card */}
-          <motion.div
-            variants={cardVariants}
-            className="lg:col-span-2"
-          >
+          <motion.div variants={cardVariants} className="lg:col-span-2">
             <div
               className={cn(
                 "relative w-full aspect-[3/4] rounded-2xl overflow-hidden group",
@@ -139,9 +133,7 @@ export function AboutSection() {
                 <h3 className="text-xl font-heading font-semibold text-foreground mb-1">
                   {aboutData.name}
                 </h3>
-                <p className="text-sm text-accent font-body font-medium">
-                  {aboutData.role}
-                </p>
+                <p className="text-sm text-accent font-body font-medium">{aboutData.role}</p>
               </div>
               <div
                 className={cn(
@@ -178,9 +170,7 @@ export function AboutSection() {
                   <h3 className="text-base font-heading font-semibold text-foreground mb-2">
                     {card.title}
                   </h3>
-                  <p className="text-sm text-muted font-body leading-relaxed">
-                    {card.description}
-                  </p>
+                  <p className="text-sm text-muted font-body leading-relaxed">{card.description}</p>
                 </motion.div>
               )
             })}
