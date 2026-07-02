@@ -105,8 +105,10 @@ function generateWireframe(): { rings: WireframePoint[][]; meridians: WireframeP
   return { rings, meridians }
 }
 
-const SPHERE_RADIUS = 0.38
-const BADGE_RADIUS = 22
+// Bumped from 0.38/22 -> more items (19, up from 10) on the same sphere
+// meant more frequent badge-to-badge overlap at the old spacing.
+const SPHERE_RADIUS = 0.44
+const BADGE_RADIUS = 19
 
 export function TagCloud({
   items,
@@ -128,8 +130,17 @@ export function TagCloud({
   const wireframeRef = useRef(generateWireframe())
   const iconCanvasesRef = useRef<Map<number, HTMLCanvasElement>>(new Map())
   const iconLoadedRef = useRef<Map<number, boolean>>(new Map())
-  const hitRegionsRef = useRef<Array<{ x: number; y: number; w: number; h: number; category: string; name: string }>>([])
-  const hoverRegionRef = useRef<{ x: number; y: number; w: number; h: number; category: string; name: string } | null>(null)
+  const hitRegionsRef = useRef<
+    Array<{ x: number; y: number; w: number; h: number; category: string; name: string }>
+  >([])
+  const hoverRegionRef = useRef<{
+    x: number
+    y: number
+    w: number
+    h: number
+    category: string
+    name: string
+  } | null>(null)
   const isHoveringRef = useRef(false)
   const reducedMotionRef = useRef(false)
   const maxFpsRef = useRef(60)
@@ -214,8 +225,15 @@ export function TagCloud({
       isMobileRef.current = mobileQuery.matches
       reducedMotionRef.current = reducedMotionQuery.matches
       isLowPowerRef.current = (navigator.hardwareConcurrency || 8) <= 4
-      autoRotateRef.current = !reducedMotionRef.current && !isHoveringRef.current && !isMobileRef.current
-      maxFpsRef.current = reducedMotionRef.current ? 12 : isMobileRef.current ? 12 : isLowPowerRef.current ? 24 : 60
+      autoRotateRef.current =
+        !reducedMotionRef.current && !isHoveringRef.current && !isMobileRef.current
+      maxFpsRef.current = reducedMotionRef.current
+        ? 12
+        : isMobileRef.current
+          ? 12
+          : isLowPowerRef.current
+            ? 24
+            : 60
     }
     setMotionPrefs()
     reducedMotionQuery.addEventListener("change", setMotionPrefs)
@@ -227,7 +245,11 @@ export function TagCloud({
       if (!c || !el) return
       const rect = el.getBoundingClientRect()
       sizeRef.current = { w: rect.width, h: rect.height }
-      const cappedDpr = isMobileRef.current ? Math.min(dpr, 1) : isLowPowerRef.current ? Math.min(dpr, 1.5) : Math.min(dpr, 2)
+      const cappedDpr = isMobileRef.current
+        ? Math.min(dpr, 1)
+        : isLowPowerRef.current
+          ? Math.min(dpr, 1.5)
+          : Math.min(dpr, 2)
       c.width = rect.width * cappedDpr
       c.height = rect.height * cappedDpr
       c.style.width = `${rect.width}px`
@@ -238,7 +260,12 @@ export function TagCloud({
     const ro = new ResizeObserver(resize)
     ro.observe(container)
 
-    function drawSphereWireframe(radius: number, cx: number, cy: number, rot: { x: number; y: number }) {
+    function drawSphereWireframe(
+      radius: number,
+      cx: number,
+      cy: number,
+      rot: { x: number; y: number },
+    ) {
       ctx.save()
 
       // Draw latitude rings
@@ -303,7 +330,10 @@ export function TagCloud({
       const hasIcon = iconCanvas && iconLoaded
       const pillH = r * 1.3
       const fontSize = Math.max(8, Math.round(10 * scale))
-      const textApproxW = Math.max(fontSize * 2.6, Math.min(fontSize * 9.5, label.length * fontSize * 0.58))
+      const textApproxW = Math.max(
+        fontSize * 2.6,
+        Math.min(fontSize * 9.5, label.length * fontSize * 0.58),
+      )
       const horizontalPad = pillH * 0.34
       const iconSize = pillH * 0.62
       const gap = pillH * 0.24
@@ -316,8 +346,11 @@ export function TagCloud({
       ctx.translate(cx, cy)
       ctx.globalAlpha = opacity
 
-      // glassmorphism dark background
-      ctx.fillStyle = "rgba(10, 15, 30, 0.6)"
+      // glassmorphism background — same light glass recipe used site-wide
+      // (bg-white/[0.06] equivalent); the old rgba(10,15,30,0.6) dark-navy
+      // fill read as a near-solid black chip against the dark starfield,
+      // especially for front-facing badges where opacity approaches 1.
+      ctx.fillStyle = "rgba(255, 255, 255, 0.08)"
 
       ctx.beginPath()
       ctx.roundRect(-pillW / 2, -pillH / 2, pillW, pillH, pillR)
@@ -513,7 +546,10 @@ export function TagCloud({
       const rect = canvas.getBoundingClientRect()
       const x = e.clientX - rect.left
       const y = e.clientY - rect.top
-      const region = [...hitRegionsRef.current].reverse().find((r) => x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h) || null
+      const region =
+        [...hitRegionsRef.current]
+          .reverse()
+          .find((r) => x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h) || null
       hoverRegionRef.current = region
       if (!isDragging.current && containerRef.current) {
         containerRef.current.style.cursor = region ? "pointer" : "grab"

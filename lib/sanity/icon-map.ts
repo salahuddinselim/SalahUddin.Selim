@@ -21,6 +21,7 @@ import {
 } from "react-icons/fa"
 import { FaXTwitter } from "react-icons/fa6"
 import {
+  SiC,
   SiCplusplus,
   SiJavascript,
   SiTypescript,
@@ -35,6 +36,10 @@ import {
   SiDjango,
   SiNodedotjs,
   SiJquery,
+  SiExpress,
+  SiCodeforces,
+  SiStreamlit,
+  SiOpenjdk,
 } from "react-icons/si"
 
 type IconComponent = LucideIcon | FC<SVGProps<SVGSVGElement>>
@@ -49,9 +54,15 @@ export const iconMap: Record<string, IconComponent> = {
   javascript: SiJavascript,
   typescript: SiTypescript,
   php: FaPhp,
+  c: SiC,
   cpp: SiCplusplus,
   arduino: SiArduino,
   iot: SiArduino,
+  sql: SiMysql,
+  express: SiExpress,
+  codeforces: SiCodeforces,
+  streamlit: SiStreamlit,
+  javafx: SiOpenjdk,
   git: FaGitAlt,
   github: FaGithub,
   mysql: SiMysql,

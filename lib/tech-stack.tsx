@@ -1,5 +1,5 @@
 import type { IconType } from "react-icons"
-import { FaJava } from "react-icons/fa"
+import { FaJava, FaHtml5, FaCss3Alt, FaBootstrap, FaGitAlt, FaGithub } from "react-icons/fa"
 import {
   SiC,
   SiCplusplus,
@@ -10,13 +10,17 @@ import {
   SiOpenjdk,
   SiPython,
   SiStreamlit,
+  SiPhp,
+  SiArduino,
+  SiIntellijidea,
+  SiCodeforces,
 } from "react-icons/si"
 
 export type TechTier = "Core" | "Working" | "Learning"
 
 export interface TechStackItem {
   name: string
-  category: "languages" | "frontend" | "backend"
+  category: "languages" | "frontend" | "backend" | "iot" | "tools"
   brandColor: string
   textColor?: string
   icon: IconType
@@ -64,6 +68,15 @@ export const TECH_STACK: TechStackItem[] = [
     projects: [{ label: "Portfolio Frontend", href: "/projects" }],
   },
   {
+    name: "PHP",
+    category: "languages",
+    brandColor: "#777BB4",
+    icon: SiPhp,
+    tier: "Core",
+    lastUsed: "June 2026",
+    projects: [{ label: "TournyMate", href: "/projects" }],
+  },
+  {
     name: "Node.js",
     category: "backend",
     brandColor: "#339933",
@@ -100,6 +113,33 @@ export const TECH_STACK: TechStackItem[] = [
     projects: [{ label: "Analytics Dashboard", href: "/projects" }],
   },
   {
+    name: "HTML5",
+    category: "frontend",
+    brandColor: "#E34F26",
+    icon: FaHtml5,
+    tier: "Core",
+    lastUsed: "June 2026",
+    projects: [{ label: "Portfolio Frontend", href: "/projects" }],
+  },
+  {
+    name: "CSS3",
+    category: "frontend",
+    brandColor: "#1572B6",
+    icon: FaCss3Alt,
+    tier: "Core",
+    lastUsed: "June 2026",
+    projects: [{ label: "Portfolio Frontend", href: "/projects" }],
+  },
+  {
+    name: "Bootstrap",
+    category: "frontend",
+    brandColor: "#7952B3",
+    icon: FaBootstrap,
+    tier: "Core",
+    lastUsed: "June 2026",
+    projects: [{ label: "TournyMate", href: "/projects" }],
+  },
+  {
     name: "SQL",
     category: "backend",
     brandColor: "#00758F",
@@ -117,5 +157,51 @@ export const TECH_STACK: TechStackItem[] = [
     lastUsed: "March 2026",
     projects: [{ label: "Desktop UI Client", href: "/projects" }],
   },
+  {
+    name: "Arduino",
+    category: "iot",
+    brandColor: "#00979D",
+    icon: SiArduino,
+    tier: "Working",
+    lastUsed: "February 2026",
+    projects: [{ label: "Automated Fish Pond Monitoring", href: "/projects" }],
+  },
+  {
+    name: "Git",
+    category: "tools",
+    brandColor: "#F05032",
+    icon: FaGitAlt,
+    tier: "Core",
+    lastUsed: "June 2026",
+    projects: [{ label: "All Projects", href: "/projects" }],
+  },
+  {
+    name: "GitHub",
+    category: "tools",
+    brandColor: "#F8FAFC",
+    textColor: "#0B1220",
+    icon: FaGithub,
+    tier: "Core",
+    lastUsed: "June 2026",
+    projects: [{ label: "All Projects", href: "/projects" }],
+  },
+  {
+    name: "IntelliJ IDEA",
+    category: "tools",
+    brandColor: "#000000",
+    textColor: "#F8FAFC",
+    icon: SiIntellijidea,
+    tier: "Core",
+    lastUsed: "June 2026",
+    projects: [{ label: "Desktop Management Tool", href: "/projects" }],
+  },
+  {
+    name: "Codeforces",
+    category: "tools",
+    brandColor: "#1F8ACB",
+    icon: SiCodeforces,
+    tier: "Working",
+    lastUsed: "June 2026",
+    projects: [{ label: "DSA Problem Sets", href: "/projects" }],
+  },
 ]
-
