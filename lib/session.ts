@@ -10,8 +10,9 @@ export interface SessionPayload {
 function getSessionSecret(): string {
   const secret = process.env.SESSION_SECRET
   if (!secret || secret.length < 32) {
-    if (process.env.NODE_ENV === "production") {
-      throw new Error("SESSION_SECRET must be at least 32 characters in production")
+    const isLocalDev = process.env.NODE_ENV === "development" && !process.env.VERCEL_ENV
+    if (!isLocalDev) {
+      throw new Error("SESSION_SECRET must be at least 32 characters")
     }
     return "dev-secret-min-32-chars-long!!"
   }
@@ -24,13 +25,13 @@ async function encrypt(payload: SessionPayload): Promise<string> {
   const key = await crypto.subtle.importKey(
     "raw",
     encoder.encode(secret.padEnd(32, "0").slice(0, 32)),
-    { name: "AES-CBC", length: 256 },
+    { name: "AES-GCM", length: 256 },
     false,
     ["encrypt"],
   )
-  const iv = crypto.getRandomValues(new Uint8Array(16))
+  const iv = crypto.getRandomValues(new Uint8Array(12))
   const encoded = encoder.encode(JSON.stringify(payload))
-  const encrypted = await crypto.subtle.encrypt({ name: "AES-CBC", iv }, key, encoded)
+  const encrypted = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, encoded)
   const combined = new Uint8Array(iv.length + new Uint8Array(encrypted).length)
   combined.set(iv, 0)
   combined.set(new Uint8Array(encrypted), iv.length)
@@ -44,14 +45,14 @@ async function decrypt(token: string): Promise<SessionPayload | null> {
     const key = await crypto.subtle.importKey(
       "raw",
       encoder.encode(secret.padEnd(32, "0").slice(0, 32)),
-      { name: "AES-CBC", length: 256 },
+      { name: "AES-GCM", length: 256 },
       false,
       ["decrypt"],
     )
     const combined = new Uint8Array(Buffer.from(token, "base64url"))
-    const iv = combined.slice(0, 16)
-    const ciphertext = combined.slice(16)
-    const decrypted = await crypto.subtle.decrypt({ name: "AES-CBC", iv }, key, ciphertext)
+    const iv = combined.slice(0, 12)
+    const ciphertext = combined.slice(12)
+    const decrypted = await crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, ciphertext)
     return JSON.parse(new TextDecoder().decode(decrypted)) as SessionPayload
   } catch {
     return null

@@ -24,6 +24,9 @@ export const personaStats = [
 
 export const fallbackSocials = [
   { name: "GitHub", url: "https://github.com/salahuddinselim", icon: "github" },
+  { name: "LinkedIn", url: "https://www.linkedin.com/in/selimsalahuddin/", icon: "linkedin" },
+  { name: "Instagram", url: "https://www.instagram.com/selimsalahuddin", icon: "instagram" },
+  { name: "Facebook", url: "https://www.facebook.com/salahuddin.selim.19", icon: "facebook" },
   { name: "Kaggle", url: "https://kaggle.com/salahuddinselim", icon: "kaggle" },
   { name: "X (Twitter)", url: "https://x.com/salahuddinselim", icon: "twitter" },
 ]

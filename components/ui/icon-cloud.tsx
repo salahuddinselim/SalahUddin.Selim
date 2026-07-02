@@ -34,8 +34,8 @@ export function IconCloud({
   const h = customHeight ?? 400
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [isDragging, setIsDragging] = useState(false)
-  const [lastMousePos, setLastMousePos] = useState({ x: 0, y: 0 })
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
+  const lastMousePosRef = useRef({ x: 0, y: 0 })
+  const mousePosRef = useRef({ x: 0, y: 0 })
   const [targetRotation, setTargetRotation] = useState<{
     x: number
     y: number
@@ -187,27 +187,25 @@ export function IconCloud({
     })
 
     setIsDragging(true)
-    setLastMousePos({ x: e.clientX, y: e.clientY })
+    lastMousePosRef.current = { x: e.clientX, y: e.clientY }
   }
 
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const rect = canvasRef.current?.getBoundingClientRect()
     if (rect) {
-      const x = e.clientX - rect.left
-      const y = e.clientY - rect.top
-      setMousePos({ x, y })
+      mousePosRef.current = { x: e.clientX - rect.left, y: e.clientY - rect.top }
     }
 
     if (isDragging) {
-      const deltaX = e.clientX - lastMousePos.x
-      const deltaY = e.clientY - lastMousePos.y
+      const deltaX = e.clientX - lastMousePosRef.current.x
+      const deltaY = e.clientY - lastMousePosRef.current.y
 
       rotationRef.current = {
         x: rotationRef.current.x + deltaY * 0.002,
         y: rotationRef.current.y + deltaX * 0.002,
       }
 
-      setLastMousePos({ x: e.clientX, y: e.clientY })
+      lastMousePosRef.current = { x: e.clientX, y: e.clientY }
     }
   }
 
@@ -226,8 +224,8 @@ export function IconCloud({
         const centerX = canvas.width / 2
         const centerY = canvas.height / 2
         const maxDistance = Math.sqrt(centerX * centerX + centerY * centerY)
-        const dx = mousePos.x - centerX
-        const dy = mousePos.y - centerY
+        const dx = mousePosRef.current.x - centerX
+        const dy = mousePosRef.current.y - centerY
         const distance = Math.sqrt(dx * dx + dy * dy)
         const speed = 0.003 + (distance / maxDistance) * 0.01
 
@@ -300,7 +298,7 @@ export function IconCloud({
         cancelAnimationFrame(animationFrameRef.current)
       }
     }
-  }, [icons, images, generatedIconPositions, isDragging, mousePos, targetRotation])
+  }, [icons, images, generatedIconPositions, isDragging, targetRotation])
 
   return (
     <canvas

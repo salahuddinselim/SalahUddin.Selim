@@ -17,7 +17,7 @@
     "analyze": "ANALYZE=true next build",
     "knip": "knip",
     "sanity": "sanity dev",
-    "lhci": "lhci autorun --upload.target=temporary-public-storage --start-server-command=\"npm run dev -- --hostname 127.0.0.1 --port 3000\" --start-server-ready-pattern=\"Local:\" --start-server-ready-timeout=20000 --collect.settings.chromeFlags=\"--headless --disable-gpu --no-sandbox --disable-dev-shm-usage\"",
+    "lhci": "npm run build && lhci autorun --upload.target=temporary-public-storage --start-server-command=\"npm run start -- --hostname 127.0.0.1 --port 3000\" --start-server-ready-pattern=\"Ready in\" --start-server-ready-timeout=20000 --collect.settings.chromeFlags=\"--headless --disable-gpu --no-sandbox --disable-dev-shm-usage\"",
     "prepare": "husky"
   },
   "lint-staged": {

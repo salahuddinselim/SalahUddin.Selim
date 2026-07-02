@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useCallback } from "react"
+import { useEffect, useRef, useCallback, useState } from "react"
 
 interface TurnstileProps {
   onVerify: (token: string) => void
@@ -34,6 +34,7 @@ export function Turnstile({ onVerify, onExpire, theme = "dark" }: TurnstileProps
   const containerRef = useRef<HTMLDivElement>(null)
   const loadedRef = useRef(false)
   const widgetIdRef = useRef<string | null>(null)
+  const [scriptError, setScriptError] = useState(false)
 
   const renderWidget = useCallback(() => {
     if (!window.turnstile || !containerRef.current || loadedRef.current) return
@@ -59,6 +60,7 @@ export function Turnstile({ onVerify, onExpire, theme = "dark" }: TurnstileProps
     s.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad"
     s.async = true
     s.defer = true
+    s.onerror = () => setScriptError(true)
     document.head.appendChild(s)
     return () => {
       if (container) {
@@ -74,7 +76,16 @@ export function Turnstile({ onVerify, onExpire, theme = "dark" }: TurnstileProps
     }
   }, [renderWidget])
 
-  return <div ref={containerRef} data-turnstile-widget />
+  return (
+    <div>
+      <div ref={containerRef} data-turnstile-widget />
+      {scriptError && (
+        <p className="text-xs text-error/90 font-body mt-1">
+          Security check failed to load — disable ad blockers and refresh the page.
+        </p>
+      )}
+    </div>
+  )
 }
 
 export function resetTurnstile() {

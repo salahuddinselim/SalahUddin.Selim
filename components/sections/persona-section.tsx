@@ -1,25 +1,13 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { ExternalLink } from "lucide-react"
 import { cn } from "@/lib/utils"
 import Image from "next/image"
 import { GitHubStats } from "@/components/ui/github-stats"
-import {
-  getSocialLinks,
-  getEducation,
-  type SocialLinkData,
-  type EducationData,
-} from "@/lib/sanity/fetch"
+import type { SocialLinkData, EducationData } from "@/lib/sanity/fetch"
 import { getSocialIcon } from "@/lib/sanity/icon-map"
-import {
-  personaSectionCopy,
-  personaStats,
-  fallbackSocials,
-  githubUsername,
-  gitHubChartUrl,
-} from "@/data"
+import { personaSectionCopy, personaStats, githubUsername, gitHubChartUrl } from "@/data"
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -31,19 +19,13 @@ const itemVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: "easeOut" as const } },
 }
 
-export function PersonaSection() {
-  const [socials, setSocials] = useState<SocialLinkData[]>(fallbackSocials)
-  const [education, setEducation] = useState<EducationData[]>([])
-
-  useEffect(() => {
-    getSocialLinks()
-      .then(setSocials)
-      .catch(() => setSocials(fallbackSocials))
-    getEducation()
-      .then(setEducation)
-      .catch(() => {})
-  }, [])
-
+export function PersonaSection({
+  socials,
+  education,
+}: {
+  socials: SocialLinkData[]
+  education: EducationData[]
+}) {
   return (
     <section className="relative min-h-screen px-4 sm:px-6 md:px-8 pb-24 max-w-[1200px] mx-auto">
       {/* Header */}

@@ -17,6 +17,7 @@ import {
   FaFlask,
   FaLinkedinIn,
   FaInstagram,
+  FaFacebookF,
 } from "react-icons/fa"
 import { FaXTwitter } from "react-icons/fa6"
 import {
@@ -80,6 +81,7 @@ export const iconMap: Record<string, IconComponent> = {
   twitter: FaXTwitter,
   linkedin: FaLinkedinIn,
   instagram: FaInstagram,
+  facebook: FaFacebookF,
 }
 
 export function getSocialIcon(iconName?: string): IconComponent {

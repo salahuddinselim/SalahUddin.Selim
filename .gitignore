@@ -57,3 +57,7 @@ CLAUDE.md
 /tmp/
 tmp-*
 !tmp/test
+nul
+%s
+next-dev-output.txt
+next-startup.txt

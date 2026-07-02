@@ -1,5 +1,14 @@
+const PRODUCTION_FALLBACK_URL = "https://salah-uddin-selim.vercel.app"
+
+// Guard against NEXT_PUBLIC_SITE_URL being left as a localhost value in a
+// deployed environment (e.g. copied from .env.local into Vercel by mistake) —
+// that would leak into OpenGraph/canonical URLs and break link previews.
+const isDeployed = process.env.VERCEL === "1" || process.env.NODE_ENV === "production"
+const configuredUrl = process.env.NEXT_PUBLIC_SITE_URL
+const isLocalhost = configuredUrl?.includes("localhost")
+
 export const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://salah-uddin-selim.vercel.app"
+  configuredUrl && !(isDeployed && isLocalhost) ? configuredUrl : PRODUCTION_FALLBACK_URL
 
 export const s = siteUrl.replace(/\/+$/, "")
 

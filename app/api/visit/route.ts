@@ -7,8 +7,8 @@ import {
   type CountryStat,
   type DeviceStat,
 } from "@/lib/sanity/write"
-import { checkRateLimit } from "@/lib/rate-limit"
-import { corsResponse, addCorsHeaders, isSameOrigin } from "@/lib/cors"
+import { checkRateLimit, getIP } from "@/lib/rate-limit"
+import { corsResponse, addCorsHeaders, requireSameOrigin } from "@/lib/cors"
 
 const TIMEOUT_MS = 3500
 
@@ -47,7 +47,7 @@ async function lookupCountry(ip: string) {
 }
 
 export async function POST(request: NextRequest) {
-  if (!isSameOrigin(request)) {
+  if (!requireSameOrigin(request)) {
     return addCorsHeaders(request, NextResponse.json({ ok: false }, { status: 403 }))
   }
 
@@ -64,75 +64,90 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const ip =
-      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
-      request.headers.get("x-real-ip") ??
-      "127.0.0.1"
+    const ip = getIP(request)
 
     const ua = request.headers.get("user-agent") ?? "Unknown"
-    const now = new Date()
-    const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`
+    const countryInfo = ip !== "127.0.0.1" && ip !== "unknown" ? await lookupCountry(ip) : null
 
-    const [countryInfo, currentDoc] = await Promise.all([
-      ip !== "127.0.0.1" ? lookupCountry(ip) : null,
-      withTimeout(writeClient.getDocument<VisitorStats>(VISITOR_DOC_ID), 2500).catch(() => null),
-    ])
+    const MAX_ATTEMPTS = 3
+    let persisted = false
 
-    const total = (currentDoc?.totalViews ?? 0) + 1
-    let thisMonthViews = (currentDoc?.thisMonthViews ?? 0) + 1
-    let thisMonth = currentDoc?.thisMonth ?? monthKey
+    for (let attempt = 0; attempt < MAX_ATTEMPTS && !persisted; attempt++) {
+      const currentDoc = await withTimeout(
+        writeClient.getDocument<VisitorStats & { _rev: string }>(VISITOR_DOC_ID),
+        2500,
+      ).catch(() => null)
 
-    if (thisMonth !== monthKey) {
-      thisMonthViews = 1
-      thisMonth = monthKey
-    }
+      const now = new Date()
+      const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`
 
-    const countries: CountryStat[] = currentDoc?.countries ?? []
-    const devices: DeviceStat[] = currentDoc?.devices ?? []
-    const monthlyHistory: { month: string; views: number }[] = currentDoc?.monthlyHistory ?? []
+      const total = (currentDoc?.totalViews ?? 0) + 1
+      let thisMonthViews = (currentDoc?.thisMonthViews ?? 0) + 1
+      let thisMonth = currentDoc?.thisMonth ?? monthKey
 
-    if (countryInfo) {
-      const existing = countries.find((c) => c.code === countryInfo.code)
-      if (existing) {
-        existing.count += 1
-      } else {
-        countries.push({ ...countryInfo, count: 1 })
+      if (thisMonth !== monthKey) {
+        thisMonthViews = 1
+        thisMonth = monthKey
       }
-      countries.sort((a, b) => b.count - a.count)
+
+      const countries: CountryStat[] = currentDoc?.countries ?? []
+      const devices: DeviceStat[] = currentDoc?.devices ?? []
+      const monthlyHistory: { month: string; views: number }[] = currentDoc?.monthlyHistory ?? []
+
+      if (countryInfo) {
+        const existing = countries.find((c) => c.code === countryInfo.code)
+        if (existing) {
+          existing.count += 1
+        } else {
+          countries.push({ ...countryInfo, count: 1 })
+        }
+        countries.sort((a, b) => b.count - a.count)
+      }
+
+      const deviceName = getDevice(ua)
+      const existingDevice = devices.find((d) => d.name === deviceName)
+      if (existingDevice) {
+        existingDevice.count += 1
+      } else {
+        devices.push({ name: deviceName, count: 1 })
+      }
+      devices.sort((a, b) => b.count - a.count)
+
+      const historyEntry = monthlyHistory.find((h) => h.month === thisMonth)
+      if (historyEntry) {
+        historyEntry.views = thisMonthViews
+      } else {
+        monthlyHistory.push({ month: thisMonth, views: thisMonthViews })
+      }
+      monthlyHistory.sort((a, b) => a.month.localeCompare(b.month))
+
+      const payload = {
+        _id: VISITOR_DOC_ID,
+        _type: "visitorStats",
+        totalViews: total,
+        thisMonthViews,
+        thisMonth,
+        countries,
+        devices,
+        monthlyHistory,
+        lastUpdated: now.toISOString(),
+      }
+
+      try {
+        const tx = writeClient.transaction()
+        if (currentDoc) {
+          tx.patch(VISITOR_DOC_ID, (p) => p.set(payload).ifRevisionId(currentDoc._rev))
+        } else {
+          tx.createIfNotExists(payload)
+        }
+        await withTimeout(tx.commit(), TIMEOUT_MS)
+        persisted = true
+      } catch {
+        // revision conflict (or doc created concurrently) — retry with fresh doc
+      }
     }
 
-    const deviceName = getDevice(ua)
-    const existingDevice = devices.find((d) => d.name === deviceName)
-    if (existingDevice) {
-      existingDevice.count += 1
-    } else {
-      devices.push({ name: deviceName, count: 1 })
-    }
-    devices.sort((a, b) => b.count - a.count)
-
-    const historyEntry = monthlyHistory.find((h) => h.month === thisMonth)
-    if (historyEntry) {
-      historyEntry.views = thisMonthViews
-    } else {
-      monthlyHistory.push({ month: thisMonth, views: thisMonthViews })
-    }
-    monthlyHistory.sort((a, b) => a.month.localeCompare(b.month))
-
-    const payload = {
-      _id: VISITOR_DOC_ID,
-      _type: "visitorStats",
-      totalViews: total,
-      thisMonthViews,
-      thisMonth,
-      countries,
-      devices,
-      monthlyHistory,
-      lastUpdated: now.toISOString(),
-    }
-
-    await withTimeout(writeClient.createOrReplace(payload), TIMEOUT_MS)
-
-    const response = NextResponse.json({ ok: true })
+    const response = NextResponse.json({ ok: true, persisted })
     return addCorsHeaders(request, response)
   } catch {
     const response = NextResponse.json({ ok: true, persisted: false }, { status: 202 })

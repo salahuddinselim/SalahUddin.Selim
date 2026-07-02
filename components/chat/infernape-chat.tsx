@@ -33,10 +33,28 @@ export function InfernapeChat({ open, onClose }: InfernapeChatProps) {
   const [loading, setLoading] = useState(false)
   const [asked, setAsked] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
+  const closeButtonRef = useRef<HTMLButtonElement>(null)
+  const previouslyFocusedRef = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages])
+
+  useEffect(() => {
+    if (!open) return
+
+    previouslyFocusedRef.current = document.activeElement as HTMLElement | null
+    closeButtonRef.current?.focus()
+
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose()
+    }
+    window.addEventListener("keydown", onKeyDown)
+    return () => {
+      window.removeEventListener("keydown", onKeyDown)
+      previouslyFocusedRef.current?.focus()
+    }
+  }, [open, onClose])
 
   const handleQuestion = async (question: string) => {
     if (loading) return
@@ -89,6 +107,9 @@ export function InfernapeChat({ open, onClose }: InfernapeChatProps) {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Chat with Infernape"
             className="fixed bottom-6 right-6 z-50 w-[400px] max-w-[calc(100vw-2rem)] h-[560px] max-h-[calc(100vh-6rem)] rounded-2xl border border-white/10 bg-[#0B1220]/95 backdrop-blur-2xl shadow-2xl flex flex-col overflow-hidden"
           >
             <div className="flex items-center justify-between px-5 py-4 border-b border-white/10 shrink-0">
@@ -110,7 +131,9 @@ export function InfernapeChat({ open, onClose }: InfernapeChatProps) {
                 </div>
               </div>
               <button
+                ref={closeButtonRef}
                 onClick={onClose}
+                aria-label="Close chat"
                 className="w-8 h-8 rounded-full flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-all"
               >
                 <X size={16} />

@@ -177,18 +177,33 @@ export function SpaceBackground() {
   }, [])
 
   useEffect(() => {
-    const w = window.innerWidth
-    const h = window.innerHeight
-    startTransition(() => setSize({ width: w, height: h }))
-    const isMobile = w < 768
-    const starCount = isMobile || isReducedMotion || isLowPower ? 40 : 120
-    const stars = generateConstellationStars(w, h, starCount)
-    startTransition(() => {
-      setBigStars(stars)
-      setConstellations(
-        isMobile || isReducedMotion || isLowPower ? [] : buildConstellations(stars, w, h, 200),
-      )
-    })
+    const regenerate = () => {
+      const w = window.innerWidth
+      const h = window.innerHeight
+      startTransition(() => setSize({ width: w, height: h }))
+      const isMobile = w < 768
+      const starCount = isMobile || isReducedMotion || isLowPower ? 40 : 120
+      const stars = generateConstellationStars(w, h, starCount)
+      startTransition(() => {
+        setBigStars(stars)
+        setConstellations(
+          isMobile || isReducedMotion || isLowPower ? [] : buildConstellations(stars, w, h, 200),
+        )
+      })
+    }
+
+    regenerate()
+
+    let resizeTimeout: ReturnType<typeof setTimeout> | null = null
+    const onResize = () => {
+      if (resizeTimeout) clearTimeout(resizeTimeout)
+      resizeTimeout = setTimeout(regenerate, 250)
+    }
+    window.addEventListener("resize", onResize)
+    return () => {
+      window.removeEventListener("resize", onResize)
+      if (resizeTimeout) clearTimeout(resizeTimeout)
+    }
   }, [isReducedMotion, isLowPower])
 
   useEffect(() => {

@@ -18,6 +18,16 @@ export function isSameOrigin(request: Request): boolean {
   return ALLOWED_ORIGINS.some((allowed) => origin === allowed)
 }
 
+// Stricter check for state-changing (POST) endpoints: browsers always send
+// Origin on same-origin POST/fetch requests, so a missing Origin here means
+// the request didn't come from a browser page on this site (e.g. a script
+// hitting the API directly) and should be rejected rather than allowed.
+export function requireSameOrigin(request: Request): boolean {
+  const origin = getOrigin(request)
+  if (!origin) return false
+  return ALLOWED_ORIGINS.some((allowed) => origin === allowed)
+}
+
 export function corsResponse(request: Request, status = 204) {
   const origin = getOrigin(request)
   if (origin && ALLOWED_ORIGINS.includes(origin)) {

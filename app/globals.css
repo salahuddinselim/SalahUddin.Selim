@@ -70,6 +70,32 @@
   box-shadow: 0 0 20px rgba(0, 217, 255, 0.1);
 }
 
+/* .btn-hero: high-contrast white variant reserved for the single above-the-fold
+   hero CTA, where the cyan .btn-primary doesn't have enough contrast against
+   the hero's own cyan-heavy background. Not for use elsewhere. */
+.btn-hero {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  padding: 0.75rem 2rem;
+  border-radius: var(--radius-lg);
+  font-size: var(--text-lg, 1.125rem);
+  font-weight: 700;
+  font-family: var(--font-body-family);
+  background: #fff;
+  color: #050816;
+  border: 2px solid #fff;
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.15);
+  transition: all var(--transition-base);
+  cursor: pointer;
+  text-decoration: none;
+}
+.btn-hero:hover {
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 50px rgba(255, 255, 255, 0.3);
+}
+
 /* ═══════════════════════════════════════════════════
    1. CUSTOM PROPERTIES (Design Tokens)
    ═══════════════════════════════════════════════════

@@ -22,7 +22,7 @@ export const ProjectCard = memo(function ProjectCard({
 }: ProjectCardProps) {
   const ref = useRef<HTMLDivElement>(null)
   const id = useId()
-  const active = activeProject?.title === project.title
+  const active = activeProject?._id === project._id
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
@@ -64,19 +64,23 @@ export const ProjectCard = memo(function ProjectCard({
         {active ? (
           <div className="fixed inset-0 grid place-items-center z-50 px-4">
             <motion.button
-              key={`close-${project.title}-${id}`}
+              key={`close-${project._id}-${id}`}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0, transition: { duration: 0.05 } }}
-              className="fixed top-4 right-4 z-50 w-8 h-8 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center text-white/70 hover:text-white hover:bg-white/20 transition-colors"
+              className="fixed top-4 right-4 z-50 w-11 h-11 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center text-white/70 hover:text-white hover:bg-white/20 transition-colors"
               onClick={() => setActiveProject(null)}
+              aria-label="Close project details"
             >
               <X size={16} />
             </motion.button>
 
             <motion.div
-              layoutId={`card-${project.title}-${id}`}
+              layoutId={`card-${project._id}-${id}`}
               ref={ref}
+              role="dialog"
+              aria-modal="true"
+              aria-label={project.title}
               className={cn(
                 "w-full max-w-[560px] max-h-[85vh] overflow-y-auto",
                 "rounded-2xl",
@@ -85,7 +89,7 @@ export const ProjectCard = memo(function ProjectCard({
                 "shadow-[0_0_40px_rgba(0,217,255,0.08)]",
               )}
             >
-              <motion.div layoutId={`image-${project.title}-${id}`}>
+              <motion.div layoutId={`image-${project._id}-${id}`}>
                 <div className="relative w-full aspect-video overflow-hidden rounded-t-2xl bg-gradient-to-br from-accent/20 via-accent-secondary/10 to-bg-secondary flex items-center justify-center">
                   <span className="text-4xl font-heading font-bold text-accent/30 select-none">
                     {project.title.charAt(0)}
@@ -96,13 +100,13 @@ export const ProjectCard = memo(function ProjectCard({
               <div className="p-5 space-y-4">
                 <div>
                   <motion.h3
-                    layoutId={`title-${project.title}-${id}`}
+                    layoutId={`title-${project._id}-${id}`}
                     className="text-xl font-heading font-semibold text-foreground"
                   >
                     {project.title}
                   </motion.h3>
                   <motion.p
-                    layoutId={`description-${project.title}-${id}`}
+                    layoutId={`description-${project._id}-${id}`}
                     className="text-sm text-accent font-body mt-1"
                   >
                     {project.description}
@@ -128,7 +132,7 @@ export const ProjectCard = memo(function ProjectCard({
                       Tech Stack
                     </h4>
                     <div className="flex flex-wrap gap-2">
-                      {project.technologies.map((tech) => (
+                      {(project.technologies ?? []).map((tech) => (
                         <span
                           key={tech}
                           className="px-3 py-1 rounded-full text-xs font-mono bg-accent/10 text-accent border border-accent/10"
@@ -175,7 +179,7 @@ export const ProjectCard = memo(function ProjectCard({
       </AnimatePresence>
 
       <motion.div
-        layoutId={`card-${project.title}-${id}`}
+        layoutId={`card-${project._id}-${id}`}
         onClick={() => setActiveProject(active ? null : project)}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
@@ -205,7 +209,7 @@ export const ProjectCard = memo(function ProjectCard({
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050816]",
         )}
       >
-        <motion.div layoutId={`image-${project.title}-${id}`} className="relative overflow-hidden">
+        <motion.div layoutId={`image-${project._id}-${id}`} className="relative overflow-hidden">
           <div className="aspect-video bg-gradient-to-br from-accent/20 via-accent-secondary/10 to-bg-secondary overflow-hidden flex items-center justify-center transition-transform duration-500 group-hover:scale-105">
             <span className="text-3xl font-heading font-bold text-accent/20 select-none">
               {project.title.charAt(0)}
@@ -215,20 +219,20 @@ export const ProjectCard = memo(function ProjectCard({
 
         <div className="p-4 space-y-3">
           <motion.h3
-            layoutId={`title-${project.title}-${id}`}
+            layoutId={`title-${project._id}-${id}`}
             className="text-base font-heading font-semibold text-foreground"
           >
             {project.title}
           </motion.h3>
           <motion.p
-            layoutId={`description-${project.title}-${id}`}
+            layoutId={`description-${project._id}-${id}`}
             className="text-sm text-muted font-body line-clamp-2 leading-relaxed"
           >
             {project.description}
           </motion.p>
 
           <div className="flex flex-wrap gap-1.5">
-            {project.technologies.slice(0, 4).map((tech) => (
+            {(project.technologies ?? []).slice(0, 4).map((tech) => (
               <span
                 key={tech}
                 className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-accent/8 text-accent/70 border border-accent/8"
@@ -236,15 +240,15 @@ export const ProjectCard = memo(function ProjectCard({
                 {tech}
               </span>
             ))}
-            {project.technologies.length > 4 && (
+            {(project.technologies?.length ?? 0) > 4 && (
               <span className="px-2 py-0.5 rounded-full text-[10px] font-mono text-muted">
-                +{project.technologies.length - 4}
+                +{(project.technologies?.length ?? 0) - 4}
               </span>
             )}
           </div>
 
           <motion.button
-            layoutId={`button-${project.title}-${id}`}
+            layoutId={`button-${project._id}-${id}`}
             className="btn-secondary text-xs px-3 py-1.5"
           >
             View Project

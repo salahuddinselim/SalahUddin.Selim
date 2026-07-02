@@ -2,10 +2,19 @@ import { NextResponse } from "next/server"
 import { readFile } from "node:fs/promises"
 import { join } from "node:path"
 import { corsResponse, addCorsHeaders, isSameOrigin } from "@/lib/cors"
+import { checkRateLimit } from "@/lib/rate-limit"
 
 export async function GET(request: Request) {
   if (!isSameOrigin(request)) {
     return addCorsHeaders(request, NextResponse.json({ error: "Forbidden" }, { status: 403 }))
+  }
+
+  const { success: allowed } = await checkRateLimit(request, "cv", {
+    max: 60,
+    windowMs: 3600_000,
+  })
+  if (!allowed) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 })
   }
 
   try {

@@ -1,4 +1,6 @@
-type RateLimitFn = (identifier: string) => Promise<{ success: boolean; remaining: number; reset: number }>
+type RateLimitFn = (
+  identifier: string,
+) => Promise<{ success: boolean; remaining: number; reset: number }>
 
 interface InMemoryEntry {
   count: number
@@ -37,19 +39,24 @@ export interface RateLimitConfig {
 
 const limiters = new Map<string, RateLimitFn>()
 
-function getIP(request: Request): string {
-  return (
-    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
-    request.headers.get("x-real-ip") ??
-    "unknown"
-  )
+// Vercel's edge network sets `x-vercel-forwarded-for` itself and it cannot be
+// spoofed by the client. Plain `x-forwarded-for` is client-appendable, and
+// trusted proxies append the real IP to the *end* of the list, not the start,
+// so we take the last entry rather than the first when falling back to it.
+export function getIP(request: Request): string {
+  const vercelIp = request.headers.get("x-vercel-forwarded-for")
+  if (vercelIp) return vercelIp.split(",")[0]?.trim() ?? "unknown"
+
+  const forwardedFor = request.headers.get("x-forwarded-for")
+  if (forwardedFor) {
+    const parts = forwardedFor.split(",").map((p) => p.trim())
+    return parts[parts.length - 1] ?? "unknown"
+  }
+
+  return request.headers.get("x-real-ip") ?? "unknown"
 }
 
-export async function checkRateLimit(
-  request: Request,
-  name: string,
-  config: RateLimitConfig,
-) {
+export async function checkRateLimit(request: Request, name: string, config: RateLimitConfig) {
   let limiter = limiters.get(name)
   if (!limiter) {
     const redisUrl = process.env.UPSTASH_REDIS_REST_URL

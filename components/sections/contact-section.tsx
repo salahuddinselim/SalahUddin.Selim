@@ -6,7 +6,8 @@ import { motion } from "framer-motion"
 import { Send, Loader2, CheckCircle2, AlertCircle, Mail } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Turnstile, resetTurnstile } from "@/components/ui/turnstile"
-import { contactSectionCopy, contactFormFields, contactApiEndpoint } from "@/data"
+import { contactSectionCopy, contactFormFields, contactApiEndpoint, fallbackSocials } from "@/data"
+import type { SocialLinkData } from "@/lib/sanity/fetch"
 
 const SocialOrbit = dynamic(
   () => import("@/components/sections/social-orbit").then((mod) => mod.SocialOrbit),
@@ -38,7 +39,13 @@ const fadeUp = {
   }),
 }
 
-export function ContactSection() {
+export function ContactSection({
+  socials = fallbackSocials,
+  email,
+}: {
+  socials?: SocialLinkData[]
+  email?: string
+} = {}) {
   const [fields, setFields] = useState<FormFields>({
     name: "",
     email: "",
@@ -158,22 +165,24 @@ export function ContactSection() {
             className="lg:col-span-3 space-y-5"
             noValidate
           >
-            {/* Error banner */}
-            {state === "error" && errorMsg && (
-              <div className="flex items-start gap-3 rounded-xl bg-error/10 border border-error/20 px-4 py-3">
-                <AlertCircle size={16} className="text-error shrink-0 mt-0.5" />
-                <p className="text-sm text-error/90 font-body">{errorMsg}</p>
-              </div>
-            )}
-            {/* Success banner */}
-            {state === "success" && (
-              <div className="flex items-start gap-3 rounded-xl bg-success/10 border border-success/20 px-4 py-3">
-                <CheckCircle2 size={16} className="text-success shrink-0 mt-0.5" />
-                <p className="text-sm text-success/90 font-body">
-                  Message sent successfully! I'll get back to you soon.
-                </p>
-              </div>
-            )}
+            <div aria-live="polite" role="status">
+              {/* Error banner */}
+              {state === "error" && errorMsg && (
+                <div className="flex items-start gap-3 rounded-xl bg-error/10 border border-error/20 px-4 py-3">
+                  <AlertCircle size={16} className="text-error shrink-0 mt-0.5" />
+                  <p className="text-sm text-error/90 font-body">{errorMsg}</p>
+                </div>
+              )}
+              {/* Success banner */}
+              {state === "success" && (
+                <div className="flex items-start gap-3 rounded-xl bg-success/10 border border-success/20 px-4 py-3">
+                  <CheckCircle2 size={16} className="text-success shrink-0 mt-0.5" />
+                  <p className="text-sm text-success/90 font-body">
+                    Message sent successfully! I'll get back to you soon.
+                  </p>
+                </div>
+              )}
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <InputField
                 label={contactFormFields.name.label}
@@ -291,7 +300,7 @@ export function ContactSection() {
             <p className="text-sm text-muted font-body text-center mb-6 max-w-xs">
               {contactSectionCopy.connectDescription}
             </p>
-            <SocialOrbit />
+            <SocialOrbit socials={socials} email={email} />
           </motion.div>
         </div>
       </div>

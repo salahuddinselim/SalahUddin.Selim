@@ -1,8 +1,9 @@
 import type { MetadataRoute } from "next"
+import { s } from "@/data/site"
 
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: { userAgent: "*", allow: "/" },
-    sitemap: "https://salah-uddin-selim.vercel.app/sitemap.xml",
+    sitemap: `${s}/sitemap.xml`,
   }
 }

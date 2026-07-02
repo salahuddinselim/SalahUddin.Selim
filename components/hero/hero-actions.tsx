@@ -16,6 +16,7 @@ const fadeUp: Variants = {
 export function HeroActions() {
   const [cvOpen, setCvOpen] = useState(false)
   const cvRef = useRef<HTMLDivElement>(null)
+  const cvButtonRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
@@ -27,6 +28,18 @@ export function HeroActions() {
     return () => document.removeEventListener("mousedown", handleClick)
   }, [])
 
+  useEffect(() => {
+    if (!cvOpen) return
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setCvOpen(false)
+        cvButtonRef.current?.focus()
+      }
+    }
+    document.addEventListener("keydown", handleKeyDown)
+    return () => document.removeEventListener("keydown", handleKeyDown)
+  }, [cvOpen])
+
   return (
     <motion.div
       variants={fadeUp}
@@ -37,16 +50,9 @@ export function HeroActions() {
       <a
         href="#contact"
         className={cn(
-          "inline-flex items-center justify-center gap-2.5",
+          "btn-hero",
           "w-full sm:w-auto min-h-[48px] sm:min-h-[52px] min-w-0 sm:min-w-[200px]",
-          "px-6 sm:px-8 py-2.5 sm:py-3 rounded-xl",
-          "bg-white text-[#050816]",
-          "text-lg font-bold font-body tracking-wide",
-          "border-2 border-white",
-          "shadow-[0_0_30px_rgba(255,255,255,0.15)]",
-          "transition-all duration-300",
-          "hover:bg-white/90 hover:shadow-[0_0_50px_rgba(255,255,255,0.3)] hover:scale-[1.04]",
-          "active:scale-[0.97]",
+          "tracking-wide hover:scale-[1.04] active:scale-[0.97]",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050816]",
         )}
         aria-label="Get in touch with Salah Uddin Selim"
@@ -57,6 +63,7 @@ export function HeroActions() {
 
       <div ref={cvRef} className="relative w-full sm:w-auto">
         <button
+          ref={cvButtonRef}
           type="button"
           onClick={() => setCvOpen((o) => !o)}
           aria-expanded={cvOpen}

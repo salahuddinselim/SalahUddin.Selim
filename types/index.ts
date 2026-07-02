@@ -101,7 +101,7 @@ export interface SanityProject {
   slug: string
   description: string
   longDescription: string
-  technologies: string[]
+  technologies?: string[]
   category: string
   image: string
   liveUrl?: string

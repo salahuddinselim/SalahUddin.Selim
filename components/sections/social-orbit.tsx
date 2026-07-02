@@ -1,10 +1,11 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Link2, X, Mail } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { getSocialLinks, getProfile } from "@/lib/sanity/fetch"
+import type { SocialLinkData } from "@/lib/sanity/fetch"
 import { getSocialIcon } from "@/lib/sanity/icon-map"
+import { fallbackContactEmail } from "@/data"
 
 interface SocialNode {
   id: string
@@ -13,36 +14,26 @@ interface SocialNode {
   label: string
 }
 
-export function SocialOrbit() {
+export function SocialOrbit({
+  socials,
+  email = fallbackContactEmail,
+}: {
+  socials: SocialLinkData[]
+  email?: string
+}) {
   const [open, setOpen] = useState(false)
-  const [socialLinks, setSocialLinks] = useState<SocialNode[]>([])
-  const defaultEmail = ["sselim223512", "bscse.uiu.ac.bd"].join("@")
-  const [email, setEmail] = useState(defaultEmail)
 
-  useEffect(() => {
-    getProfile()
-      .then((p) => { if (p.email) setEmail(p.email) })
-      .catch(() => {})
-  }, [])
-
-  useEffect(() => {
-    getSocialLinks()
-      .then((links) => {
-        const nodes: SocialNode[] = links
-          .filter((l) => l.url && l.name)
-          .map((l) => {
-            const Icon = getSocialIcon(l.icon)
-            return {
-              id: l.name.toLowerCase().replace(/\s+/g, "-"),
-              icon: <Icon size={16} />,
-              href: l.url,
-              label: l.name,
-            }
-          })
-        setSocialLinks(nodes)
-      })
-      .catch(() => setSocialLinks([]))
-  }, [])
+  const socialLinks: SocialNode[] = socials
+    .filter((l) => l.url && l.name)
+    .map((l) => {
+      const Icon = getSocialIcon(l.icon)
+      return {
+        id: l.name.toLowerCase().replace(/\s+/g, "-"),
+        icon: <Icon size={16} />,
+        href: l.url,
+        label: l.name,
+      }
+    })
 
   const emailNode: SocialNode = {
     id: "email",
@@ -69,14 +60,16 @@ export function SocialOrbit() {
         style={{
           opacity: open ? 0.6 : 0,
           scale: open ? 1 : 0.8,
-          transition: "opacity 0.5s cubic-bezier(0.16,1,0.3,1), scale 0.5s cubic-bezier(0.16,1,0.3,1)",
+          transition:
+            "opacity 0.5s cubic-bezier(0.16,1,0.3,1), scale 0.5s cubic-bezier(0.16,1,0.3,1)",
         }}
         className="absolute rounded-full border border-accent/20 pointer-events-none"
       >
         <div
           className="rounded-full"
           style={{
-            width: 220, height: 220,
+            width: 220,
+            height: 220,
             animation: "soc-ring-inner 60s linear infinite",
           }}
         />
@@ -86,14 +79,16 @@ export function SocialOrbit() {
         style={{
           opacity: open ? 0.4 : 0,
           scale: open ? 1 : 0.8,
-          transition: "opacity 0.6s cubic-bezier(0.16,1,0.3,1) 0.05s, scale 0.6s cubic-bezier(0.16,1,0.3,1) 0.05s",
+          transition:
+            "opacity 0.6s cubic-bezier(0.16,1,0.3,1) 0.05s, scale 0.6s cubic-bezier(0.16,1,0.3,1) 0.05s",
         }}
         className="absolute rounded-full border border-accent-secondary/15 pointer-events-none"
       >
         <div
           className="rounded-full"
           style={{
-            width: 280, height: 280,
+            width: 280,
+            height: 280,
             animation: "soc-ring-outer 60s linear infinite",
           }}
         />
@@ -115,9 +110,7 @@ export function SocialOrbit() {
           "flex items-center justify-center",
           "transition-colors duration-300",
           "hover:scale-105 active:scale-[0.93]",
-          open
-            ? "border-accent/50 bg-accent/10"
-            : "border-white/10 hover:border-accent/30",
+          open ? "border-accent/50 bg-accent/10" : "border-white/10 hover:border-accent/30",
         )}
       >
         <div
@@ -143,9 +136,7 @@ export function SocialOrbit() {
         const radius = 130
         const x = Math.cos(angle) * radius
         const y = Math.sin(angle) * radius
-        const delay = open
-          ? i * 0.04 + 0.1
-          : (allNodes.length - 1 - i) * 0.03
+        const delay = open ? i * 0.04 + 0.1 : (allNodes.length - 1 - i) * 0.03
 
         return (
           <a

@@ -1,16 +1,12 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
 import { checkRateLimit } from "@/lib/rate-limit"
-import { corsResponse, addCorsHeaders, isSameOrigin } from "@/lib/cors"
+import { corsResponse, addCorsHeaders, requireSameOrigin } from "@/lib/cors"
 
 export const runtime = "nodejs"
 
 const contactSchema = z.object({
-  name: z
-    .string()
-    .min(1, "Name is required")
-    .max(100, "Name must be under 100 characters")
-    .trim(),
+  name: z.string().min(1, "Name is required").max(100, "Name must be under 100 characters").trim(),
   email: z
     .string()
     .min(1, "Email is required")
@@ -56,7 +52,7 @@ async function verifyTurnstile(token: string): Promise<boolean> {
 }
 
 export async function POST(request: Request) {
-  if (!isSameOrigin(request)) {
+  if (!requireSameOrigin(request)) {
     return addCorsHeaders(request, NextResponse.json({ error: "Forbidden" }, { status: 403 }))
   }
 
@@ -133,7 +129,7 @@ export async function POST(request: Request) {
 
     const { error } = await resend.emails.send({
       from: "Portfolio Contact <onboarding@resend.dev>",
-      to: process.env.CONTACT_EMAIL || "sselim223512@bscse.uiu.ac.bd",
+      to: process.env.CONTACT_EMAIL || "selimsalahuddin19@gmail.com",
       subject: `[Portfolio] ${esc(subject)}`,
       html: [
         "<h3>New Contact Message</h3>",

@@ -1,9 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { Briefcase, GraduationCap, CheckCircle2, Sparkles } from "lucide-react"
-import { getExperience, getEducation } from "@/lib/sanity/fetch"
 import type { SanityExperience } from "@/types"
 import type { EducationData } from "@/lib/sanity/fetch"
 
@@ -151,20 +149,13 @@ function EmptyState({ label }: { label: string }) {
   )
 }
 
-export function ExperienceSection() {
-  const [experience, setExperience] = useState<SanityExperience[]>([])
-  const [education, setEducation] = useState<EducationData[]>([])
-
-  useEffect(() => {
-    Promise.all([
-      getExperience().catch(() => [] as SanityExperience[]),
-      getEducation().catch(() => [] as EducationData[]),
-    ]).then(([exp, edu]) => {
-      setExperience(exp)
-      setEducation(edu)
-    })
-  }, [])
-
+export function ExperienceSection({
+  experience,
+  education,
+}: {
+  experience: SanityExperience[]
+  education: EducationData[]
+}) {
   return (
     <section id="experience" className="relative w-full py-24 sm:py-32 px-4">
       <div className="mx-auto max-w-5xl">

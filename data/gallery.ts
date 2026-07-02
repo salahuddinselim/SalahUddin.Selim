@@ -3,7 +3,6 @@ export const gallerySectionCopy = {
   heading: "Gallery",
   subtitle: "Academics · Creations · Moments",
   backLabel: "Back to Home",
-  imageCountLabel: "",
 }
 
 export const spanClasses: Record<string, string> = {

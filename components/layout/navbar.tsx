@@ -2,12 +2,13 @@
 
 import { useState, useEffect, useRef, startTransition } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Home, Menu, X, MessageCircle } from "lucide-react"
+import { Home, Menu, X } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import dynamic from "next/dynamic"
 import { LiquidRipple } from "@/components/ui/liquid-ripple"
+import { ChatButton } from "@/components/layout/chat-button"
 import { navItems, siteName, chatLabel } from "@/data"
 
 const InfernapeChat = dynamic(
@@ -21,6 +22,8 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [chatOpen, setChatOpen] = useState(false)
   const headerRef = useRef<HTMLElement>(null)
+  const mobileMenuRef = useRef<HTMLElement>(null)
+  const mobileToggleRef = useRef<HTMLButtonElement>(null)
   const [glow, setGlow] = useState({ x: 50, y: 50, opacity: 0 })
   const [headerHeight, setHeaderHeight] = useState(72)
   const scrollDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -60,14 +63,18 @@ export function Navbar() {
 
   useEffect(() => {
     if (!mobileOpen) return
+    const toggleButton = mobileToggleRef.current
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setMobileOpen(false)
     }
     document.addEventListener("keydown", onKey)
     document.body.style.overflow = "hidden"
+    const firstLink = mobileMenuRef.current?.querySelector("a")
+    firstLink?.focus()
     return () => {
       document.removeEventListener("keydown", onKey)
       document.body.style.overflow = ""
+      toggleButton?.focus()
     }
   }, [mobileOpen])
 
@@ -180,35 +187,10 @@ export function Navbar() {
         </nav>
 
         <div className="flex items-center gap-1.5 sm:gap-3">
-          <button
-            type="button"
-            onClick={() => setChatOpen(true)}
-            aria-label="Open chat"
-            className="hidden lg:inline-flex items-center justify-center gap-2 rounded-full border border-cyan-400/20 bg-white/5 px-4 py-2 text-sm font-semibold uppercase tracking-[0.20em] text-cyan-200 transition-all duration-200 hover:border-cyan-300/30 hover:bg-cyan-400/10"
-          >
-            <MessageCircle size={14} />
-            {chatLabel}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setChatOpen(true)}
-            className="hidden md:flex lg:hidden h-10 w-10 items-center justify-center rounded-full border border-cyan-400/20 bg-cyan-400/10 text-cyan-300 transition-all duration-200 hover:bg-cyan-400/20"
-            aria-label="Open chat"
-          >
-            <MessageCircle size={16} />
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setChatOpen(true)}
-            className="flex md:hidden h-11 w-11 items-center justify-center rounded-full border border-cyan-400/20 bg-cyan-400/10 text-cyan-300 transition-all duration-200 hover:bg-cyan-400/20"
-            aria-label="Open chat"
-          >
-            <MessageCircle size={18} />
-          </button>
+          <ChatButton onClick={() => setChatOpen(true)} label={chatLabel} />
 
           <motion.button
+            ref={mobileToggleRef}
             className="flex md:hidden h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/80 transition-all duration-200 hover:bg-white/10"
             onClick={() => setMobileOpen(!mobileOpen)}
             whileHover={{ scale: 1.05 }}
@@ -247,6 +229,7 @@ export function Navbar() {
             className="fixed left-1/2 -translate-x-1/2 z-40 w-[90%] max-w-[1100px]"
           >
             <nav
+              ref={mobileMenuRef}
               id="mobile-menu"
               className="rounded-3xl border border-white/10 bg-[#0B1220]/95 p-4 backdrop-blur-2xl shadow-2xl max-h-[75dvh] overflow-y-auto"
               aria-label="Mobile navigation"

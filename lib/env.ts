@@ -23,6 +23,15 @@ const envSchema = z.object({
 
 export type Env = z.infer<typeof envSchema>
 
+const PRODUCTION_RECOMMENDED_KEYS = [
+  "SANITY_API_TOKEN",
+  "TURNSTILE_SECRET_KEY",
+  "RESEND_API_KEY",
+  "CONTACT_EMAIL",
+  "UPSTASH_REDIS_REST_URL",
+  "UPSTASH_REDIS_REST_TOKEN",
+] as const
+
 export function validateEnv(): Env {
   const parsed = envSchema.safeParse(process.env)
   if (!parsed.success) {
@@ -38,5 +47,17 @@ export function validateEnv(): Env {
     }
     console.error("\n⚠️  Build continuing in development mode — some features may not work.\n")
   }
+
+  if (process.env.NODE_ENV === "production") {
+    const missing = PRODUCTION_RECOMMENDED_KEYS.filter((key) => !process.env[key])
+    if (missing.length > 0) {
+      console.warn(
+        `\n⚠️  Production build is missing recommended env vars: ${missing.join(", ")}\n` +
+          `   Affected features will silently degrade (e.g. contact emails only logged, ` +
+          `visit stats not persisted, rate limiting falls back to in-memory).\n`,
+      )
+    }
+  }
+
   return parsed.data ?? ({} as Env)
 }

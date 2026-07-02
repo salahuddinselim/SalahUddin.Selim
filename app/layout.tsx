@@ -1,4 +1,4 @@
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import { headers } from "next/headers"
 import "./globals.css"
 import { fontVariables } from "@/lib/fonts"
@@ -9,10 +9,11 @@ import { VisitTracker } from "@/components/analytics/visit-tracker"
 import { SpaceBackgroundWrapper } from "@/components/effects/space-background-wrapper"
 import { AnalyticsWrapper } from "@/components/analytics/analytics-wrapper"
 import { ShowOnMainSite } from "@/components/layout/shell-provider"
-import { siteUrl, siteConfig, jsonLd } from "@/data"
+import { siteUrl, siteConfig, buildJsonLd, fallbackContactEmail, fallbackSocials } from "@/data"
+import { getSocialLinks, getProfile } from "@/lib/sanity/fetch"
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://salah-uddin-selim.vercel.app"),
+  metadataBase: new URL(siteUrl),
   title: {
     default: siteConfig.title,
     template: siteConfig.titleTemplate,
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
   description: siteConfig.description,
   keywords: siteConfig.keywords,
   authors: [siteConfig.author],
-  icons: { icon: siteConfig.icon },
+  icons: { icon: siteConfig.icon, apple: "/apple-touch-icon.png" },
   manifest: siteConfig.manifest,
   openGraph: {
     title: siteConfig.title,
@@ -43,8 +44,18 @@ export const metadata: Metadata = {
   },
 }
 
+export const viewport: Viewport = {
+  themeColor: "#050816",
+}
+
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const nonce = (await headers()).get("x-nonce") ?? ""
+
+  const [socialsResult, profileResult] = await Promise.allSettled([getSocialLinks(), getProfile()])
+  const socials = socialsResult.status === "fulfilled" ? socialsResult.value : fallbackSocials
+  const email = profileResult.status === "fulfilled" ? profileResult.value?.email : undefined
+  const jsonLd = buildJsonLd(socials, email || fallbackContactEmail)
+
   return (
     <html
       lang="en"
@@ -84,7 +95,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <script
           nonce={nonce}
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
         />
       </body>
     </html>

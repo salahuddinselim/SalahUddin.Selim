@@ -1,10 +1,10 @@
 "use client"
 
-import { useEffect, useState, useMemo } from "react"
+import { useState, useMemo } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { ChevronDown, Award } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { getCredentials, type CredentialData } from "@/lib/sanity/fetch"
+import type { CredentialData } from "@/lib/sanity/fetch"
 import { credentialsSectionCopy, categoryColors } from "@/data"
 
 function getCategoryColor(cat: string): string {
@@ -49,16 +49,9 @@ function CardDetail({ cert }: { cert: CredentialData }) {
   )
 }
 
-export function CredentialsSection() {
-  const [credentials, setCredentials] = useState<CredentialData[]>([])
+export function CredentialsSection({ credentials }: { credentials: CredentialData[] }) {
   const [activeCategory, setActiveCategory] = useState("All")
   const [expandedId, setExpandedId] = useState<string | null>(null)
-
-  useEffect(() => {
-    getCredentials()
-      .then(setCredentials)
-      .catch(() => {})
-  }, [])
 
   const filtered = useMemo(() => {
     return activeCategory === "All"
@@ -147,7 +140,7 @@ export function CredentialsSection() {
               }
             >
               {cat.id}
-              <span className={cn("tabular-nums", isActive ? "opacity-80" : "text-white/20")}>
+              <span className={cn("tabular-nums", isActive ? "opacity-80" : "text-white/50")}>
                 {cat.count}
               </span>
             </motion.button>
@@ -175,11 +168,11 @@ export function CredentialsSection() {
                       <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan-400/60" />
                       <span className="relative inline-flex h-[10px] w-[10px] rounded-full bg-cyan-400 shadow-[0_0_10px_rgba(0,217,255,0.5)]" />
                     </span>
-                    <span className="text-xs font-mono uppercase tracking-[0.25em] text-white/20">
+                    <span className="text-xs font-mono uppercase tracking-[0.25em] text-white/50">
                       {year}
                     </span>
                   </div>
-                  <span className="text-[10px] font-mono tracking-[0.15em] text-white/20">
+                  <span className="text-[10px] font-mono tracking-[0.15em] text-white/50">
                     {yearCerts.length} cert{yearCerts.length !== 1 ? "s" : ""}
                   </span>
                 </div>
@@ -198,9 +191,19 @@ export function CredentialsSection() {
                         className={cn(
                           "rounded-xl border bg-white/[0.02] p-4 cursor-pointer transition-all duration-200",
                           "hover:border-cyan-400/20 hover:shadow-[0_0_25px_rgba(0,217,255,0.04)]",
+                          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/50",
                           isExpanded ? "border-cyan-400/20" : "border-white/[0.06]",
                         )}
                         onClick={() => setExpandedId(isExpanded ? null : id)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault()
+                            setExpandedId(isExpanded ? null : id)
+                          }
+                        }}
+                        role="button"
+                        tabIndex={0}
+                        aria-expanded={isExpanded}
                       >
                         <div className="flex items-start gap-4">
                           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-cyan-400/10 text-cyan-300">
@@ -228,7 +231,7 @@ export function CredentialsSection() {
                           </div>
 
                           <div className="flex flex-col items-end gap-2 shrink-0">
-                            <span className="text-[10px] font-mono whitespace-nowrap text-white/25">
+                            <span className="text-[10px] font-mono whitespace-nowrap text-white/50">
                               {cert.date}
                             </span>
                             <ChevronDown

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { GoogleGenAI } from "@google/genai"
 import { checkRateLimit } from "@/lib/rate-limit"
-import { corsResponse, addCorsHeaders, isSameOrigin } from "@/lib/cors"
+import { corsResponse, addCorsHeaders, requireSameOrigin } from "@/lib/cors"
 
 export const runtime = "nodejs"
 export const maxDuration = 30
@@ -11,8 +11,11 @@ ABOUT SALAH UDDIN SELIM:
 - Name: Salah Uddin Selim
 - Title: CSE Student & Software Engineer
 - Location: Dhaka, Bangladesh
-- Email: sselim223512@bscse.uiu.ac.bd
+- Email: selimsalahuddin19@gmail.com
 - GitHub: github.com/salahuddinselim
+- LinkedIn: linkedin.com/in/selimsalahuddin
+- Instagram: instagram.com/selimsalahuddin
+- Facebook: facebook.com/salahuddin.selim.19
 - Education: B.Sc. in Computer Science & Engineering at United International University (GPA 3.68/4.00, 112/137 credits, 2022 — Present)
 - HSC: Pirganj Govt. College, Thakurgaon — GPA 5.00/5.00 (2018-2020)
 - SSC: Pirganj Pilot High School, Thakurgaon — GPA 5.00/5.00 (2013-2018)
@@ -58,7 +61,7 @@ const SYSTEM_INSTRUCTION = [
 ].join("\n")
 
 export async function POST(request: Request) {
-  if (!isSameOrigin(request)) {
+  if (!requireSameOrigin(request)) {
     return addCorsHeaders(request, NextResponse.json({ error: "Forbidden" }, { status: 403 }))
   }
 
@@ -94,7 +97,12 @@ export async function POST(request: Request) {
   }
 
   for (const msg of body.messages) {
-    if (typeof msg.content !== "string" || msg.content.length > 4000) {
+    if (
+      typeof msg !== "object" ||
+      msg === null ||
+      typeof (msg as { content?: unknown }).content !== "string" ||
+      (msg as { content: string }).content.length > 4000
+    ) {
       return NextResponse.json({ error: "Invalid message content" }, { status: 422 })
     }
   }

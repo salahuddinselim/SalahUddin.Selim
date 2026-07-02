@@ -1,12 +1,11 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import Image from "next/image"
 import { motion } from "framer-motion"
 import Link from "next/link"
 import { ArrowLeft, MapPin, Image as ImageIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { getGalleryImages, type GalleryImageData } from "@/lib/sanity/fetch"
+import type { GalleryImageData } from "@/lib/sanity/fetch"
 import { gallerySectionCopy, spanClasses } from "@/data"
 
 const containerVariants = {
@@ -26,15 +25,7 @@ const headerVariants = {
   },
 }
 
-export function GallerySection() {
-  const [images, setImages] = useState<GalleryImageData[]>([])
-
-  useEffect(() => {
-    getGalleryImages()
-      .then(setImages)
-      .catch(() => {})
-  }, [])
-
+export function GallerySection({ images }: { images: GalleryImageData[] }) {
   return (
     <section className="relative min-h-screen px-4 sm:px-6 md:px-8 pb-24 max-w-[1340px] mx-auto">
       {/* Back button */}
@@ -70,7 +61,7 @@ export function GallerySection() {
             {images.length}
           </span>
         </div>
-        <p className="text-sm font-mono text-white/25 tracking-[0.15em]">
+        <p className="text-sm font-mono text-white/50 tracking-[0.15em]">
           {gallerySectionCopy.subtitle}
         </p>
       </motion.div>
@@ -132,8 +123,8 @@ export function GallerySection() {
                   </span>
                 </div>
               )}
-              {/* Caption — visible on hover */}
-              <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+              {/* Caption — visible on hover, and always on touch devices (no hover) */}
+              <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 [@media(hover:none)]:translate-y-0 [@media(hover:none)]:opacity-100">
                 <p className="text-sm font-semibold text-white drop-shadow-lg">
                   {img.caption ?? img.title}
                 </p>
