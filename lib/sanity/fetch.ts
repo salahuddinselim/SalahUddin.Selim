@@ -61,23 +61,43 @@ export interface SocialLinkData {
 }
 
 export function getProfile(): Promise<SanityProfile> {
-  return client.fetch(profileQuery, {}, { next: { revalidate: SANITY_REVALIDATE_SECONDS } })
+  return client.fetch(
+    profileQuery,
+    {},
+    { next: { revalidate: SANITY_REVALIDATE_SECONDS, tags: ["sanity"] } },
+  )
 }
 
 export function getSkills(): Promise<SanitySkill[]> {
-  return client.fetch(skillsQuery, {}, { next: { revalidate: SANITY_REVALIDATE_SECONDS } })
+  return client.fetch(
+    skillsQuery,
+    {},
+    { next: { revalidate: SANITY_REVALIDATE_SECONDS, tags: ["sanity"] } },
+  )
 }
 
 export function getProjects(): Promise<SanityProject[]> {
-  return client.fetch(projectsQuery, {}, { next: { revalidate: SANITY_REVALIDATE_SECONDS } })
+  return client.fetch(
+    projectsQuery,
+    {},
+    { next: { revalidate: SANITY_REVALIDATE_SECONDS, tags: ["sanity"] } },
+  )
 }
 
 export function getExperience(): Promise<SanityExperience[]> {
-  return client.fetch(experienceQuery, {}, { next: { revalidate: SANITY_REVALIDATE_SECONDS } })
+  return client.fetch(
+    experienceQuery,
+    {},
+    { next: { revalidate: SANITY_REVALIDATE_SECONDS, tags: ["sanity"] } },
+  )
 }
 
 export function getSocialLinks(): Promise<SocialLinkData[]> {
-  return client.fetch(socialLinksQuery, {}, { next: { revalidate: SANITY_REVALIDATE_SECONDS } })
+  return client.fetch(
+    socialLinksQuery,
+    {},
+    { next: { revalidate: SANITY_REVALIDATE_SECONDS, tags: ["sanity"] } },
+  )
 }
 
 const galleryQuery = groq`*[_type == "gallery"] | order(order asc) {
@@ -101,7 +121,11 @@ export interface GalleryImageData {
 }
 
 export function getGalleryImages(): Promise<GalleryImageData[]> {
-  return client.fetch(galleryQuery, {}, { next: { revalidate: SANITY_REVALIDATE_SECONDS } })
+  return client.fetch(
+    galleryQuery,
+    {},
+    { next: { revalidate: SANITY_REVALIDATE_SECONDS, tags: ["sanity"] } },
+  )
 }
 
 const credentialsQuery = groq`*[_type == "credential"] | order(year desc, order asc) {
@@ -125,7 +149,11 @@ export interface CredentialData {
 }
 
 export function getCredentials(): Promise<CredentialData[]> {
-  return client.fetch(credentialsQuery, {}, { next: { revalidate: SANITY_REVALIDATE_SECONDS } })
+  return client.fetch(
+    credentialsQuery,
+    {},
+    { next: { revalidate: SANITY_REVALIDATE_SECONDS, tags: ["sanity"] } },
+  )
 }
 
 const educationQuery = groq`*[_type == "education"] | order(order asc) {
@@ -155,5 +183,9 @@ export interface EducationData {
 }
 
 export function getEducation(): Promise<EducationData[]> {
-  return client.fetch(educationQuery, {}, { next: { revalidate: SANITY_REVALIDATE_SECONDS } })
+  return client.fetch(
+    educationQuery,
+    {},
+    { next: { revalidate: SANITY_REVALIDATE_SECONDS, tags: ["sanity"] } },
+  )
 }

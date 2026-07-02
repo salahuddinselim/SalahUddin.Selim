@@ -8,6 +8,7 @@ const envSchema = z.object({
   NEXT_PUBLIC_SITE_URL: z.string().url("NEXT_PUBLIC_SITE_URL must be a valid URL").optional(),
 
   SANITY_API_TOKEN: z.string().optional(),
+  SANITY_REVALIDATE_SECRET: z.string().optional(),
   TURNSTILE_SECRET_KEY: z.string().optional(),
   RESEND_API_KEY: z.string().optional(),
   CONTACT_EMAIL: z.string().email("CONTACT_EMAIL must be a valid email").optional(),
