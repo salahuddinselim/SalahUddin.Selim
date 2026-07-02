@@ -12,6 +12,7 @@ import {
   ImageIcon,
   Globe,
   RefreshCw,
+  Rocket,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -23,6 +24,23 @@ function formatUptime(seconds: number): string {
   if (d > 0) return `${d}d ${h}h`
   if (h > 0) return `${h}h ${m}m`
   return `${m}m ${s.toString().padStart(2, "0")}s`
+}
+
+const SEO_CHECK_META: Record<string, { label: string; icon: typeof Search }> = {
+  "/robots.txt": { label: "Robots", icon: Search },
+  "/sitemap.xml": { label: "Sitemap", icon: Globe },
+  "/manifest.webmanifest": { label: "Manifest", icon: FileText },
+  "/opengraph-image": { label: "OG Image", icon: ImageIcon },
+}
+
+function formatDeployTime(iso: string): string {
+  const diffMs = Date.now() - new Date(iso).getTime()
+  const diffMin = Math.round(diffMs / 60000)
+  if (diffMin < 1) return "just now"
+  if (diffMin < 60) return `${diffMin}m ago`
+  const diffHr = Math.round(diffMin / 60)
+  if (diffHr < 24) return `${diffHr}h ago`
+  return new Date(iso).toLocaleDateString()
 }
 
 const containerVariants = {
@@ -43,6 +61,7 @@ const cardVariants = {
 }
 
 interface MonitorData {
+  status: "ok" | "degraded"
   dbLatency: number
   contentMetrics: {
     projects: number
@@ -55,6 +74,10 @@ interface MonitorData {
     node: string
     env: string
   }
+  uptime: number
+  lastDeployedAt: string
+  deployCommit: string | null
+  health: number
   seo: {
     score: number
     items: { label: string; status: string }[]
@@ -69,7 +92,10 @@ export function MonitorSection() {
   const fetchMonitor = useCallback(() => {
     fetch("/api/monitor")
       .then((r) => r.json())
-      .then(setData)
+      .then((d: MonitorData) => {
+        setData(d)
+        setUptime(d.uptime)
+      })
       .catch(() => {})
   }, [])
 
@@ -94,7 +120,10 @@ export function MonitorSection() {
   const dbLatency = data?.dbLatency ?? 0
   const contentMetrics = data?.contentMetrics ?? { projects: 0, credentials: 0, skills: 0 }
   const techStack = data?.techStack ?? { next: "—", react: "—", node: "—", env: "development" }
-  const seo = data?.seo ?? { score: 100, items: [] }
+  const seo = data?.seo ?? { score: 0, items: [] }
+  const health = data?.health ?? 0
+  const lastDeployedAt = data?.lastDeployedAt ?? null
+  const deployCommit = data?.deployCommit ?? null
 
   return (
     <section className="relative min-h-screen px-4 sm:px-6 md:px-8 pb-24 max-w-[1340px] mx-auto">
@@ -157,24 +186,37 @@ export function MonitorSection() {
             <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-white/30">
               SYSTEM HEALTH
             </span>
-            <span className="inline-flex items-center rounded-full border border-cyan-400/20 bg-cyan-400/10 px-2.5 py-0.5 text-[9px] font-mono uppercase tracking-[0.2em] text-cyan-300">
-              {data ? "ONLINE" : "LOADING"}
+            <span
+              className={cn(
+                "inline-flex items-center rounded-full border px-2.5 py-0.5 text-[9px] font-mono uppercase tracking-[0.2em]",
+                !data
+                  ? "border-white/10 bg-white/5 text-white/40"
+                  : data.status === "ok"
+                    ? "border-cyan-400/20 bg-cyan-400/10 text-cyan-300"
+                    : "border-amber-400/20 bg-amber-400/10 text-amber-300",
+              )}
+            >
+              {!data ? "LOADING" : data.status === "ok" ? "ONLINE" : "DEGRADED"}
             </span>
           </div>
           <div className="flex items-baseline gap-2 mb-2">
-            <span className="text-5xl sm:text-6xl font-bold text-white tabular-nums">100</span>
+            <span className="text-5xl sm:text-6xl font-bold text-white tabular-nums">{health}</span>
             <span className="text-lg font-semibold text-cyan-300">%</span>
           </div>
           <div className="w-full h-1.5 rounded-full bg-white/[0.06] overflow-hidden mb-3">
             <motion.div
               className="h-full rounded-full bg-gradient-to-r from-cyan-400 to-blue-500"
-              initial={{ width: "100%" }}
-              animate={{ width: "100%" }}
+              initial={{ width: 0 }}
+              animate={{ width: `${health}%` }}
               transition={{ duration: 0.8, ease: "easeOut" as const }}
             />
           </div>
           <p className="text-xs font-mono text-white/30 tracking-wide">
-            All systems operating within optimal parameters.
+            {data?.status === "ok"
+              ? "All systems operating within optimal parameters."
+              : data?.status === "degraded"
+                ? "Some checks are failing — see details below."
+                : "Checking system status..."}
           </p>
         </motion.div>
 
@@ -224,6 +266,24 @@ export function MonitorSection() {
             >
               {formatUptime(uptime)}
             </motion.span>
+          </motion.div>
+
+          <motion.div
+            variants={cardVariants}
+            className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 shadow-[0_8px_30px_rgba(0,0,0,0.2)]"
+          >
+            <div className="flex items-center gap-2 mb-3">
+              <Rocket size={14} className="text-purple-400" />
+              <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-white/30">
+                LAST DEPLOY
+              </span>
+            </div>
+            <span className="text-2xl font-bold text-white tabular-nums font-mono">
+              {lastDeployedAt ? formatDeployTime(lastDeployedAt) : "—"}
+            </span>
+            {deployCommit && (
+              <span className="mt-1 block text-[11px] font-mono text-white/30">{deployCommit}</span>
+            )}
           </motion.div>
         </div>
       </motion.div>
@@ -356,29 +416,40 @@ export function MonitorSection() {
             </span>
           </div>
           <div className="space-y-3">
-            {[
-              { label: "Robots", icon: Search, status: "Online" },
-              { label: "Sitemap", icon: Globe, status: "Online" },
-              { label: "Favicon", icon: ImageIcon, status: "Online" },
-              { label: "OG Image", icon: ImageIcon, status: "Online" },
-            ].map((item) => (
-              <div
-                key={item.label}
-                className="flex items-center justify-between rounded-xl border border-white/[0.04] bg-white/[0.02] px-4 py-2.5"
-              >
-                <div className="flex items-center gap-2.5">
-                  <item.icon size={13} className="text-white/30" />
-                  <span className="text-xs font-mono text-white/60">{item.label}</span>
-                </div>
-                <span className="flex items-center gap-1.5 text-[10px] font-mono text-blue-300/70">
-                  <span className="relative flex h-1.5 w-1.5">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-400/75" />
-                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-blue-400" />
+            {seo.items.map((item) => {
+              const meta = SEO_CHECK_META[item.label] ?? { label: item.label, icon: Search }
+              const isOnline = item.status === "Online"
+              return (
+                <div
+                  key={item.label}
+                  className="flex items-center justify-between rounded-xl border border-white/[0.04] bg-white/[0.02] px-4 py-2.5"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <meta.icon size={13} className="text-white/30" />
+                    <span className="text-xs font-mono text-white/60">{meta.label}</span>
+                  </div>
+                  <span
+                    className={cn(
+                      "flex items-center gap-1.5 text-[10px] font-mono",
+                      isOnline ? "text-blue-300/70" : "text-red-300/70",
+                    )}
+                  >
+                    <span className="relative flex h-1.5 w-1.5">
+                      {isOnline && (
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-400/75" />
+                      )}
+                      <span
+                        className={cn(
+                          "relative inline-flex h-1.5 w-1.5 rounded-full",
+                          isOnline ? "bg-blue-400" : "bg-red-400",
+                        )}
+                      />
+                    </span>
+                    {item.status}
                   </span>
-                  {item.status}
-                </span>
-              </div>
-            ))}
+                </div>
+              )
+            })}
           </div>
         </motion.div>
       </motion.div>
