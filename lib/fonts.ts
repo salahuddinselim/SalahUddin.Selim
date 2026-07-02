@@ -2,7 +2,7 @@ import { Poppins, Inter, JetBrains_Mono } from "next/font/google"
 
 export const fontHeading = Poppins({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["600", "700"],
   variable: "--font-heading",
   display: "swap",
   preload: true,
