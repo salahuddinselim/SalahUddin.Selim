@@ -4,17 +4,6 @@ import { useRef, useState, useEffect } from "react"
 import { GitFork, Star, BookOpen, Users } from "lucide-react"
 import { motion } from "framer-motion"
 
-interface GitHubUser {
-  public_repos: number
-  followers: number
-  following: number
-}
-
-interface GitHubRepo {
-  stargazers_count: number
-  forks_count: number
-}
-
 interface GitHubStats {
   public_repos: number
   total_stars: number
@@ -28,7 +17,7 @@ interface StatItem {
   icon: React.ReactNode
 }
 
-const GITHUB_USERNAME = "salahuddinselim"
+const LAST_KNOWN_STATS_KEY = "github-stats:last-known"
 
 function SkeletonCard() {
   return (
@@ -67,13 +56,17 @@ function StatCard({ label, value, icon, index }: StatItem & { index: number }) {
   )
 }
 
-function ErrorCard({ onRetry }: { onRetry: () => void }) {
+function ErrorCard({ onRetry, isStale }: { onRetry: () => void; isStale: boolean }) {
   return (
-    <div className="col-span-full flex flex-col items-center justify-center rounded-xl border border-white/[0.06] bg-white/[0.02] px-6 py-12 text-center">
-      <p className="text-sm text-white/50">Failed to load GitHub stats</p>
+    <div className="col-span-full flex flex-col items-center justify-center gap-1 rounded-xl border border-white/[0.06] bg-white/[0.02] px-6 py-4 text-center">
+      <p className="text-xs text-white/40">
+        {isStale
+          ? "Showing last known stats — couldn't refresh from GitHub"
+          : "Failed to load GitHub stats"}
+      </p>
       <button
         onClick={onRetry}
-        className="mt-3 rounded-lg bg-white/[0.06] px-4 py-2 text-xs font-medium text-white/70 transition-colors hover:bg-white/[0.1] hover:text-white/90"
+        className="mt-1 rounded-lg bg-white/[0.06] px-3 py-1.5 text-[11px] font-medium text-white/70 transition-colors hover:bg-white/[0.1] hover:text-white/90"
       >
         Retry
       </button>
@@ -100,34 +93,26 @@ export function GitHubStats() {
     setError(false)
 
     try {
-      const [userRes, reposRes] = await Promise.all([
-        fetch(`https://api.github.com/users/${GITHUB_USERNAME}`, {
-          next: { revalidate: 3600 },
-        }),
-        fetch(`https://api.github.com/users/${GITHUB_USERNAME}/repos?per_page=100&sort=updated`, {
-          next: { revalidate: 3600 },
-        }),
-      ])
+      const res = await fetch("/api/github-stats")
+      if (!res.ok) throw new Error("GitHub stats route error")
 
-      if (!userRes.ok || !reposRes.ok) throw new Error("GitHub API error")
-
-      const userData: GitHubUser = await userRes.json()
-      const reposData: GitHubRepo[] = await reposRes.json()
-
-      const total_stars = reposData.reduce((acc, repo) => acc + repo.stargazers_count, 0)
-      const total_forks = reposData.reduce((acc, repo) => acc + repo.forks_count, 0)
-
-      const result: GitHubStats = {
-        public_repos: userData.public_repos,
-        total_stars,
-        total_forks,
-        followers: userData.followers,
-      }
+      const result: GitHubStats = await res.json()
 
       cacheRef.current = { data: result, ts: Date.now() }
       setStats(result)
+      try {
+        localStorage.setItem(LAST_KNOWN_STATS_KEY, JSON.stringify(result))
+      } catch {
+        // localStorage unavailable (private browsing, etc.) — non-critical
+      }
     } catch {
       setError(true)
+      try {
+        const raw = localStorage.getItem(LAST_KNOWN_STATS_KEY)
+        if (raw) setStats(JSON.parse(raw))
+      } catch {
+        // no last-known stats available — will show the plain error state
+      }
     } finally {
       setLoading(false)
     }
@@ -166,11 +151,13 @@ export function GitHubStats() {
     <div className="grid grid-cols-2 gap-3 sm:gap-4">
       {loading && Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)}
 
-      {error && <ErrorCard onRetry={fetchStats} />}
+      {!loading && error && !stats && <ErrorCard onRetry={fetchStats} isStale={false} />}
 
-      {stats &&
-        !error &&
+      {!loading &&
+        stats &&
         statItems.map((item, i) => <StatCard key={item.label} {...item} index={i} />)}
+
+      {!loading && error && stats && <ErrorCard onRetry={fetchStats} isStale />}
     </div>
   )
 }

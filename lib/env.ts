@@ -14,6 +14,7 @@ const envSchema = z.object({
   CONTACT_EMAIL: z.string().email("CONTACT_EMAIL must be a valid email").optional(),
   GEMINI_API_KEY: z.string().optional(),
   GOOGLE_API_KEY: z.string().optional(),
+  GITHUB_TOKEN: z.string().optional(),
 
   UPSTASH_REDIS_REST_URL: z.string().url("UPSTASH_REDIS_REST_URL must be a valid URL").optional(),
   UPSTASH_REDIS_REST_TOKEN: z.string().optional(),
