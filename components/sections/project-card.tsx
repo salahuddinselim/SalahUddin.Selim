@@ -69,8 +69,6 @@ export const ProjectCard = memo(function ProjectCard({
   const ref = useRef<HTMLDivElement>(null)
   const id = useId()
   const active = activeProject?._id === project._id
-  const ctaHref = project.liveUrl ?? project.githubUrl
-  const ctaText = project.liveUrl ? "Live Demo" : "GitHub"
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
@@ -168,19 +166,39 @@ export const ProjectCard = memo(function ProjectCard({
                     </p>
                   </div>
 
-                  {ctaHref && (
-                    <motion.a
+                  {/* Both links, not just one -- picking a single "best"
+                      link (previously liveUrl ?? githubUrl) silently made
+                      whichever one lost the pick unreachable from the
+                      modal for any project that has both set. */}
+                  {(project.liveUrl || project.githubUrl) && (
+                    <motion.div
                       layout
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      href={ctaHref}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn-primary text-xs px-4 py-2 shrink-0 whitespace-nowrap"
+                      className="flex flex-col gap-2 shrink-0"
                     >
-                      {ctaText}
-                    </motion.a>
+                      {project.liveUrl && (
+                        <a
+                          href={project.liveUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="btn-primary text-xs px-4 py-2 whitespace-nowrap text-center"
+                        >
+                          Live Demo
+                        </a>
+                      )}
+                      {project.githubUrl && (
+                        <a
+                          href={project.githubUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="btn-secondary text-xs px-4 py-2 whitespace-nowrap text-center"
+                        >
+                          GitHub
+                        </a>
+                      )}
+                    </motion.div>
                   )}
                 </div>
                 <div className="pt-4 relative px-4">

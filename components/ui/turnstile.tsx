@@ -35,6 +35,7 @@ export function Turnstile({ onVerify, onExpire, theme = "dark" }: TurnstileProps
   const loadedRef = useRef(false)
   const widgetIdRef = useRef<string | null>(null)
   const [scriptError, setScriptError] = useState(false)
+  const [isNearViewport, setIsNearViewport] = useState(false)
 
   const renderWidget = useCallback(() => {
     if (!window.turnstile || !containerRef.current || loadedRef.current) return
@@ -49,7 +50,33 @@ export function Turnstile({ onVerify, onExpire, theme = "dark" }: TurnstileProps
     widgetIds.set(containerRef.current, id)
   }, [onVerify, onExpire, theme])
 
+  // The contact form (and this widget) sits at the bottom of the homepage,
+  // but ContactSection was mounting unconditionally on page load -- so the
+  // Turnstile script and its widget (which does its own ongoing background
+  // challenge/heartbeat work) were loading and running immediately for
+  // every visitor, whether or not they ever scroll down to the form.
+  // Measured this as a real contributor to idle main-thread cost on the
+  // live site. Deferring the script load until the widget is actually
+  // near-viewport avoids that cost for the common case of not filling out
+  // the contact form.
   useEffect(() => {
+    const el = containerRef.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsNearViewport(true)
+          observer.disconnect()
+        }
+      },
+      { rootMargin: "300px" },
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    if (!isNearViewport) return
     const container = containerRef.current
     if (window.turnstile) {
       renderWidget()
@@ -74,7 +101,7 @@ export function Turnstile({ onVerify, onExpire, theme = "dark" }: TurnstileProps
       loadedRef.current = false
       window.onTurnstileLoad = undefined
     }
-  }, [renderWidget])
+  }, [renderWidget, isNearViewport])
 
   return (
     <div>
