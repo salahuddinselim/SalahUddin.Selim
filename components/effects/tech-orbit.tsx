@@ -77,10 +77,7 @@ export function TechOrbit() {
         @keyframes orbit-spin-clockwise { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes orbit-spin-counter { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
       `}</style>
-      <div
-        style={{ transform: `scale(${scale})` }}
-        className="relative"
-      >
+      <div style={{ transform: `scale(${scale})` }} className="relative">
         {cards.map((card) => {
           const startAngleDeg = (card.startAngle * 180) / Math.PI
 
@@ -125,6 +122,7 @@ export function TechOrbit() {
                       backdropFilter: "blur(var(--glass-badge-blur))",
                       WebkitBackdropFilter: "blur(var(--glass-badge-blur))",
                       border: "1px solid var(--glass-badge-border)",
+                      boxShadow: "var(--glass-badge-shadow)",
                     }}
                     whileHover={{
                       scale: 1.1,

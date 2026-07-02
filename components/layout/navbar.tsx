@@ -119,11 +119,12 @@ export function Navbar() {
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.55, ease: "easeOut" }}
+        style={{ WebkitBackdropFilter: "blur(18px)" }}
         className={cn(
           "fixed top-3 sm:top-5 left-1/2 z-50 flex items-center justify-between",
           "-translate-x-1/2 w-[96%] sm:w-[95%] max-w-[1240px]",
           "rounded-full",
-          "border border-white/10 bg-[#0B1220]/80 backdrop-blur-[28px] shadow-[0_40px_120px_rgba(0,0,0,0.18)]",
+          "border border-white/10 bg-white/[0.06] backdrop-blur-[18px] shadow-[0_8px_32px_rgba(0,0,0,0.2)]",
           "transition-all duration-300",
           scrolled ? "py-1.5 sm:py-2 px-3 sm:px-4" : "py-2 sm:py-3 px-3 sm:px-5",
         )}
