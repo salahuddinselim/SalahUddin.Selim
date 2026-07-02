@@ -10,7 +10,7 @@ export default function middleware(request: NextRequest) {
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob: https:",
     "font-src 'self' data:",
-    "connect-src 'self' https://id5e9a8v.apicdn.sanity.io https://id5e9a8v.api.sanity.io https://cdn.sanity.io https://api.resend.com https://va.vercel-scripts.com https://challenges.cloudflare.com https://ghchart.rshah.org",
+    "connect-src 'self' https://id5e9a8v.apicdn.sanity.io https://id5e9a8v.api.sanity.io https://cdn.sanity.io https://api.resend.com https://va.vercel-scripts.com https://challenges.cloudflare.com https://ghchart.rshah.org https://api.github.com",
     "frame-src 'self' https://challenges.cloudflare.com",
     "object-src 'none'",
     "base-uri 'self'",
