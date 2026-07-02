@@ -25,6 +25,9 @@ const nextConfig: NextConfig = {
     optimizeServerReact: true,
     scrollRestoration: true,
   },
+  compiler: {
+    removeConsole: process.env.NODE_ENV === "production" ? { exclude: ["error", "warn"] } : false,
+  },
   async headers() {
     return [
       {

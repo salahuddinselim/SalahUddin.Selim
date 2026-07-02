@@ -1,5 +1,10 @@
 import type { Metadata } from "next"
-import { MonitorSection } from "@/components/sections/monitor-section"
+import nextDynamic from "next/dynamic"
+
+const MonitorSection = nextDynamic(
+  () => import("@/components/sections/monitor-section").then((mod) => mod.MonitorSection),
+  { loading: () => <div className="min-h-[400px] animate-pulse bg-white/5 rounded-2xl m-8" /> },
+)
 
 export const metadata: Metadata = {
   title: "Monitor",
