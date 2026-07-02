@@ -1,6 +1,7 @@
 # Salah Uddin Selim — Portfolio
 
-[![Live Site](https://img.shields.io/badge/Live-salahuddinselim.com-8B5CF6?style=flat-square)](https://salahuddinselim.com)
+[![Live Site](https://img.shields.io/badge/Live-salah--uddin--selim.vercel.app-8B5CF6?style=flat-square)](https://salah-uddin-selim.vercel.app)
+[![License](https://img.shields.io/badge/License-Proprietary-red?style=flat-square)](LICENSE)
 [![Next.js](https://img.shields.io/badge/Next.js_16-000000?style=flat-square&logo=next.js&logoColor=white)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://typescriptlang.org)
 [![Tailwind CSS v4](https://img.shields.io/badge/Tailwind_CSS_v4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
@@ -72,4 +73,4 @@ vercel --prod
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+**All Rights Reserved.** This code is proprietary — see [LICENSE](LICENSE). The repository is public for portfolio and demonstration purposes only; it is not open source, and no permission is granted to copy, reuse, or redistribute this code or design.
