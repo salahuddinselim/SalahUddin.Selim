@@ -3,7 +3,6 @@
 import { motion } from "framer-motion"
 import { ExternalLink } from "lucide-react"
 import { cn } from "@/lib/utils"
-import Image from "next/image"
 import { GitHubStats } from "@/components/ui/github-stats"
 import type { SocialLinkData, EducationData } from "@/lib/sanity/fetch"
 import { getSocialIcon } from "@/lib/sanity/icon-map"
@@ -223,13 +222,18 @@ export function PersonaSection({
             </a>
           </div>
           <div className="px-5 py-4">
-            <Image
+            {/* Plain <img>, not next/image: this is a third-party SVG chart
+                (ghchart.rshah.org isn't in next.config.ts remotePatterns, and
+                Next's image optimizer blocks SVG by default anyway) that was
+                silently failing to render. w-full h-auto lets the browser
+                scale it using the SVG's own intrinsic aspect ratio instead of
+                a hardcoded width/height that doesn't match the real chart. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
               src={gitHubChartUrl}
               alt="GitHub contribution chart"
-              width={900}
-              height={220}
               loading="lazy"
-              className="w-full rounded-lg opacity-90"
+              className="w-full h-auto rounded-lg opacity-90"
               style={{ filter: "brightness(1.1) contrast(1.05)" }}
             />
             <div className="flex items-center justify-end gap-2 mt-2">

@@ -102,9 +102,15 @@ export const ProjectCard = memo(function ProjectCard({
           together on close -- previously the backdrop was a bare conditional
           outside AnimatePresence and vanished instantly while the layoutId
           card kept animating shut, which read as a broken, out-of-sync close. */}
+      {/* z-[60]/z-[70], not z-40/z-50 -- the site's fixed navbar (and its
+          mobile menu button) is also z-50, and on small viewports the modal's
+          close button landed directly under the navbar's hamburger button,
+          so taps meant to close the modal hit the nav instead. Bumping the
+          whole modal stack above z-50 guarantees it's clickable and also
+          properly blocks interaction with the nav while open. */}
       <AnimatePresence>
         {active ? (
-          <div className="fixed inset-0 z-40 grid place-items-center px-4">
+          <div className="fixed inset-0 z-[60] grid place-items-center px-4">
             <motion.div
               key={`overlay-${project._id}`}
               initial={{ opacity: 0 }}
@@ -119,7 +125,7 @@ export const ProjectCard = memo(function ProjectCard({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0, transition: { duration: 0.05 } }}
-              className="fixed top-4 right-4 z-50 w-11 h-11 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center text-white/70 hover:text-white hover:bg-white/20 transition-colors"
+              className="fixed top-4 right-4 z-[70] w-11 h-11 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center text-white/70 hover:text-white hover:bg-white/20 transition-colors"
               onClick={() => setActiveProject(null)}
               aria-label="Close project details"
             >
@@ -133,7 +139,7 @@ export const ProjectCard = memo(function ProjectCard({
               aria-modal="true"
               aria-label={project.title}
               className={cn(
-                "relative z-50 w-full max-w-[560px] h-full md:h-fit md:max-h-[85vh] flex flex-col overflow-hidden",
+                "relative z-[60] w-full max-w-[560px] h-full md:h-fit md:max-h-[85vh] flex flex-col overflow-hidden",
                 "sm:rounded-3xl",
                 "bg-[rgba(17,24,39,0.92)] backdrop-blur-[20px]",
                 "border border-[rgba(0,217,255,0.15)]",
