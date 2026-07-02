@@ -111,13 +111,19 @@ export const ProjectCard = memo(function ProjectCard({
       <AnimatePresence>
         {active ? (
           <div className="fixed inset-0 z-[60] grid place-items-center px-4">
+            {/* No custom transition duration here on purpose -- the reference
+                component leaves the backdrop on Framer Motion's default
+                timing so it stays roughly in sync with the layoutId card's
+                own (longer, spring-based) layout animation. A faster custom
+                duration made the backdrop vanish well before the card
+                finished resizing, which read as an out-of-sync, jarring
+                close even though each element was individually smooth. */}
             <motion.div
               key={`overlay-${project._id}`}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+              className="fixed inset-0 bg-black/60"
             />
 
             <motion.button
@@ -132,6 +138,14 @@ export const ProjectCard = memo(function ProjectCard({
               <X size={16} />
             </motion.button>
 
+            {/* No backdrop-blur here -- this box is the layoutId shared
+                element that resizes between the list row and the full
+                modal. Animating backdrop-filter while width/height/position
+                change forces the browser to re-blur the backdrop every
+                frame, which is a well-known jank source on real devices
+                (the reference component this is based on uses a plain solid
+                background for exactly this reason). Solid near-opaque bg
+                instead keeps the glass look without the per-frame cost. */}
             <motion.div
               layoutId={`card-${project._id}-${id}`}
               ref={ref}
@@ -141,7 +155,7 @@ export const ProjectCard = memo(function ProjectCard({
               className={cn(
                 "relative z-[60] w-full max-w-[560px] h-full md:h-fit md:max-h-[85vh] flex flex-col overflow-hidden",
                 "sm:rounded-3xl",
-                "bg-[rgba(17,24,39,0.92)] backdrop-blur-[20px]",
+                "bg-[rgba(15,21,35,0.98)]",
                 "border border-[rgba(0,217,255,0.15)]",
                 "shadow-[0_0_40px_rgba(0,217,255,0.08)]",
               )}
@@ -188,11 +202,15 @@ export const ProjectCard = memo(function ProjectCard({
                   )}
                 </div>
 
+                {/* No delay here (unlike an earlier version of this) --
+                    transition={{ delay }} without scoping to `animate` also
+                    delays the `exit` fade, so on close this content sat
+                    fully visible for 100ms before even starting to fade,
+                    out of step with the backdrop/card already animating. */}
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  transition={{ delay: 0.1 }}
                   className={cn(
                     "p-5 pt-4 space-y-4 overflow-y-auto",
                     "[mask:linear-gradient(to_bottom,white,white,transparent)]",
@@ -275,9 +293,9 @@ export const ProjectCard = memo(function ProjectCard({
           className={cn(
             "group flex flex-col md:flex-row items-center justify-between gap-4",
             "p-4 rounded-2xl cursor-pointer",
-            "bg-[rgba(17,24,39,0.5)] backdrop-blur-[16px]",
+            "bg-[rgba(15,21,35,0.72)]",
             "border border-[rgba(255,255,255,0.06)]",
-            "hover:border-accent/20 hover:bg-[rgba(17,24,39,0.7)]",
+            "hover:border-accent/20 hover:bg-[rgba(15,21,35,0.9)]",
             "transition-all duration-300",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050816]",
           )}
