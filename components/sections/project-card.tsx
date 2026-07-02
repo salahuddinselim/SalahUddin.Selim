@@ -8,6 +8,12 @@ import { useOutsideClick } from "@/hooks/use-outside-click"
 import { cn } from "@/lib/utils"
 import type { SanityProject as Project } from "@/types"
 
+const modalTransition = {
+  type: "spring" as const,
+  stiffness: 380,
+  damping: 35,
+}
+
 interface ProjectCardProps {
   project: Project
   index: number
@@ -23,6 +29,7 @@ function ProjectThumb({
   fallbackTextClassName,
   sizes,
   priority,
+  transition,
 }: {
   project: Project
   layoutId: string
@@ -30,10 +37,12 @@ function ProjectThumb({
   fallbackTextClassName?: string
   sizes: string
   priority?: boolean
+  transition?: import("framer-motion").Transition
 }) {
   return (
     <motion.div
       layoutId={layoutId}
+      transition={transition}
       className={cn(
         "relative shrink-0 overflow-hidden bg-gradient-to-br from-accent/20 via-accent-secondary/10 to-bg-secondary flex items-center justify-center",
         className,
@@ -135,11 +144,13 @@ export const ProjectCard = memo(function ProjectCard({
               role="dialog"
               aria-modal="true"
               aria-label={project.title}
-              className="w-full max-w-[500px] h-full md:h-fit md:max-h-[90%] flex flex-col bg-[rgba(15,21,35,0.98)] border border-[rgba(0,217,255,0.15)] shadow-[0_0_40px_rgba(0,217,255,0.08)] sm:rounded-3xl overflow-hidden"
+              transition={modalTransition}
+              className="relative z-10 w-full max-w-[500px] h-full md:h-fit md:max-h-[90%] flex flex-col bg-[rgba(15,21,35,0.98)] border border-[rgba(0,217,255,0.15)] shadow-[0_0_40px_rgba(0,217,255,0.08)] sm:rounded-3xl overflow-hidden"
             >
               <ProjectThumb
                 project={project}
                 layoutId={`image-${project._id}-${id}`}
+                transition={modalTransition}
                 className="w-full h-80 shrink-0 sm:rounded-t-3xl"
                 fallbackTextClassName="text-5xl"
                 sizes="500px"
@@ -151,12 +162,14 @@ export const ProjectCard = memo(function ProjectCard({
                   <div>
                     <motion.h3
                       layoutId={`title-${project._id}-${id}`}
+                      transition={modalTransition}
                       className="font-heading font-semibold text-foreground text-base"
                     >
                       {project.title}
                     </motion.h3>
                     <motion.p
                       layoutId={`description-${project._id}-${id}`}
+                      transition={modalTransition}
                       className="text-accent font-body text-sm mt-1"
                     >
                       {project.description}
@@ -249,13 +262,18 @@ export const ProjectCard = memo(function ProjectCard({
           aria-label={`View details for ${project.title}`}
           initial={false}
           animate={{ opacity: 1 }}
-          transition={{ delay: index * 0.05, duration: 0.4, ease: "easeOut" }}
+          transition={
+            activeProject
+              ? modalTransition
+              : { delay: index * 0.05, duration: 0.4, ease: "easeOut" }
+          }
           className="p-4 flex flex-col hover:bg-white/[0.04] rounded-xl cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050816]"
         >
           <div className="flex gap-4 flex-col w-full">
             <ProjectThumb
               project={project}
               layoutId={`image-${project._id}-${id}`}
+              transition={activeProject ? modalTransition : undefined}
               className="h-60 w-full rounded-lg"
               fallbackTextClassName="text-4xl"
               sizes="(max-width: 768px) 100vw, 50vw"
@@ -263,12 +281,14 @@ export const ProjectCard = memo(function ProjectCard({
             <div className="flex justify-center items-center flex-col">
               <motion.h3
                 layoutId={`title-${project._id}-${id}`}
+                transition={activeProject ? modalTransition : undefined}
                 className="font-heading font-semibold text-foreground text-center text-base"
               >
                 {project.title}
               </motion.h3>
               <motion.p
                 layoutId={`description-${project._id}-${id}`}
+                transition={activeProject ? modalTransition : undefined}
                 className="text-muted font-body text-center text-sm"
               >
                 {project.description}
@@ -292,11 +312,15 @@ export const ProjectCard = memo(function ProjectCard({
           aria-label={`View details for ${project.title}`}
           initial={false}
           animate={{ opacity: 1, y: 0 }}
-          transition={{
-            delay: index * 0.08,
-            duration: 0.5,
-            ease: "easeOut",
-          }}
+          transition={
+            activeProject
+              ? modalTransition
+              : {
+                  delay: index * 0.08,
+                  duration: 0.5,
+                  ease: "easeOut",
+                }
+          }
           whileHover={{ y: -4 }}
           className={cn(
             "group cursor-pointer rounded-2xl overflow-hidden",
@@ -311,6 +335,7 @@ export const ProjectCard = memo(function ProjectCard({
           <ProjectThumb
             project={project}
             layoutId={`image-${project._id}-${id}`}
+            transition={activeProject ? modalTransition : undefined}
             className="aspect-video w-full transition-transform duration-500 group-hover:scale-105"
             fallbackTextClassName="text-3xl"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
@@ -319,12 +344,14 @@ export const ProjectCard = memo(function ProjectCard({
           <div className="p-4 space-y-3">
             <motion.h3
               layoutId={`title-${project._id}-${id}`}
+              transition={activeProject ? modalTransition : undefined}
               className="text-base font-heading font-semibold text-foreground"
             >
               {project.title}
             </motion.h3>
             <motion.p
               layoutId={`description-${project._id}-${id}`}
+              transition={activeProject ? modalTransition : undefined}
               className="text-sm text-muted font-body line-clamp-2 leading-relaxed"
             >
               {project.description}
@@ -348,6 +375,7 @@ export const ProjectCard = memo(function ProjectCard({
 
             <motion.button
               layoutId={`button-${project._id}-${id}`}
+              transition={activeProject ? modalTransition : undefined}
               className="btn-secondary text-xs px-3 py-1.5"
             >
               View Project
