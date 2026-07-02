@@ -114,26 +114,6 @@ export const ProjectCard = memo(function ProjectCard({
               className="fixed inset-0 bg-black/60"
             />
 
-            {/* Close button only shown below lg -- on desktop the modal
-                doesn't fill the viewport, so clicking outside it is the
-                natural way to close (useOutsideClick, below). z-[70], not
-                z-50, because the site's fixed navbar (and its mobile menu
-                button) is also z-50, and on small viewports the close
-                button landed directly under the navbar's hamburger button,
-                so taps meant to close the modal hit the nav instead. */}
-            <motion.button
-              key={`close-${project._id}-${id}`}
-              layout
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0, transition: { duration: 0.05 } }}
-              className="flex absolute top-4 right-4 lg:hidden z-[70] items-center justify-center bg-white/10 backdrop-blur-sm rounded-full h-8 w-8 text-white/80 hover:text-white hover:bg-white/20 transition-colors"
-              onClick={() => setActiveProject(null)}
-              aria-label="Close project details"
-            >
-              <X size={16} />
-            </motion.button>
-
             {/* No backdrop-blur here -- this box is the layoutId shared
                 element that resizes between the card and the full modal.
                 Animating backdrop-filter while width/height change forces
@@ -147,6 +127,28 @@ export const ProjectCard = memo(function ProjectCard({
               transition={modalTransition}
               className="relative z-10 w-full max-w-[500px] h-full md:h-fit md:max-h-[90%] flex flex-col bg-[rgba(15,21,35,0.98)] border border-[rgba(0,217,255,0.15)] shadow-[0_0_40px_rgba(0,217,255,0.08)] sm:rounded-3xl overflow-hidden"
             >
+              {/* Always visible, at every breakpoint -- outside-click and
+                  Escape both close the modal too, but neither is discoverable
+                  on first use, so a visible exit is required regardless.
+                  Anchored to the modal's own corner (not the viewport) so it
+                  reads as part of the modal on desktop, where the modal
+                  doesn't fill the screen. z-[70], not z-50, because the
+                  site's fixed navbar (and its mobile menu button) is also
+                  z-50, and a viewport-anchored button at this position
+                  previously landed under the navbar's hamburger button on
+                  small viewports. */}
+              <motion.button
+                key={`close-${project._id}-${id}`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0, transition: { duration: 0.05 } }}
+                className="flex absolute top-3 right-3 z-[70] items-center justify-center bg-white/10 backdrop-blur-sm rounded-full h-11 w-11 text-white/80 hover:text-white hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 transition-colors"
+                onClick={() => setActiveProject(null)}
+                aria-label="Close project details"
+              >
+                <X size={18} />
+              </motion.button>
+
               <ProjectThumb
                 project={project}
                 layoutId={`image-${project._id}-${id}`}

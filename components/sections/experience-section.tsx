@@ -217,9 +217,6 @@ export function ExperienceSection({
           transition={{ duration: 0.5, ease: "easeOut" }}
           className="text-center mb-14"
         >
-          <p className="text-[10px] font-mono uppercase tracking-[0.35em] text-cyan-400/50 mb-3">
-            CAREER & ACADEMIC
-          </p>
           <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-white">
             Experience <span className="text-cyan-400/60">&</span> Education
           </h2>

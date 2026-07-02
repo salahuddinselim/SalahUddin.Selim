@@ -2,8 +2,9 @@
 
 import { motion } from "framer-motion"
 import Image from "next/image"
-import { User, ArrowUpRight, MapPin, GraduationCap, Code2 } from "lucide-react"
+import { ArrowUpRight, MapPin, GraduationCap, Code2 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { AwardBadge } from "@/components/sections/award-badge"
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -30,11 +31,8 @@ export function AboutPreview() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="flex items-center gap-3 mb-10"
+          className="mb-10"
         >
-          <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
-            <User size={20} className="text-accent" />
-          </div>
           <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
             About Me
           </h2>
@@ -119,6 +117,8 @@ export function AboutPreview() {
                 Java · Python · PHP · C/C++ · JS · Node · Arduino
               </span>
             </div>
+
+            <AwardBadge />
 
             <a href="/persona" className="btn-secondary">
               View Profile

@@ -143,12 +143,10 @@ export function ContactSection({
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-60px" }}
-          className="flex items-center gap-3 mb-10"
+          className="mb-10"
         >
-          <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
-            <Mail size={20} className="text-accent" />
-          </div>
-          <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
+          <h2 className="flex items-center gap-2.5 text-2xl md:text-3xl font-bold tracking-tight text-foreground">
+            <Mail size={24} className="text-accent shrink-0" aria-hidden="true" />
             {contactSectionCopy.heading}
           </h2>
         </motion.div>

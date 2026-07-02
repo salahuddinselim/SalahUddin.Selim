@@ -1,6 +1,5 @@
 import type { Metadata } from "next"
 import { HeroSection } from "@/components/sections/hero-section"
-import { AwardBadge } from "@/components/sections/award-badge"
 import nextDynamic from "next/dynamic"
 import {
   getProjects,
@@ -67,7 +66,6 @@ export default async function Home() {
   return (
     <main>
       <HeroSection />
-      <AwardBadge />
       <ProjectsPreview projects={allProjects} />
       <AboutPreview />
       <ExperienceSection experience={experience} education={education} />

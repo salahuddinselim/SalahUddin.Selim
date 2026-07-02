@@ -1,0 +1,351 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-03T00:00:00.000Z",
+  "title": "Design System: Salah Uddin Selim — Portfolio",
+  "extensions": {
+    "colorMeta": {
+      "bg-void": {
+        "role": "neutral",
+        "displayName": "Void Black",
+        "canonical": "oklch(15% 0.03 265)",
+        "tonalRamp": [
+          "#02030a",
+          "#050816",
+          "#0b1120",
+          "#131c30",
+          "#1e2c48",
+          "#33456b",
+          "#5b76a0",
+          "#a6b8d6"
+        ]
+      },
+      "bg-nebula": {
+        "role": "neutral",
+        "displayName": "Nebula Navy",
+        "canonical": "oklch(19% 0.035 265)",
+        "tonalRamp": [
+          "#03040a",
+          "#070a15",
+          "#0b1120",
+          "#141b30",
+          "#212c48",
+          "#38466b",
+          "#6178a0",
+          "#aab9d6"
+        ]
+      },
+      "bg-card": {
+        "role": "neutral",
+        "displayName": "Glass Panel",
+        "canonical": "oklch(24% 0.02 260 / 0.65)",
+        "tonalRamp": [
+          "rgba(6,9,15,0.65)",
+          "rgba(11,16,27,0.65)",
+          "rgba(17,24,39,0.65)",
+          "rgba(26,35,54,0.65)",
+          "rgba(38,50,74,0.65)",
+          "rgba(58,74,102,0.65)",
+          "rgba(92,112,144,0.65)",
+          "rgba(150,168,196,0.65)"
+        ]
+      },
+      "accent-cyan": {
+        "role": "primary",
+        "displayName": "Signal Cyan",
+        "canonical": "oklch(83% 0.13 210)",
+        "tonalRamp": [
+          "#003844",
+          "#00566b",
+          "#00799b",
+          "#00a0c8",
+          "#00c3ee",
+          "#00d9ff",
+          "#5ce8ff",
+          "#b3f4ff"
+        ]
+      },
+      "accent-violet": {
+        "role": "secondary",
+        "displayName": "Nebula Violet",
+        "canonical": "oklch(64% 0.19 293)",
+        "tonalRamp": [
+          "#2a1257",
+          "#3f1c81",
+          "#5729ab",
+          "#6f3cc9",
+          "#8b5cf6",
+          "#a67ff8",
+          "#c1a4fa",
+          "#dccafd"
+        ]
+      },
+      "ink-primary": {
+        "role": "neutral",
+        "displayName": "Signal White",
+        "canonical": "oklch(100% 0 0)",
+        "tonalRamp": [
+          "#0a0a0a",
+          "#333333",
+          "#5c5c5c",
+          "#858585",
+          "#adadad",
+          "#d6d6d6",
+          "#f0f0f0",
+          "#ffffff"
+        ]
+      },
+      "ink-muted": {
+        "role": "neutral",
+        "displayName": "Muted Ice",
+        "canonical": "oklch(87% 0.03 230)",
+        "tonalRamp": [
+          "#1a222b",
+          "#334252",
+          "#4d6478",
+          "#6a8398",
+          "#8ba3b8",
+          "#a8c0d3",
+          "#c8d8e8",
+          "#e3edf5"
+        ]
+      },
+      "signal-success": {
+        "role": "success",
+        "displayName": "Signal Green",
+        "canonical": "oklch(75% 0.17 149)",
+        "tonalRamp": [
+          "#0c2c17",
+          "#134723",
+          "#1c672f",
+          "#22c55e",
+          "#4ade80",
+          "#86efac",
+          "#bbf7d0",
+          "#e6faed"
+        ]
+      },
+      "signal-warning": {
+        "role": "warning",
+        "displayName": "Signal Amber",
+        "canonical": "oklch(80% 0.15 90)",
+        "tonalRamp": [
+          "#3a2c05",
+          "#5f4809",
+          "#8a660d",
+          "#eab308",
+          "#fbc94d",
+          "#fdda85",
+          "#feeab8",
+          "#fff8e0"
+        ]
+      },
+      "signal-error": {
+        "role": "error",
+        "displayName": "Signal Red",
+        "canonical": "oklch(63% 0.21 25)",
+        "tonalRamp": [
+          "#3d0a0a",
+          "#651414",
+          "#921f1f",
+          "#ef4444",
+          "#f57171",
+          "#f9a0a0",
+          "#fccece",
+          "#fdeaea"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Hero headline only, per the strict 48px baseline."
+      },
+      "headline": { "displayName": "Headline", "purpose": "Section titles." },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Card titles, subheadings — the 20px scale step."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Prose copy, capped at 65–75ch via .max-w-readable."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Monospace instrument-panel voice: tags, badges, stats, code."
+      }
+    },
+    "shadows": [
+      {
+        "name": "ambient-sm",
+        "value": "0 1px 2px rgba(0,0,0,0.3)",
+        "purpose": "Minimal resting elevation for small controls."
+      },
+      {
+        "name": "ambient-md",
+        "value": "0 4px 6px -1px rgba(0,0,0,0.4), 0 2px 4px -2px rgba(0,0,0,0.3)",
+        "purpose": "Default resting elevation for glass-panel cards."
+      },
+      {
+        "name": "ambient-lg",
+        "value": "0 10px 15px -3px rgba(0,0,0,0.4), 0 4px 6px -4px rgba(0,0,0,0.3)",
+        "purpose": "Raised panels, dropdowns."
+      },
+      {
+        "name": "glow-cyan-primary-hover",
+        "value": "0 0 25px rgba(0,217,255,0.25)",
+        "purpose": "Primary button hover glow."
+      },
+      {
+        "name": "glow-cyan-secondary-hover",
+        "value": "0 0 20px rgba(0,217,255,0.1)",
+        "purpose": "Secondary button hover glow."
+      },
+      {
+        "name": "glow-white-hero",
+        "value": "0 0 30px rgba(255,255,255,0.15)",
+        "purpose": "Hero CTA resting glow."
+      },
+      {
+        "name": "glow-white-hero-hover",
+        "value": "0 0 50px rgba(255,255,255,0.3)",
+        "purpose": "Hero CTA hover glow."
+      },
+      {
+        "name": "glow-modal-cyan",
+        "value": "0 0 40px rgba(0,217,255,0.08)",
+        "purpose": "Expanded project-detail modal ambient bloom."
+      }
+    ],
+    "motion": [
+      {
+        "name": "transition-fast",
+        "value": "150ms ease",
+        "purpose": "Micro-interactions: color/border shifts."
+      },
+      {
+        "name": "transition-base",
+        "value": "300ms ease",
+        "purpose": "Default state transitions (buttons, hovers)."
+      },
+      {
+        "name": "transition-slow",
+        "value": "500ms ease",
+        "purpose": "Larger layout/opacity transitions."
+      },
+      {
+        "name": "transition-spring",
+        "value": "500ms cubic-bezier(0.34, 1.56, 0.64, 1)",
+        "purpose": "Springy entrance/emphasis motion."
+      }
+    ],
+    "breakpoints": []
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Default call-to-action across the site.",
+      "html": "<button class=\"ds-btn-primary\">View Projects</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 24px; border-radius: 16px; font-size: 14px; font-weight: 600; background: #00d9ff; color: #fff; border: 1px solid #00d9ff; transition: all 300ms ease; cursor: pointer; } .ds-btn-primary:hover { background: #33e0ff; box-shadow: 0 0 25px rgba(0,217,255,0.25); } .ds-btn-primary:focus-visible { outline: 2px solid #00d9ff; outline-offset: 2px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Secondary action, paired with primary.",
+      "html": "<button class=\"ds-btn-secondary\">Learn More</button>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 20px; border-radius: 16px; font-size: 14px; font-weight: 500; background: transparent; color: #00d9ff; border: 1px solid rgba(0,217,255,0.25); transition: all 300ms ease; cursor: pointer; } .ds-btn-secondary:hover { background: rgba(0,217,255,0.08); border-color: rgba(0,217,255,0.4); box-shadow: 0 0 20px rgba(0,217,255,0.1); } .ds-btn-secondary:focus-visible { outline: 2px solid #00d9ff; outline-offset: 2px; }"
+    },
+    {
+      "name": "Hero Button",
+      "kind": "button",
+      "refersTo": "button-hero",
+      "description": "One-off high-contrast CTA reserved for the above-the-fold hero only.",
+      "html": "<button class=\"ds-btn-hero\">Get In Touch</button>",
+      "css": ".ds-btn-hero { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 12px 32px; border-radius: 16px; font-size: 18px; font-weight: 700; background: #fff; color: #050816; border: 2px solid #fff; box-shadow: 0 0 30px rgba(255,255,255,0.15); transition: all 300ms ease; cursor: pointer; } .ds-btn-hero:hover { background: rgba(255,255,255,0.9); box-shadow: 0 0 50px rgba(255,255,255,0.3); }"
+    },
+    {
+      "name": "Project Card",
+      "kind": "card",
+      "refersTo": "card-project",
+      "description": "Glass-panel grid card that expands into a full project modal.",
+      "html": "<div class=\"ds-card-project\"><div class=\"ds-card-project-thumb\"></div><h3 class=\"ds-card-project-title\">Project Name</h3><div class=\"ds-card-project-tags\"><span class=\"ds-tag\">Next.js</span><span class=\"ds-tag\">TypeScript</span></div></div>",
+      "css": ".ds-card-project { background: rgba(17,24,39,0.65); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.06); border-radius: 32px; overflow: hidden; padding: 16px; cursor: pointer; transition: border-color 300ms ease, box-shadow 300ms ease; } .ds-card-project:hover { border-color: rgba(0,217,255,0.15); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.4); } .ds-card-project-thumb { height: 240px; width: 100%; border-radius: 10px; background: #0b1120; margin-bottom: 12px; } .ds-card-project-title { font-family: Poppins, system-ui, sans-serif; font-weight: 600; font-size: 20px; color: #fff; margin: 0 0 8px; }"
+    },
+    {
+      "name": "Tag / Chip",
+      "kind": "chip",
+      "refersTo": "badge-glass",
+      "description": "Monospace instrument-readout tag used for skills, categories, stats.",
+      "html": "<span class=\"ds-tag\">TypeScript</span>",
+      "css": ".ds-tag { display: inline-flex; align-items: center; padding: 4px 12px; border-radius: 9999px; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.05em; background: rgba(0,217,255,0.1); color: #00d9ff; border: 1px solid rgba(0,217,255,0.1); transition: border-color 200ms, background 200ms, box-shadow 200ms; } .ds-tag:hover { border-color: rgba(0,217,255,0.4); background: rgba(0,217,255,0.16); box-shadow: 0 0 12px rgba(0,217,255,0.2); }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input-default",
+      "description": "Contact form field styled to match the glass-panel system.",
+      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"Your name\" />",
+      "css": ".ds-input { width: 100%; padding: 10px 16px; border-radius: 10px; background: rgba(17,24,39,0.65); border: 1px solid rgba(255,255,255,0.06); color: #fff; font-family: Inter, system-ui, sans-serif; font-size: 14px; transition: border-color 200ms ease; } .ds-input::placeholder { color: #c8d8e8; opacity: 0.7; } .ds-input:focus-visible { outline: 2px solid #00d9ff; outline-offset: 2px; border-color: rgba(0,217,255,0.4); }"
+    },
+    {
+      "name": "Navigation Bar",
+      "kind": "nav",
+      "refersTo": "nav-primary",
+      "description": "Fixed top navigation, z-50, sits above page content.",
+      "html": "<nav class=\"ds-nav\"><span class=\"ds-nav-logo\">S.</span><div class=\"ds-nav-links\"><a href=\"#\" class=\"ds-nav-link\">Projects</a><a href=\"#\" class=\"ds-nav-link\">Credentials</a></div></nav>",
+      "css": ".ds-nav { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; background: rgba(5,8,22,0.8); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255,255,255,0.06); } .ds-nav-logo { font-family: Poppins, sans-serif; font-weight: 700; color: #fff; } .ds-nav-links { display: flex; gap: 24px; } .ds-nav-link { font-family: Inter, sans-serif; font-size: 14px; color: #fff; text-decoration: none; transition: color 150ms ease; } .ds-nav-link:hover { color: #00d9ff; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Cosmic OS",
+    "overview": "This is not a portfolio dressed up with a space theme — it's an instrument panel that happens to hold a portfolio. Every surface reads as a pane in a dark control system: near-black voids, hairline borders, glass-panel cards, and a single cyan signal color doing the work of drawing the eye. The nebula glow and starfield aren't wallpaper; they're the ambient hum of a system that's alive. Futuristic, immersive, bold — the visual identity is the pitch, proof that the person who built this can make motion, glassmorphism, and depth behave under real engineering discipline (fps-capped canvases, compositor-aware blur, viewport-gated third-party scripts) rather than dragging the page down.\n\nThe system explicitly rejects the generic SaaS-template look — no cream/sand backgrounds, no gradient text, no hero-metric blocks, no tiny uppercase eyebrows scaffolding every section. It also rejects the overly corporate agency-portfolio register (stock-photo safe, forgettable) and gimmicky 3D-tech-demo sites where effects overwhelm the content they're supposed to frame. Everything here is legible first, spectacular second.",
+    "keyCharacteristics": [
+      "Near-black void background (#050816) with a secondary nebula tone (#0b1120) for layered depth, never a lighter 'card gray'",
+      "One accent does the signaling: cyan (#00d9ff) for primary actions, focus, and links; violet (#8b5cf6) reserved for secondary/complementary accents",
+      "Glass-panel surfaces: translucent dark backgrounds with backdrop blur and a barely-visible hairline border, not opaque flat cards",
+      "Generous, large-radius geometry (16-40px) on containers; small radius (6-10px) on tight controls",
+      "Monospace type appears only where it signals 'system data': labels, tags, code, stats — never body copy"
+    ],
+    "rules": [
+      {
+        "name": "The One Signal Rule",
+        "body": "Cyan (#00d9ff) is the only color allowed to mean 'click me' or 'this is active.' Violet, success-green, and warning-yellow carry their own distinct meanings and must never substitute for cyan's role.",
+        "section": "colors"
+      },
+      {
+        "name": "The Glass, Not Gray Rule",
+        "body": "Container surfaces are never a flat opaque gray. They are the void background showing through a translucent, blurred panel with a hairline border.",
+        "section": "colors"
+      },
+      {
+        "name": "The Strict Scale Rule",
+        "body": "The type scale is fixed at 16px body / 20px subheading / 32px heading / 48px hero. Don't introduce arbitrary in-between sizes.",
+        "section": "typography"
+      },
+      {
+        "name": "The Glow-Over-Shadow Rule",
+        "body": "Interactive elevation is communicated with colored glow (accent-tinted box-shadow at low opacity), not by darkening a gray shadow.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do use #00d9ff cyan as the only 'this is interactive/active' signal color across the entire site.",
+      "Do build containers as translucent glass panels (rgba(17,24,39,0.65) + blur + hairline border), never flat opaque gray cards.",
+      "Do use colored glow (box-shadow in the accent hue at low opacity) for hover/elevation states instead of plain darkening shadows.",
+      "Do cap body prose at 65-75ch and reserve monospace type for labels, tags, stats, and code — never for body copy.",
+      "Do cap fps and viewport-gate any continuous canvas/animation loop or third-party script; every visual effect must earn its frame budget.",
+      "Do swap to a solid/near-opaque background on any backdrop-filter: blur() element while it's actively resizing."
+    ],
+    "donts": [
+      "Don't introduce cream/sand/warm-neutral backgrounds, gradient text, hero-metric blocks, or tiny uppercase eyebrow labels.",
+      "Don't design toward a safe, stock-photo, indistinguishable-from-every-freelancer agency-portfolio look.",
+      "Don't let visual effects overwhelm content or usability — no gimmicky 3D-tech-demo excess.",
+      "Don't use .btn-hero's white-on-void styling anywhere except the single above-the-fold hero CTA.",
+      "Don't place any colored border-left/border-right accent stripe on cards or list items.",
+      "Don't stack z-40/z-50 on anything meant to render above the fixed navbar; use z-[60]/z-[70].",
+      "Don't skip the prefers-reduced-motion fallback on new animated or canvas-driven components."
+    ]
+  }
+}

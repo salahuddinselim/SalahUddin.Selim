@@ -90,7 +90,7 @@ export function HeroActions() {
           <div
             id="cv-dropdown"
             role="menu"
-            className="absolute left-1/2 -translate-x-1/2 mt-2 w-44 rounded-xl overflow-hidden bg-[rgba(10,10,15,0.95)] backdrop-blur-[20px] border border-white/10 shadow-xl z-50 animate-dropdown-in"
+            className="absolute left-1/2 -translate-x-1/2 mt-2 w-56 rounded-xl overflow-hidden bg-[rgba(10,10,15,0.95)] backdrop-blur-[20px] border border-white/10 shadow-xl z-[60] animate-dropdown-in"
           >
             <a
               href="/api/cv"
@@ -98,20 +98,28 @@ export function HeroActions() {
               rel="noopener noreferrer"
               onClick={() => setCvOpen(false)}
               role="menuitem"
-              className="flex items-center gap-3 px-4 py-3 text-sm text-white/80 hover:text-white hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:bg-white/10"
+              className="flex items-start gap-3 px-4 py-3 text-sm text-white/80 hover:text-white hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:bg-white/10"
             >
-              <Eye size={16} className="text-accent" />
-              Preview CV
+              <Eye size={16} className="text-accent mt-0.5 shrink-0" />
+              <span className="flex flex-col">
+                Preview CV
+                <span className="text-xs text-white/60 font-normal">Opens in a new tab</span>
+              </span>
             </a>
             <a
               href="/api/cv"
               download="Salah_Uddin_Selim.pdf"
               onClick={() => setCvOpen(false)}
               role="menuitem"
-              className="flex items-center gap-3 px-4 py-3 text-sm text-white/80 hover:text-white hover:bg-white/5 transition-colors border-t border-white/5 focus-visible:outline-none focus-visible:bg-white/10"
+              className="flex items-start gap-3 px-4 py-3 text-sm text-white/80 hover:text-white hover:bg-white/5 transition-colors border-t border-white/5 focus-visible:outline-none focus-visible:bg-white/10"
             >
-              <Download size={16} className="text-accent" />
-              Download CV
+              <Download size={16} className="text-accent mt-0.5 shrink-0" />
+              <span className="flex flex-col">
+                Download CV
+                <span className="text-xs text-white/60 font-normal">
+                  Saves the PDF to your device
+                </span>
+              </span>
             </a>
           </div>
         )}
