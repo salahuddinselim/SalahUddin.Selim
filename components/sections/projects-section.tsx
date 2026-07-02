@@ -28,7 +28,7 @@ export function ProjectsSection({ projects: initialProjects }: { projects: Sanit
           </h1>
         </motion.div>
 
-        <ul className="max-w-3xl mx-auto w-full flex flex-col gap-3">
+        <ul className="max-w-4xl mx-auto w-full grid grid-cols-1 sm:grid-cols-2 items-start gap-4">
           {projects.map((project, i) => (
             <li key={project._id ?? project.title}>
               <ProjectCard

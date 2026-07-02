@@ -3,7 +3,7 @@
 import { useEffect, useId, useRef, memo } from "react"
 import Image from "next/image"
 import { AnimatePresence, motion } from "framer-motion"
-import { GitBranch, ExternalLink, X } from "lucide-react"
+import { X } from "lucide-react"
 import { useOutsideClick } from "@/hooks/use-outside-click"
 import { cn } from "@/lib/utils"
 import type { SanityProject as Project } from "@/types"
@@ -46,7 +46,7 @@ function ProjectThumb({
           fill
           sizes={sizes}
           priority={priority}
-          className="object-cover"
+          className="object-cover object-top"
         />
       ) : (
         <span
@@ -69,6 +69,8 @@ export const ProjectCard = memo(function ProjectCard({
   const ref = useRef<HTMLDivElement>(null)
   const id = useId()
   const active = activeProject?._id === project._id
+  const ctaHref = project.liveUrl ?? project.githubUrl
+  const ctaText = project.liveUrl ? "Live Demo" : "GitHub"
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
@@ -79,18 +81,9 @@ export const ProjectCard = memo(function ProjectCard({
   }, [setActiveProject])
 
   useEffect(() => {
-    if (activeProject) {
-      document.body.style.overflow = "hidden"
-    } else {
-      // Only restore if no other component is locking scroll
-      if (document.body.style.overflow === "hidden") {
-        document.body.style.overflow = ""
-      }
-    }
+    document.body.style.overflow = activeProject ? "hidden" : ""
     return () => {
-      if (document.body.style.overflow === "hidden") {
-        document.body.style.overflow = ""
-      }
+      document.body.style.overflow = ""
     }
   }, [activeProject])
 
@@ -99,25 +92,13 @@ export const ProjectCard = memo(function ProjectCard({
   return (
     <>
       {/* Backdrop and modal share one AnimatePresence so they fade/collapse
-          together on close -- previously the backdrop was a bare conditional
-          outside AnimatePresence and vanished instantly while the layoutId
-          card kept animating shut, which read as a broken, out-of-sync close. */}
-      {/* z-[60]/z-[70], not z-40/z-50 -- the site's fixed navbar (and its
-          mobile menu button) is also z-50, and on small viewports the modal's
-          close button landed directly under the navbar's hamburger button,
-          so taps meant to close the modal hit the nav instead. Bumping the
-          whole modal stack above z-50 guarantees it's clickable and also
-          properly blocks interaction with the nav while open. */}
+          together on close. No custom transition duration on the backdrop
+          and no delay on the content fade -- both would desync from the
+          card's own layoutId animation and read as a jarring, out-of-sync
+          close even though each element individually animates smoothly. */}
       <AnimatePresence>
         {active ? (
           <div className="fixed inset-0 z-[60] grid place-items-center px-4">
-            {/* No custom transition duration here on purpose -- the reference
-                component leaves the backdrop on Framer Motion's default
-                timing so it stays roughly in sync with the layoutId card's
-                own (longer, spring-based) layout animation. A faster custom
-                duration made the backdrop vanish well before the card
-                finished resizing, which read as an out-of-sync, jarring
-                close even though each element was individually smooth. */}
             <motion.div
               key={`overlay-${project._id}`}
               initial={{ opacity: 0 }}
@@ -126,12 +107,20 @@ export const ProjectCard = memo(function ProjectCard({
               className="fixed inset-0 bg-black/60"
             />
 
+            {/* Close button only shown below lg -- on desktop the modal
+                doesn't fill the viewport, so clicking outside it is the
+                natural way to close (useOutsideClick, below). z-[70], not
+                z-50, because the site's fixed navbar (and its mobile menu
+                button) is also z-50, and on small viewports the close
+                button landed directly under the navbar's hamburger button,
+                so taps meant to close the modal hit the nav instead. */}
             <motion.button
               key={`close-${project._id}-${id}`}
+              layout
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0, transition: { duration: 0.05 } }}
-              className="fixed top-4 right-4 z-[70] w-11 h-11 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center text-white/70 hover:text-white hover:bg-white/20 transition-colors"
+              className="flex absolute top-4 right-4 lg:hidden z-[70] items-center justify-center bg-white/10 backdrop-blur-sm rounded-full h-8 w-8 text-white/80 hover:text-white hover:bg-white/20 transition-colors"
               onClick={() => setActiveProject(null)}
               aria-label="Close project details"
             >
@@ -139,48 +128,38 @@ export const ProjectCard = memo(function ProjectCard({
             </motion.button>
 
             {/* No backdrop-blur here -- this box is the layoutId shared
-                element that resizes between the list row and the full
-                modal. Animating backdrop-filter while width/height/position
-                change forces the browser to re-blur the backdrop every
-                frame, which is a well-known jank source on real devices
-                (the reference component this is based on uses a plain solid
-                background for exactly this reason). Solid near-opaque bg
-                instead keeps the glass look without the per-frame cost. */}
+                element that resizes between the card and the full modal.
+                Animating backdrop-filter while width/height change forces
+                a re-blur every frame, a known real-device jank source. */}
             <motion.div
               layoutId={`card-${project._id}-${id}`}
               ref={ref}
               role="dialog"
               aria-modal="true"
               aria-label={project.title}
-              className={cn(
-                "relative z-[60] w-full max-w-[560px] h-full md:h-fit md:max-h-[85vh] flex flex-col overflow-hidden",
-                "sm:rounded-3xl",
-                "bg-[rgba(15,21,35,0.98)]",
-                "border border-[rgba(0,217,255,0.15)]",
-                "shadow-[0_0_40px_rgba(0,217,255,0.08)]",
-              )}
+              className="w-full max-w-[500px] h-full md:h-fit md:max-h-[90%] flex flex-col bg-[rgba(15,21,35,0.98)] border border-[rgba(0,217,255,0.15)] shadow-[0_0_40px_rgba(0,217,255,0.08)] sm:rounded-3xl overflow-hidden"
             >
               <ProjectThumb
                 project={project}
                 layoutId={`image-${project._id}-${id}`}
-                className="w-full h-64 sm:h-80 shrink-0"
+                className="w-full h-80 shrink-0 sm:rounded-t-3xl"
                 fallbackTextClassName="text-5xl"
-                sizes="560px"
+                sizes="500px"
                 priority
               />
 
-              <div className="flex flex-col overflow-hidden">
-                <div className="flex items-start justify-between gap-3 p-5 pb-0">
-                  <div className="min-w-0">
+              <div>
+                <div className="flex justify-between items-start p-4">
+                  <div>
                     <motion.h3
                       layoutId={`title-${project._id}-${id}`}
-                      className="text-xl font-heading font-semibold text-foreground"
+                      className="font-heading font-semibold text-foreground text-base"
                     >
                       {project.title}
                     </motion.h3>
                     <motion.p
                       layoutId={`description-${project._id}-${id}`}
-                      className="text-sm text-accent font-body mt-1"
+                      className="text-accent font-body text-sm mt-1"
                     >
                       {project.description}
                     </motion.p>
@@ -189,43 +168,35 @@ export const ProjectCard = memo(function ProjectCard({
                     </p>
                   </div>
 
-                  {(project.liveUrl || project.githubUrl) && (
+                  {ctaHref && (
                     <motion.a
-                      layoutId={`button-${project._id}-${id}`}
-                      href={project.liveUrl ?? project.githubUrl}
+                      layout
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      href={ctaHref}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="btn-primary text-xs px-4 py-2 shrink-0 whitespace-nowrap"
                     >
-                      {project.liveUrl ? "Live Demo" : "GitHub"}
+                      {ctaText}
                     </motion.a>
                   )}
                 </div>
-
-                {/* No delay here (unlike an earlier version of this) --
-                    transition={{ delay }} without scoping to `animate` also
-                    delays the `exit` fade, so on close this content sat
-                    fully visible for 100ms before even starting to fade,
-                    out of step with the backdrop/card already animating. */}
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className={cn(
-                    "p-5 pt-4 space-y-4 overflow-y-auto",
-                    "[mask:linear-gradient(to_bottom,white,white,transparent)]",
-                    "[scrollbar-width:none] [-ms-overflow-style:none]",
-                    "[-webkit-overflow-scrolling:touch]",
-                  )}
-                >
-                  <p className="text-base text-muted font-body leading-relaxed max-w-prose">
-                    {project.longDescription}
-                  </p>
-
-                  <div>
-                    <h4 className="text-xs font-heading font-semibold text-foreground/60 uppercase tracking-wider mb-2">
-                      Tech Stack
-                    </h4>
+                <div className="pt-4 relative px-4">
+                  <motion.div
+                    layout
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className={cn(
+                      "text-muted text-sm h-40 md:h-fit pb-10 flex flex-col items-start gap-4 overflow-auto",
+                      "[mask:linear-gradient(to_bottom,white,white,transparent)]",
+                      "[scrollbar-width:none] [-ms-overflow-style:none]",
+                      "[-webkit-overflow-scrolling:touch]",
+                    )}
+                  >
+                    <p className="leading-relaxed">{project.longDescription}</p>
                     <div className="flex flex-wrap gap-2">
                       {(project.technologies ?? []).map((tech) => (
                         <span
@@ -236,37 +207,8 @@ export const ProjectCard = memo(function ProjectCard({
                         </span>
                       ))}
                     </div>
-                  </div>
-
-                  <div className="flex items-center gap-3 pt-2 pb-6">
-                    {project.githubUrl && (
-                      <motion.a
-                        href={project.githubUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="btn-secondary text-xs px-3 py-1.5"
-                        whileHover={{ scale: 1.03 }}
-                        whileTap={{ scale: 0.97 }}
-                      >
-                        <GitBranch size={14} />
-                        GitHub
-                      </motion.a>
-                    )}
-                    {project.liveUrl && (
-                      <motion.a
-                        href={project.liveUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="btn-primary text-xs px-3 py-1.5"
-                        whileHover={{ scale: 1.03 }}
-                        whileTap={{ scale: 0.97 }}
-                      >
-                        <ExternalLink size={14} />
-                        Live Demo
-                      </motion.a>
-                    )}
-                  </div>
-                </motion.div>
+                  </motion.div>
+                </div>
               </div>
             </motion.div>
           </div>
@@ -288,48 +230,33 @@ export const ProjectCard = memo(function ProjectCard({
           aria-expanded={active}
           aria-label={`View details for ${project.title}`}
           initial={false}
-          animate={{ opacity: 1, y: 0 }}
+          animate={{ opacity: 1 }}
           transition={{ delay: index * 0.05, duration: 0.4, ease: "easeOut" }}
-          className={cn(
-            "group flex flex-col md:flex-row items-center justify-between gap-4",
-            "p-4 rounded-2xl cursor-pointer",
-            "bg-[rgba(15,21,35,0.72)]",
-            "border border-[rgba(255,255,255,0.06)]",
-            "hover:border-accent/20 hover:bg-[rgba(15,21,35,0.9)]",
-            "transition-all duration-300",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050816]",
-          )}
+          className="p-4 flex flex-col hover:bg-white/[0.04] rounded-xl cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050816]"
         >
-          <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto min-w-0">
+          <div className="flex gap-4 flex-col w-full">
             <ProjectThumb
               project={project}
               layoutId={`image-${project._id}-${id}`}
-              className="h-32 w-32 md:h-14 md:w-14 rounded-xl"
-              fallbackTextClassName="text-2xl"
-              sizes="128px"
+              className="h-60 w-full rounded-lg"
+              fallbackTextClassName="text-4xl"
+              sizes="(max-width: 768px) 100vw, 50vw"
             />
-            <div className="min-w-0 text-center md:text-left">
+            <div className="flex justify-center items-center flex-col">
               <motion.h3
                 layoutId={`title-${project._id}-${id}`}
-                className="font-heading font-semibold text-foreground"
+                className="font-heading font-semibold text-foreground text-center text-base"
               >
                 {project.title}
               </motion.h3>
               <motion.p
                 layoutId={`description-${project._id}-${id}`}
-                className="text-sm text-muted font-body line-clamp-1"
+                className="text-muted font-body text-center text-sm"
               >
                 {project.description}
               </motion.p>
             </div>
           </div>
-
-          <motion.div
-            layoutId={`button-${project._id}-${id}`}
-            className="btn-secondary text-xs px-4 py-2 shrink-0 whitespace-nowrap"
-          >
-            View Project
-          </motion.div>
         </motion.div>
       ) : (
         <motion.div
