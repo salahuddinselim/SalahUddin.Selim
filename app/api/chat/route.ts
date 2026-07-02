@@ -41,6 +41,31 @@ PROJECTS:
 5. Player Information System — Bangladesh Cricket Team — C, File I/O. CLI for player stats with search/sort. github.com/salahuddinselim/Player-Information-System
 `
 
+// The chat UI only offers these 5 fixed questions (no free-text input), so we
+// can afford a hand-written fallback answer for each. If the Gemini call
+// fails for any reason (quota, transient overload, etc.) we serve this
+// instead of a dead-end error — the assistant should never simply break.
+const FALLBACK_ANSWERS: Record<string, string> = {
+  "what are salah's technical skills?":
+    "Salah works across Python, Java, C/C++, PHP, and JavaScript, with frameworks like JavaFX and Bootstrap, MySQL for databases, and hands-on IoT experience with Arduino sensors. He's also comfortable with Git, REST APIs, and multithreaded/socket programming.",
+  "tell me about his projects":
+    "A few highlights: a multiplayer Puzzle Solving Game in Java/JavaFX that won 6th Runner-Up at UIU's Software Project Competition, a full-stack Tournament Management System (PHP/MySQL), an Automated Fish Pond Monitoring System using Arduino and IoT sensors, and an AI Voice Assistant in Python. Check out the Projects page for details and links.",
+  "what's his education background?":
+    "Salah is pursuing a B.Sc. in Computer Science & Engineering at United International University (GPA 3.68/4.00, graduating 2026). He earned a perfect GPA of 5.00/5.00 in both his HSC and SSC exams in Bangladesh.",
+  "what awards has he won?":
+    "He placed 6th Runner-Up at the UIU Software Project Competition, Spring 2025, and achieved a perfect GPA of 5.00/5.00 in both HSC and SSC.",
+  "how can i contact him?":
+    "You can reach Salah at selimsalahuddin19@gmail.com, through the contact form on this site, or connect on LinkedIn, GitHub, Instagram, or Facebook — links are in the footer and Persona page.",
+}
+
+function getFallbackAnswer(question: string): string {
+  const key = question.trim().toLowerCase()
+  return (
+    FALLBACK_ANSWERS[key] ??
+    "I'm having trouble reaching my AI brain right now — but you can find everything about Salah's skills, projects, education, and contact info elsewhere on this site, or reach out directly at selimsalahuddin19@gmail.com."
+  )
+}
+
 const SYSTEM_INSTRUCTION = [
   `You are Infernape, an AI assistant for Salah Uddin Selim's portfolio website.`,
   ``,
@@ -107,14 +132,20 @@ export async function POST(request: Request) {
     }
   }
 
+  const { messages } = body
+  const lastUserContent = (messages[messages.length - 1] as { content: string }).content
+
   const apiKey = process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY
   if (!apiKey) {
-    return NextResponse.json({ error: "Service unavailable" }, { status: 503 })
+    const resp = NextResponse.json({
+      role: "assistant",
+      content: getFallbackAnswer(lastUserContent),
+    })
+    return addCorsHeaders(request, resp)
   }
 
   try {
     const genAI = new GoogleGenAI({ apiKey })
-    const { messages } = body
 
     let historyMessages = messages.slice(0, -1)
     const firstUserIdx = historyMessages.findIndex((m: { role: string }) => m.role === "user")
@@ -127,19 +158,26 @@ export async function POST(request: Request) {
 
     contents.push({
       role: "user",
-      parts: [{ text: messages[messages.length - 1].content }],
+      parts: [{ text: lastUserContent }],
     })
 
     const response = await genAI.models.generateContent({
-      model: "gemini-2.0-flash",
+      model: "gemini-2.5-flash-lite",
       contents,
       config: { systemInstruction: SYSTEM_INSTRUCTION },
     })
 
+    if (!response.text) throw new Error("Empty response from model")
+
     const resp = NextResponse.json({ role: "assistant", content: response.text })
     return addCorsHeaders(request, resp)
-  } catch {
-    return NextResponse.json({ error: "Service unavailable" }, { status: 503 })
+  } catch (error) {
+    console.error("[chat] Gemini request failed, serving fallback:", error)
+    const resp = NextResponse.json({
+      role: "assistant",
+      content: getFallbackAnswer(lastUserContent),
+    })
+    return addCorsHeaders(request, resp)
   }
 }
 
