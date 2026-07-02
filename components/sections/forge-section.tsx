@@ -127,7 +127,7 @@ export function ForgeSection({ skills }: ForgeSectionProps) {
           transition={{ duration: 0.6, ease: "easeOut", delay: 0.15 }}
           className="relative w-full h-[440px] sm:h-[600px] md:h-[680px] mb-12 sm:mb-16"
         >
-          <SkillCloud activeCategory={activeCategory} onCategorySelect={handleCategoryClick} />
+          <SkillCloud onCategorySelect={handleCategoryClick} />
         </motion.div>
 
         <motion.div

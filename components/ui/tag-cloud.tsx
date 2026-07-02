@@ -18,7 +18,6 @@ interface TagItem {
 interface TagCloudProps {
   items: TagItem[]
   categoryColors: Record<string, string>
-  activeCategory?: string | null
   onTagClick?: (category: string, name: string) => void
   className?: string
 }
@@ -110,13 +109,7 @@ function generateWireframe(): { rings: WireframePoint[][]; meridians: WireframeP
 const SPHERE_RADIUS = 0.44
 const BADGE_RADIUS = 19
 
-export function TagCloud({
-  items,
-  categoryColors,
-  activeCategory = null,
-  onTagClick,
-  className = "",
-}: TagCloudProps) {
+export function TagCloud({ items, categoryColors, onTagClick, className = "" }: TagCloudProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const tagsRef = useRef<Tag3D[]>([])
@@ -146,16 +139,11 @@ export function TagCloud({
   const maxFpsRef = useRef(60)
   const isMobileRef = useRef(false)
   const isLowPowerRef = useRef(false)
-  const activeCategoryRef = useRef(activeCategory)
   const onTagClickRef = useRef(onTagClick)
 
   useEffect(() => {
     onTagClickRef.current = onTagClick
   }, [onTagClick])
-
-  useEffect(() => {
-    activeCategoryRef.current = activeCategory
-  }, [activeCategory])
 
   useEffect(() => {
     const pts = fibonacciSphere(items.length)
@@ -216,7 +204,12 @@ export function TagCloud({
     if (!canvas || !container) return
 
     const dpr = window.devicePixelRatio || 1
-    const ctx = canvas.getContext("2d", { desynchronized: true })!
+    // desynchronized: true was previously set for lower input latency, but its
+    // low-latency swap chain intermittently renders a solid black frame on
+    // Windows/Chrome when combined with DOM mutations during rAF (the cursor
+    // style writes below) -- that's the "black screen on hover" bug. A synced
+    // 2d context avoids the flicker; the badges aren't latency-sensitive.
+    const ctx = canvas.getContext("2d")!
     let isActive = true
     const { rings, meridians } = wireframeRef.current
     const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)")
@@ -416,7 +409,6 @@ export function TagCloud({
       const radius = Math.min(w, h) * SPHERE_RADIUS
       const rot = rotationRef.current
       const currentDpr = canvas!.width / Math.max(1, w)
-      const activeCategory = activeCategoryRef.current
 
       // Update rotation
       if (isDragging.current) {
@@ -451,15 +443,14 @@ export function TagCloud({
         })
         .sort((a, b) => a.rz - b.rz)
 
-      // Draw badges
+      // Draw badges -- the sphere always renders every skill at full
+      // brightness; category filtering only affects the list below it.
       hitRegionsRef.current = []
       for (const tag of sorted) {
         const sx = cx + tag.rx * radius
         const sy = cy + tag.ry * radius
         const scale = (tag.rz + 1) / 2
         const opacity = Math.max(0.1, Math.min(1, 0.35 + scale * 0.65))
-        const isInactive = activeCategory && tag.category !== activeCategory
-        if (isInactive && scale < 0.3) continue
 
         const iconCanvas = iconCanvasesRef.current.get(tag.idx)
         const iconLoaded = iconLoadedRef.current.get(tag.idx)
@@ -470,12 +461,12 @@ export function TagCloud({
           tag.color,
           tag.textColor,
           tag.label,
-          isInactive ? opacity * 0.15 : opacity,
-          isInactive ? scale * 0.5 : scale,
+          opacity,
+          scale,
           iconCanvas,
           iconLoaded,
         )
-        if (dims && (!activeCategory || tag.category === activeCategory)) {
+        if (dims) {
           hitRegionsRef.current.push({
             x: sx - dims.width / 2,
             y: sy - dims.height / 2,
@@ -552,7 +543,10 @@ export function TagCloud({
           .find((r) => x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h) || null
       hoverRegionRef.current = region
       if (!isDragging.current && containerRef.current) {
-        containerRef.current.style.cursor = region ? "pointer" : "grab"
+        const nextCursor = region ? "pointer" : "grab"
+        if (containerRef.current.style.cursor !== nextCursor) {
+          containerRef.current.style.cursor = nextCursor
+        }
       }
     }
     const onClickCanvas = () => {

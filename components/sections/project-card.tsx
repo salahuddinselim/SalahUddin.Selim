@@ -52,17 +52,22 @@ export const ProjectCard = memo(function ProjectCard({
 
   return (
     <>
-      {active && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm h-full w-full z-40"
-        />
-      )}
-
+      {/* Backdrop and modal share one AnimatePresence so they fade/collapse
+          together on close -- previously the backdrop was a bare conditional
+          outside AnimatePresence and vanished instantly while the layoutId
+          card kept animating shut, which read as a broken, out-of-sync close. */}
       <AnimatePresence>
         {active ? (
-          <div className="fixed inset-0 grid place-items-center z-50 px-4">
+          <div className="fixed inset-0 z-40 grid place-items-center px-4">
+            <motion.div
+              key={`overlay-${project._id}`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+            />
+
             <motion.button
               key={`close-${project._id}-${id}`}
               initial={{ opacity: 0 }}
@@ -82,7 +87,7 @@ export const ProjectCard = memo(function ProjectCard({
               aria-modal="true"
               aria-label={project.title}
               className={cn(
-                "w-full max-w-[560px] max-h-[85vh] overflow-y-auto",
+                "relative z-50 w-full max-w-[560px] max-h-[85vh] overflow-y-auto",
                 "rounded-2xl",
                 "bg-[rgba(17,24,39,0.85)] backdrop-blur-[20px]",
                 "border border-[rgba(0,217,255,0.15)]",

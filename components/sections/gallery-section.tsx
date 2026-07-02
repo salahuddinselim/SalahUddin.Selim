@@ -1,10 +1,10 @@
 "use client"
 
-import Image from "next/image"
 import { motion } from "framer-motion"
 import Link from "next/link"
 import { ArrowLeft, MapPin, Image as ImageIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { DirectionAwareHover } from "@/components/ui/direction-aware-hover"
 import type { GalleryImageData } from "@/lib/sanity/fetch"
 import { gallerySectionCopy, spanClasses } from "@/data"
 
@@ -86,50 +86,25 @@ export function GallerySection({ images }: { images: GalleryImageData[] }) {
               },
             }}
             className={cn(
-              "group relative overflow-hidden rounded-2xl",
+              "relative overflow-hidden rounded-2xl",
               "border border-white/[0.06] bg-white/[0.02]",
               "shadow-[0_4px_20px_rgba(0,0,0,0.2)]",
               spanClasses[img.span ?? "square"],
             )}
           >
-            <div className="relative h-full w-full">
-              <Image
-                src={img.image}
-                alt={img.caption ?? img.title}
-                width={img.width ?? 1200}
-                height={img.height ?? 900}
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                quality={65}
-                loading="lazy"
-                className={cn(
-                  "h-full w-full object-cover transition-all duration-500",
-                  "group-hover:scale-105 group-hover:brightness-110",
-                )}
-              />
-              {/* Gradient overlay */}
-              <div
-                className={cn(
-                  "absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent",
-                  "opacity-60 transition-opacity duration-300",
-                  "group-hover:opacity-90",
-                )}
-              />
-              {/* Location badge */}
+            <DirectionAwareHover
+              imageUrl={img.image}
+              alt={img.caption ?? img.title}
+              className="h-full w-full"
+            >
               {img.location && (
-                <div className="absolute top-3 left-3">
-                  <span className="inline-flex items-center gap-1 rounded-full bg-black/40 backdrop-blur-sm px-2 py-0.5 text-[10px] font-mono text-white/50 border border-white/10 transition-all duration-300 group-hover:bg-cyan-400/20 group-hover:text-cyan-300/80 group-hover:border-cyan-400/30">
-                    <MapPin size={10} />
-                    {img.location}
-                  </span>
-                </div>
-              )}
-              {/* Caption — visible on hover, and always on touch devices (no hover) */}
-              <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 [@media(hover:none)]:translate-y-0 [@media(hover:none)]:opacity-100">
-                <p className="text-sm font-semibold text-white drop-shadow-lg">
-                  {img.caption ?? img.title}
+                <p className="mb-1 flex items-center gap-1 text-[10px] font-mono uppercase tracking-wider text-cyan-300/80">
+                  <MapPin size={10} />
+                  {img.location}
                 </p>
-              </div>
-            </div>
+              )}
+              <p className="text-sm font-semibold drop-shadow-lg">{img.caption ?? img.title}</p>
+            </DirectionAwareHover>
           </motion.div>
         ))}
       </motion.div>

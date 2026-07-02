@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useCallback, startTransition } from "react"
 import dynamic from "next/dynamic"
+import Link from "next/link"
 import { motion } from "framer-motion"
 import { FolderKanban, ArrowUpRight } from "lucide-react"
 import type { SanityProject } from "@/types"
@@ -59,10 +60,10 @@ export function ProjectsPreview({ projects: featuredProjects }: { projects: Sani
         </div>
 
         <motion.div transition={{ duration: 0.4, delay: 0.2 }} className="flex justify-center">
-          <a href="/projects" className="btn-secondary">
+          <Link href="/projects" className="btn-secondary">
             View All Projects
             <ArrowUpRight size={16} />
-          </a>
+          </Link>
         </motion.div>
       </div>
     </motion.section>

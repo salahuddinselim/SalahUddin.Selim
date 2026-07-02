@@ -13,14 +13,16 @@ const categoryColors: Record<string, string> = {
 }
 
 interface SkillCloudProps {
-  activeCategory?: string | null
   onCategorySelect?: (category: string) => void
 }
 
-export function SkillCloud({ activeCategory = null, onCategorySelect }: SkillCloudProps) {
-  const handleTagClick = useCallback((category: string) => {
-    onCategorySelect?.(category)
-  }, [onCategorySelect])
+export function SkillCloud({ onCategorySelect }: SkillCloudProps) {
+  const handleTagClick = useCallback(
+    (category: string) => {
+      onCategorySelect?.(category)
+    },
+    [onCategorySelect],
+  )
 
   const skills = TECH_STACK.map((item) => ({
     name: item.name,
@@ -30,12 +32,5 @@ export function SkillCloud({ activeCategory = null, onCategorySelect }: SkillClo
     logoSvg: <item.icon />,
   }))
 
-  return (
-    <TagCloud
-      items={skills}
-      categoryColors={categoryColors}
-      activeCategory={activeCategory}
-      onTagClick={handleTagClick}
-    />
-  )
+  return <TagCloud items={skills} categoryColors={categoryColors} onTagClick={handleTagClick} />
 }
