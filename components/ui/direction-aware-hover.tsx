@@ -93,7 +93,7 @@ export function DirectionAwareHover({
               fill
               sizes={sizes}
               priority={priority}
-              className={cn("scale-[1.15] object-cover", imageClassName)}
+              className={cn("object-contain", imageClassName)}
             />
           </motion.div>
           <motion.div
