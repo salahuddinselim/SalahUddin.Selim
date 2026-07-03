@@ -6,6 +6,13 @@ validateEnv()
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: ["192.168.77.105"],
+  // Baked into the bundle at build time (not read per-request), so it stays
+  // stable across serverless instances -- unlike process.uptime()/instance
+  // init time, which reset on every cold start and made /api/monitor report
+  // a fresh "just now" deploy on essentially every request.
+  env: {
+    BUILD_TIME: new Date().toISOString(),
+  },
   turbopack: {
     root: path.resolve(__dirname),
   },

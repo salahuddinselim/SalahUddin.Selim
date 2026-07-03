@@ -8,11 +8,11 @@ import reactPkg from "react/package.json"
 
 export const dynamic = "force-dynamic"
 
-// Captured once when this serverless function instance is initialized, not
-// per-request -- since Vercel spins up fresh instances on every deploy, this
-// is a reliable proxy for "when this deployment went live" without needing a
-// dedicated deploy-timestamp API.
-const INSTANCE_STARTED_AT = new Date().toISOString()
+// Baked into the bundle at build time (see next.config.ts) rather than read
+// from process.uptime()/an instance-init timestamp -- those reset on every
+// serverless cold start, which on Vercel can happen on almost any request,
+// making "uptime" and "last deploy" flip back to ~0/"just now" at random.
+const DEPLOYED_AT = process.env.BUILD_TIME ?? new Date().toISOString()
 
 async function checkEndpoint(
   path: string,
@@ -84,8 +84,8 @@ export async function GET(request: Request) {
       node: process.version,
       env: process.env.VERCEL_ENV ?? process.env.NODE_ENV ?? "development",
     },
-    uptime: Math.floor(process.uptime()),
-    lastDeployedAt: INSTANCE_STARTED_AT,
+    uptime: Math.floor((Date.now() - new Date(DEPLOYED_AT).getTime()) / 1000),
+    lastDeployedAt: DEPLOYED_AT,
     deployCommit: process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ?? null,
     seo: {
       score: Math.round((seoOnlineCount / seoChecks.length) * 100),

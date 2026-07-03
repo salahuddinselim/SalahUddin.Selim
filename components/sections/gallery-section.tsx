@@ -71,7 +71,7 @@ export function GallerySection({ images }: { images: GalleryImageData[] }) {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4"
+        className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 auto-rows-[160px] sm:auto-rows-[200px] gap-3 sm:gap-4"
       >
         {images.map((img, idx) => (
           <motion.div
