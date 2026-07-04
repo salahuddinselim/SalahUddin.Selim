@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef, startTransition } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Home, Menu, X } from "lucide-react"
+import { Menu, X } from "lucide-react"
+import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
@@ -146,8 +147,15 @@ export function Navbar() {
           }}
           className="flex items-center gap-2 sm:gap-3 rounded-full px-2 sm:px-3 py-2 transition-all duration-200 hover:bg-white/5 shrink-0"
         >
-          <span className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-cyan-400/10 text-cyan-300 shadow-[0_0_24px_rgba(0,217,255,0.08)]">
-            <Home size={16} />
+          <span className="relative flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center overflow-hidden rounded-full ring-1 ring-cyan-400/30 shadow-[0_0_24px_rgba(0,217,255,0.08)]">
+            <Image
+              src="/hero.webp"
+              alt="Salah Uddin Selim"
+              fill
+              sizes="40px"
+              priority
+              className="object-cover"
+            />
           </span>
           <span className="text-xs sm:text-sm font-semibold uppercase tracking-[0.32em] text-white/90 hidden sm:inline">
             {siteName}
