@@ -31,7 +31,7 @@ export const siteConfig = {
     "Bangladesh",
   ],
   author: { name: "Salah Uddin Selim" },
-  icon: "/favicon.svg",
+  icon: "/favicon-32.png",
   manifest: "/manifest.webmanifest",
   robots: { index: true, follow: true },
   googleSiteVerification: "google08db23e23b4fc7df",
