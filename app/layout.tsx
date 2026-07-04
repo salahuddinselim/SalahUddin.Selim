@@ -10,7 +10,7 @@ import { SpaceBackgroundWrapper } from "@/components/effects/space-background-wr
 import { AnalyticsWrapper } from "@/components/analytics/analytics-wrapper"
 import { ShowOnMainSite } from "@/components/layout/shell-provider"
 import { siteUrl, siteConfig, buildJsonLd, fallbackContactEmail, fallbackSocials } from "@/data"
-import { getSocialLinks, getProfile } from "@/lib/sanity/fetch"
+import { getSocialLinks, getProfile, getEducation } from "@/lib/sanity/fetch"
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -51,10 +51,19 @@ export const viewport: Viewport = {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const nonce = (await headers()).get("x-nonce") ?? ""
 
-  const [socialsResult, profileResult] = await Promise.allSettled([getSocialLinks(), getProfile()])
+  const [socialsResult, profileResult, educationResult] = await Promise.allSettled([
+    getSocialLinks(),
+    getProfile(),
+    getEducation(),
+  ])
   const socials = socialsResult.status === "fulfilled" ? socialsResult.value : fallbackSocials
   const email = profileResult.status === "fulfilled" ? profileResult.value?.email : undefined
-  const jsonLd = buildJsonLd(socials, email || fallbackContactEmail)
+  const education = educationResult.status === "fulfilled" ? educationResult.value : []
+  const ongoingEducation = education.find((edu) => edu.status === "ongoing")
+  const gpaText = ongoingEducation?.gpa
+    ? `GPA ${ongoingEducation.gpa}/${ongoingEducation.gpaScale ?? "4.0"}`
+    : undefined
+  const jsonLd = buildJsonLd(socials, email || fallbackContactEmail, gpaText)
 
   return (
     <html

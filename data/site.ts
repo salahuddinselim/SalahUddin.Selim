@@ -17,7 +17,7 @@ export const siteConfig = {
   title: "Salah Uddin Selim | CSE Student & Software Engineer",
   titleTemplate: "%s | Salah Uddin Selim",
   description:
-    "CSE student at UIU (GPA 3.68/4.0) with hands-on experience in full-stack web development, IoT systems, and algorithm design. Built 5 production-quality projects across Java, Python, PHP, C/C++, and Arduino.",
+    "CSE student at UIU (GPA 3.74/4.0) with hands-on experience in full-stack web development, IoT systems, and algorithm design. Built 5 production-quality projects across Java, Python, PHP, C/C++, and Arduino.",
   ogDescription:
     "CSE student at United International University building intelligent systems with full-stack engineering, IoT, and AI.",
   keywords: [

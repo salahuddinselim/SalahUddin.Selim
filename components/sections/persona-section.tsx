@@ -25,6 +25,22 @@ export function PersonaSection({
   socials: SocialLinkData[]
   education: EducationData[]
 }) {
+  const ongoingEducation = education.find((edu) => edu.status === "ongoing")
+
+  const stats = personaStats.map((stat) => {
+    if (stat.label === "CGPA / 4.0" && ongoingEducation?.gpa) {
+      return {
+        ...stat,
+        value: ongoingEducation.gpa,
+        label: `CGPA / ${ongoingEducation.gpaScale ?? "4.0"}`,
+      }
+    }
+    if (stat.label === "Credits Earned" && ongoingEducation?.completedCredits != null) {
+      return { ...stat, value: `${ongoingEducation.completedCredits}+` }
+    }
+    return stat
+  })
+
   return (
     <section className="relative min-h-screen px-4 sm:px-6 md:px-8 pb-24 max-w-[1200px] mx-auto">
       {/* Header */}
@@ -56,10 +72,18 @@ export function PersonaSection({
           </h2>
           <div className="space-y-3 text-base text-white/50 leading-relaxed max-w-prose">
             <p>
-              CSE student at <span className="text-cyan-400">United International University</span>{" "}
-              &mdash; CGPA <span className="text-amber-400 font-bold">3.68 / 4.0</span>, graduating
-              2026. I build at the intersection of full-stack development, IoT systems, and
-              algorithm design.
+              CSE student at <span className="text-cyan-400">United International University</span>
+              {ongoingEducation?.gpa && (
+                <>
+                  {" "}
+                  &mdash; CGPA{" "}
+                  <span className="text-amber-400 font-bold">
+                    {ongoingEducation.gpa} / {ongoingEducation.gpaScale ?? "4.0"}
+                  </span>
+                </>
+              )}
+              , graduating 2026. I build at the intersection of full-stack development, IoT systems,
+              and algorithm design.
             </p>
             <p>
               My current focus: full-stack engineering with JavaFX and PHP, IoT systems with Arduino
@@ -156,7 +180,7 @@ export function PersonaSection({
         animate="visible"
         className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 mb-10"
       >
-        {personaStats.map((stat) => (
+        {stats.map((stat) => (
           <motion.div
             key={stat.label}
             variants={itemVariants}

@@ -164,6 +164,8 @@ const educationQuery = groq`*[_type == "education"] | order(order asc) {
   endYear,
   gpa,
   gpaScale,
+  completedCredits,
+  totalCredits,
   status,
   description,
   abbreviation
@@ -177,6 +179,8 @@ export interface EducationData {
   endYear?: string
   gpa?: string
   gpaScale?: string
+  completedCredits?: number
+  totalCredits?: number
   status?: string
   description?: string
   abbreviation?: string

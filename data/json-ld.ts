@@ -2,11 +2,12 @@ import { s } from "./site"
 import type { SocialLinkData } from "@/lib/sanity/fetch"
 
 export const fallbackContactEmail = "selimsalahuddin19@gmail.com"
+const fallbackGpaText = "GPA 3.74/4.0"
 
 // Social profile URLs (sameAs) come from Sanity's socialLink documents so this
 // stays in sync with what's actually configured in the CMS — no duplicated,
 // driftable copies of LinkedIn/Instagram/Facebook/etc. URLs in code.
-export function buildJsonLd(socials: SocialLinkData[], email?: string) {
+export function buildJsonLd(socials: SocialLinkData[], email?: string, gpaText?: string) {
   return {
     "@context": "https://schema.org",
     "@graph": [
@@ -26,8 +27,7 @@ export function buildJsonLd(socials: SocialLinkData[], email?: string) {
         "@id": `${s}/#website`,
         url: s,
         name: "Salah Uddin Selim",
-        description:
-          "CSE student at UIU (GPA 3.68/4.0) with hands-on experience in full-stack web development, IoT systems, and algorithm design.",
+        description: `CSE student at UIU (${gpaText ?? fallbackGpaText}) with hands-on experience in full-stack web development, IoT systems, and algorithm design.`,
         publisher: { "@id": `${s}/#person` },
       },
       {

@@ -67,7 +67,7 @@ export default async function Home() {
     <main>
       <HeroSection />
       <ProjectsPreview projects={allProjects} />
-      <AboutPreview />
+      <AboutPreview education={education} />
       <ExperienceSection experience={experience} education={education} />
       <ContactSection socials={socials} email={email} />
     </main>

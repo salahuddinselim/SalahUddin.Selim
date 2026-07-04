@@ -5,6 +5,7 @@ import Image from "next/image"
 import { ArrowUpRight, MapPin, GraduationCap, Code2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { AwardBadge } from "@/components/sections/award-badge"
+import type { EducationData } from "@/lib/sanity/fetch"
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -15,7 +16,12 @@ const fadeUp = {
   }),
 }
 
-export function AboutPreview() {
+export function AboutPreview({ education }: { education: EducationData[] }) {
+  const ongoingEducation = education.find((edu) => edu.status === "ongoing")
+  const gpaText = ongoingEducation?.gpa
+    ? `${ongoingEducation.gpa}/${ongoingEducation.gpaScale ?? "4.0"}`
+    : null
+
   return (
     <section id="about-preview" className="relative w-full py-24 sm:py-32 px-4">
       <div
@@ -92,15 +98,15 @@ export function AboutPreview() {
               CSE Student & Software Engineer
             </p>
             <p className="text-base text-muted font-body leading-relaxed max-w-prose">
-              CSE student at United International University, Dhaka (GPA 3.68/4.00) with
-              demonstrated experience in full-stack web development, IoT systems, and algorithm
-              design. Proficient in Java, Python, PHP, C/C++, JavaScript, Node.js, Express, SQL, and
-              Arduino. Built 5 production-quality projects spanning desktop applications, embedded
-              IoT telemetry systems, web platforms, and AI-powered tools. Awarded 6th Runner-Up at
-              UIU Software Project Competition, Spring 2025 for a JavaFX-based multilevel puzzle
-              game with real-time Socket Programming chat. Seeking software engineering and research
-              opportunities where I can apply systems thinking and full-stack skills to solve
-              real-world problems.
+              CSE student at United International University, Dhaka
+              {gpaText ? ` (GPA ${gpaText})` : ""} with demonstrated experience in full-stack web
+              development, IoT systems, and algorithm design. Proficient in Java, Python, PHP,
+              C/C++, JavaScript, Node.js, Express, SQL, and Arduino. Built 5 production-quality
+              projects spanning desktop applications, embedded IoT telemetry systems, web platforms,
+              and AI-powered tools. Awarded 6th Runner-Up at UIU Software Project Competition,
+              Spring 2025 for a JavaFX-based multilevel puzzle game with real-time Socket
+              Programming chat. Seeking software engineering and research opportunities where I can
+              apply systems thinking and full-stack skills to solve real-world problems.
             </p>
 
             <div className="flex flex-wrap gap-4 text-sm text-muted font-body">
@@ -110,7 +116,7 @@ export function AboutPreview() {
               </span>
               <span className="flex items-center gap-1.5">
                 <GraduationCap size={14} className="text-accent" />
-                UIU · CSE · 3.68 GPA
+                UIU · CSE{gpaText ? ` · ${ongoingEducation!.gpa} GPA` : ""}
               </span>
               <span className="flex items-center gap-1.5">
                 <Code2 size={14} className="text-accent" />

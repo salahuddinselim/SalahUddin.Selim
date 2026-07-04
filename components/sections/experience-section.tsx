@@ -162,6 +162,11 @@ function EducationEntry({ item }: EducationEntryProps) {
           <span className="text-[10px] font-mono uppercase tracking-wider text-white/30">CGPA</span>
           <span className="text-purple-300 font-bold text-sm leading-none">{item.gpa}</span>
           {item.gpaScale && <span className="text-white/30 text-xs">/{item.gpaScale}</span>}
+          {item.completedCredits != null && item.totalCredits != null && (
+            <span className="text-white/30 text-xs">
+              · {item.completedCredits}/{item.totalCredits} credits
+            </span>
+          )}
           {isOngoing && (
             <span className="ml-auto rounded-full border border-purple-400/20 px-2 py-0.5 text-[10px] font-mono text-purple-300/60">
               Ongoing
