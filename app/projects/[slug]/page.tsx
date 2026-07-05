@@ -5,6 +5,7 @@ import { notFound } from "next/navigation"
 import { GitBranch, ExternalLink, ArrowLeft } from "lucide-react"
 import { getProjects } from "@/lib/sanity/fetch"
 import { s as siteUrl } from "@/data/site"
+import { buildProjectJsonLd, serializeJsonLd } from "@/lib/project-jsonld"
 
 export const dynamic = "force-static"
 export const revalidate = 3600
@@ -56,23 +57,13 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
   const project = await getProject(slug)
   if (!project) notFound()
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "CreativeWork",
-    name: project.title,
-    description: project.description,
-    creator: { "@type": "Person", name: "Salah Uddin Selim" },
-    dateCreated: String(project.year),
-    keywords: (project.technologies ?? []).join(", "),
-    url: `${siteUrl}/projects/${slug}`,
-    ...(project.image ? { image: project.image } : {}),
-  }
+  const jsonLd = buildProjectJsonLd(project, `${siteUrl}/projects/${slug}`)
 
   return (
     <main className="min-h-screen pt-28 pb-24">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
       />
       <div className="max-w-3xl mx-auto px-6">
         <Link

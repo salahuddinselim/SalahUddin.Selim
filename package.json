@@ -5,7 +5,9 @@
   "license": "UNLICENSED",
   "author": "Salah Uddin Selim",
   "scripts": {
+    "predev": "node --env-file-if-exists=.env.local scripts/generate-csp-hashes.mjs",
     "dev": "next dev",
+    "prebuild": "node --env-file-if-exists=.env.local scripts/generate-csp-hashes.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
