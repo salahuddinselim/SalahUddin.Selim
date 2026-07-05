@@ -1,25 +1,23 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
-import projectJsonLdHashes from "./lib/csp-hashes.generated.json"
 
 export default function middleware(request: NextRequest) {
   const nonce = crypto.randomUUID()
 
-  // Static project detail pages (`app/projects/[slug]/page.tsx`, force-static)
-  // can't receive a per-request nonce, so their inline JSON-LD script is
-  // allowed via a build-time sha256 hash-source instead — see
-  // scripts/generate-csp-hashes.mjs.
-  const scriptSrc = [
-    "'self'",
-    `'nonce-${nonce}'`,
-    "https://challenges.cloudflare.com",
-    "https://va.vercel-scripts.com",
-    ...projectJsonLdHashes,
-  ].join(" ")
-
+  // NOTE: script-src intentionally uses 'unsafe-inline' rather than this
+  // nonce. Next.js's own docs state nonces require every page to be
+  // dynamically rendered per-request; this site is almost entirely static/ISR
+  // (home, projects, credentials, gallery, persona, forge all prerender at
+  // build time with no request in scope), so a nonce baked into that HTML is
+  // permanently stale and never matches a fresh per-request nonce header —
+  // confirmed in production: it silently broke React hydration site-wide
+  // (Next's own __next_f/$RC bootstrap scripts got no nonce and were CSP
+  // -blocked outright). The nonce is still generated/exposed via `x-nonce`
+  // for any future genuinely-dynamic route that wants it, but script-src
+  // can't rely on it while the site's pages are statically generated.
   const cspDirectives = [
     "default-src 'self'",
-    `script-src ${scriptSrc}`,
+    `script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://va.vercel-scripts.com`,
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob: https:",
     "font-src 'self' data:",
