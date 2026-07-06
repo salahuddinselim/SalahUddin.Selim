@@ -307,11 +307,10 @@ export const ProjectCard = memo(function ProjectCard({
           aria-expanded={active}
           aria-label={`View details for ${project.title}`}
           initial={false}
-          animate={{ opacity: 1, y: 0 }}
+          animate={{ opacity: 1 }}
           transition={modalTransition}
-          whileHover={{ y: -4 }}
           className={cn(
-            "group cursor-pointer rounded-2xl overflow-hidden",
+            "cursor-pointer rounded-2xl overflow-hidden",
             // Solid background, not backdrop-blur -- this box is the
             // layoutId shared element that resizes into the modal, and
             // animating backdrop-filter while it resizes forces a re-blur
@@ -328,7 +327,7 @@ export const ProjectCard = memo(function ProjectCard({
             project={project}
             layoutId={`image-${project._id}-${id}`}
             transition={modalTransition}
-            className="aspect-video w-full transition-transform duration-500 group-hover:scale-105"
+            className="aspect-video w-full"
             fallbackTextClassName="text-3xl"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
