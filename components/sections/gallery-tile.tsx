@@ -148,7 +148,7 @@ export function GalleryTile({ image, activeImage, setActiveImage }: GalleryTileP
         variants={tileVariants}
         exit={{ opacity: 0, y: 16, scale: 0.96, transition: { duration: 0.25 } }}
         whileHover={{ y: -2 }}
-        transition={activeImage ? modalTransition : undefined}
+        transition={modalTransition}
         onClick={() => setActiveImage(active ? null : image)}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
