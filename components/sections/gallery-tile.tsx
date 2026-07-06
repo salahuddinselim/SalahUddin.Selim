@@ -95,7 +95,7 @@ export function GalleryTile({ image, activeImage, setActiveImage }: GalleryTileP
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0, transition: { duration: 0.05 } }}
-                className="flex absolute top-3 right-3 z-[70] items-center justify-center bg-white/10 backdrop-blur-sm rounded-full h-11 w-11 text-white/80 hover:text-white hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/50 transition-colors"
+                className="flex absolute top-3 right-3 z-[70] items-center justify-center bg-white/15 rounded-full h-11 w-11 text-white/80 hover:text-white hover:bg-white/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/50 transition-colors"
                 onClick={() => setActiveImage(null)}
                 aria-label="Close image"
               >

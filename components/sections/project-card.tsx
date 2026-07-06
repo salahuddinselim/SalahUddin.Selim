@@ -140,7 +140,7 @@ export const ProjectCard = memo(function ProjectCard({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0, transition: { duration: 0.05 } }}
-                className="flex absolute top-3 right-3 z-[70] items-center justify-center bg-white/10 backdrop-blur-sm rounded-full h-11 w-11 text-white/80 hover:text-white hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 transition-colors"
+                className="flex absolute top-3 right-3 z-[70] items-center justify-center bg-white/15 rounded-full h-11 w-11 text-white/80 hover:text-white hover:bg-white/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 transition-colors"
                 onClick={() => setActiveProject(null)}
                 aria-label="Close project details"
               >
@@ -312,7 +312,11 @@ export const ProjectCard = memo(function ProjectCard({
           whileHover={{ y: -4 }}
           className={cn(
             "group cursor-pointer rounded-2xl overflow-hidden",
-            "bg-[rgba(17,24,39,0.65)] backdrop-blur-[16px]",
+            // Solid background, not backdrop-blur -- this box is the
+            // layoutId shared element that resizes into the modal, and
+            // animating backdrop-filter while it resizes forces a re-blur
+            // every frame (see project modal's own comment / CLAUDE.md).
+            "bg-[rgba(17,24,39,0.92)]",
             "border border-[rgba(255,255,255,0.06)]",
             "hover:border-accent/20",
             "transition-all duration-300",
