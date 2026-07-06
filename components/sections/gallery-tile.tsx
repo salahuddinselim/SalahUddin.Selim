@@ -8,7 +8,7 @@ import { useOutsideClick } from "@/hooks/use-outside-click"
 import { DirectionAwareHover } from "@/components/ui/direction-aware-hover"
 import { cn } from "@/lib/utils"
 import type { GalleryImageData } from "@/lib/sanity/fetch"
-import { spanClasses, galleryCategoryColors } from "@/data"
+import { spanClasses, galleryCategoryColors, getGallerySpan } from "@/data"
 
 const modalTransition = {
   type: "spring" as const,
@@ -166,7 +166,7 @@ export function GalleryTile({ image, activeImage, setActiveImage }: GalleryTileP
           "shadow-[0_4px_20px_rgba(0,0,0,0.2)]",
           "hover:border-cyan-400/20 transition-colors duration-300",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/50",
-          spanClasses[image.span ?? "square"],
+          spanClasses[getGallerySpan(image)],
         )}
       >
         <DirectionAwareHover

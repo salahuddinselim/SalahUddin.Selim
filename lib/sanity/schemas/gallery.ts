@@ -37,15 +37,11 @@ export const gallery = defineType({
       name: "span",
       title: "Grid Span",
       type: "string",
+      description:
+        'Leave unset -- square/vertical/horizontal are detected automatically from the photo\'s orientation. Only pick "Large" to feature a photo at 2x2 regardless of its orientation.',
       options: {
-        list: [
-          { title: "Square (1x1)", value: "square" },
-          { title: "Vertical (1x2)", value: "vertical" },
-          { title: "Horizontal (2x1)", value: "horizontal" },
-          { title: "Large (2x2)", value: "large" },
-        ],
+        list: [{ title: "Large (2x2, featured)", value: "large" }],
       },
-      initialValue: "square",
     }),
     defineField({ name: "order", title: "Order", type: "number", hidden: true }),
   ],
