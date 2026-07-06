@@ -11,3 +11,9 @@ export const spanClasses: Record<string, string> = {
   horizontal: "col-span-2 row-span-1",
   large: "col-span-2 row-span-2",
 }
+
+export const galleryCategoryColors: Record<string, string> = {
+  Academics: "#00D9FF",
+  Creations: "#8B5CF6",
+  Moments: "#FFD700",
+}

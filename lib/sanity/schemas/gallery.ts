@@ -5,10 +5,34 @@ export const gallery = defineType({
   title: "Gallery",
   type: "document",
   fields: [
-    defineField({ name: "title", title: "Title", type: "string", validation: (Rule) => Rule.required() }),
-    defineField({ name: "image", title: "Image", type: "image", options: { hotspot: true }, validation: (Rule) => Rule.required() }),
+    defineField({
+      name: "title",
+      title: "Title",
+      type: "string",
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "image",
+      title: "Image",
+      type: "image",
+      options: { hotspot: true },
+      validation: (Rule) => Rule.required(),
+    }),
     defineField({ name: "caption", title: "Caption", type: "string" }),
     defineField({ name: "location", title: "Location", type: "string" }),
+    defineField({
+      name: "category",
+      title: "Category",
+      type: "string",
+      description: 'Untagged items only appear under "All" on the gallery filter bar.',
+      options: {
+        list: [
+          { title: "Academics", value: "Academics" },
+          { title: "Creations", value: "Creations" },
+          { title: "Moments", value: "Moments" },
+        ],
+      },
+    }),
     defineField({
       name: "span",
       title: "Grid Span",
@@ -28,7 +52,5 @@ export const gallery = defineType({
   preview: {
     select: { title: "caption", subtitle: "location", media: "image" },
   },
-  orderings: [
-    { title: "Order", name: "order", by: [{ field: "order", direction: "asc" }] },
-  ],
+  orderings: [{ title: "Order", name: "order", by: [{ field: "order", direction: "asc" }] }],
 })

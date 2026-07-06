@@ -101,16 +101,19 @@ export function getSocialLinks(): Promise<SocialLinkData[]> {
 }
 
 const galleryQuery = groq`*[_type == "gallery"] | order(order asc) {
+  _id,
   title,
   "image": image.asset->url,
   "width": image.asset->metadata.dimensions.width,
   "height": image.asset->metadata.dimensions.height,
   caption,
   location,
-  span
+  span,
+  category
 }`
 
 export interface GalleryImageData {
+  _id: string
   title: string
   image: string
   width?: number
@@ -118,6 +121,7 @@ export interface GalleryImageData {
   caption?: string
   location?: string
   span?: "square" | "vertical" | "horizontal" | "large"
+  category?: string
 }
 
 export function getGalleryImages(): Promise<GalleryImageData[]> {
