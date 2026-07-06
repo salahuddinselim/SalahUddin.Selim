@@ -16,7 +16,6 @@ const modalTransition = {
 
 interface ProjectCardProps {
   project: Project
-  index: number
   activeProject: Project | null
   setActiveProject: (project: Project | null) => void
   variant?: "grid" | "list"
@@ -70,7 +69,6 @@ function ProjectThumb({
 
 export const ProjectCard = memo(function ProjectCard({
   project,
-  index,
   activeProject,
   setActiveProject,
   variant = "grid",
@@ -264,18 +262,14 @@ export const ProjectCard = memo(function ProjectCard({
           aria-label={`View details for ${project.title}`}
           initial={false}
           animate={{ opacity: 1 }}
-          transition={
-            activeProject
-              ? modalTransition
-              : { delay: index * 0.05, duration: 0.4, ease: "easeOut" }
-          }
+          transition={modalTransition}
           className="p-4 flex flex-col hover:bg-white/[0.04] rounded-xl cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050816]"
         >
           <div className="flex gap-4 flex-col w-full">
             <ProjectThumb
               project={project}
               layoutId={`image-${project._id}-${id}`}
-              transition={activeProject ? modalTransition : undefined}
+              transition={modalTransition}
               className="h-60 w-full rounded-lg"
               fallbackTextClassName="text-4xl"
               sizes="(max-width: 768px) 100vw, 50vw"
@@ -283,14 +277,14 @@ export const ProjectCard = memo(function ProjectCard({
             <div className="flex justify-center items-center flex-col">
               <motion.h3
                 layoutId={`title-${project._id}-${id}`}
-                transition={activeProject ? modalTransition : undefined}
+                transition={modalTransition}
                 className="font-heading font-semibold text-foreground text-center text-base"
               >
                 {project.title}
               </motion.h3>
               <motion.p
                 layoutId={`description-${project._id}-${id}`}
-                transition={activeProject ? modalTransition : undefined}
+                transition={modalTransition}
                 className="text-muted font-body text-center text-sm"
               >
                 {project.description}
@@ -314,15 +308,7 @@ export const ProjectCard = memo(function ProjectCard({
           aria-label={`View details for ${project.title}`}
           initial={false}
           animate={{ opacity: 1, y: 0 }}
-          transition={
-            activeProject
-              ? modalTransition
-              : {
-                  delay: index * 0.08,
-                  duration: 0.5,
-                  ease: "easeOut",
-                }
-          }
+          transition={modalTransition}
           whileHover={{ y: -4 }}
           className={cn(
             "group cursor-pointer rounded-2xl overflow-hidden",
@@ -337,7 +323,7 @@ export const ProjectCard = memo(function ProjectCard({
           <ProjectThumb
             project={project}
             layoutId={`image-${project._id}-${id}`}
-            transition={activeProject ? modalTransition : undefined}
+            transition={modalTransition}
             className="aspect-video w-full transition-transform duration-500 group-hover:scale-105"
             fallbackTextClassName="text-3xl"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
@@ -346,14 +332,14 @@ export const ProjectCard = memo(function ProjectCard({
           <div className="p-4 space-y-3">
             <motion.h3
               layoutId={`title-${project._id}-${id}`}
-              transition={activeProject ? modalTransition : undefined}
+              transition={modalTransition}
               className="text-base font-heading font-semibold text-foreground"
             >
               {project.title}
             </motion.h3>
             <motion.p
               layoutId={`description-${project._id}-${id}`}
-              transition={activeProject ? modalTransition : undefined}
+              transition={modalTransition}
               className="text-sm text-muted font-body line-clamp-2 leading-relaxed"
             >
               {project.description}
@@ -377,7 +363,7 @@ export const ProjectCard = memo(function ProjectCard({
 
             <motion.button
               layoutId={`button-${project._id}-${id}`}
-              transition={activeProject ? modalTransition : undefined}
+              transition={modalTransition}
               className="btn-secondary text-xs px-3 py-1.5"
             >
               View Project
