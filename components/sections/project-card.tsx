@@ -318,7 +318,11 @@ export const ProjectCard = memo(function ProjectCard({
             "bg-[rgba(17,24,39,0.92)]",
             "border border-[rgba(255,255,255,0.06)]",
             "hover:border-accent/20",
-            "transition-all duration-300",
+            // Scoped to only the properties that actually change on
+            // hover -- transition-all also matches `transform`, which
+            // fights with Framer Motion's own per-frame transform writes
+            // during the layoutId close animation and reads as stutter.
+            "transition-[border-color,box-shadow] duration-300",
             "hover:shadow-[0_0_30px_rgba(0,217,255,0.06)]",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050816]",
           )}
