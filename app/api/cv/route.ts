@@ -41,7 +41,7 @@ export async function GET(request: Request) {
       headers: {
         "Content-Type": "application/pdf",
         "Content-Disposition": `inline; filename="Salah_Uddin_Selim.pdf"`,
-        "Cache-Control": "no-cache, no-store, must-revalidate",
+        "Cache-Control": "public, max-age=3600, stale-while-revalidate=86400",
       },
     })
   } catch {
