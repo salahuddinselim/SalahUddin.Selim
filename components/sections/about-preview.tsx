@@ -95,7 +95,7 @@ export function AboutPreview({ education }: { education: EducationData[] }) {
               Salah Uddin Selim
             </h3>
             <p className="text-lg text-accent font-body font-medium">
-              CSE Student & Software Engineer
+              CSE Student & Aspiring Data Analyst
             </p>
             <p className="text-base text-muted font-body leading-relaxed max-w-prose">
               CSE student at United International University, Dhaka
@@ -105,8 +105,8 @@ export function AboutPreview({ education }: { education: EducationData[] }) {
               projects spanning desktop applications, embedded IoT telemetry systems, web platforms,
               and AI-powered tools. Awarded 6th Runner-Up at UIU Software Project Competition,
               Spring 2025 for a JavaFX-based multilevel puzzle game with real-time Socket
-              Programming chat. Seeking software engineering and research opportunities where I can
-              apply systems thinking and full-stack skills to solve real-world problems.
+              Programming chat. Seeking data analysis and research opportunities where I can apply
+              systems thinking and analytical skills to solve real-world problems.
             </p>
 
             <div className="flex flex-wrap gap-4 text-sm text-muted font-body">

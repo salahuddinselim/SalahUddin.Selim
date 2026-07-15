@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
 
 const aboutData = {
   name: "Salah Uddin Selim",
-  role: "CSE Student & Software Engineer",
+  role: "CSE Student & Aspiring Data Analyst",
   avatar: "/hero.webp",
   aboutCards: [
     {
@@ -32,7 +32,7 @@ const aboutData = {
       icon: Target,
       title: "Career Goal",
       description:
-        "To build scalable, impactful solutions as a software engineer or researcher — combining full-stack engineering, IoT, and AI to solve real-world problems.",
+        "To become a data analyst or researcher — combining strong analytical thinking, full-stack engineering, and AI to turn data into real-world impact.",
     },
   ],
 }

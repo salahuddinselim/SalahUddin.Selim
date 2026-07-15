@@ -17,7 +17,7 @@ export function buildJsonLd(socials: SocialLinkData[], email?: string, gpaText?:
         name: "Salah Uddin Selim",
         url: s,
         email: email || fallbackContactEmail,
-        jobTitle: "CSE Student & Software Engineer",
+        jobTitle: "CSE Student & Aspiring Data Analyst",
         alumniOf: "United International University",
         award: "6th Runner-Up — UIU Software Project Competition, Spring 2025",
         sameAs: socials.map((social) => social.url),

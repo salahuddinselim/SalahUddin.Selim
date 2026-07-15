@@ -15,8 +15,8 @@ export function HeroContent({ profile }: { profile: SanityProfile | null }) {
       </h1>
 
       <p className="text-base sm:text-xl text-foreground font-semibold font-body leading-snug max-w-prose mx-auto mb-4 sm:mb-6">
-        I build full-stack systems, IoT tools, and AI-powered apps &mdash; available for internships
-        &amp; research roles.
+        Aspiring Data Analyst turning data into insight &mdash; available for internships &amp;
+        research roles.
       </p>
 
       <p className="text-base text-muted/70 font-body leading-relaxed max-w-prose mx-auto">

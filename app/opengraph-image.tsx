@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og"
 import { getEducation } from "@/lib/sanity/fetch"
 
-export const alt = "Salah Uddin Selim | CSE Student & Software Engineer"
+export const alt = "Salah Uddin Selim | CSE Student & Aspiring Data Analyst"
 export const size = { width: 1200, height: 630 }
 export const contentType = "image/png"
 
@@ -93,7 +93,7 @@ export default async function og() {
             letterSpacing: "0.05em",
           }}
         >
-          CSE Student &amp; Software Engineer
+          CSE Student &amp; Aspiring Data Analyst
         </span>
         <div
           style={{

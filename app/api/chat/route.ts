@@ -9,7 +9,7 @@ export const maxDuration = 30
 const PORTFOLIO_DATA = `
 ABOUT SALAH UDDIN SELIM:
 - Name: Salah Uddin Selim
-- Title: CSE Student & Software Engineer
+- Title: CSE Student & Aspiring Data Analyst
 - Location: Dhaka, Bangladesh
 - Email: selimsalahuddin19@gmail.com
 - GitHub: github.com/salahuddinselim
