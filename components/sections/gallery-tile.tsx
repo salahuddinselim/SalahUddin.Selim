@@ -107,7 +107,7 @@ export function GalleryTile({ image, activeImage, setActiveImage }: GalleryTileP
                   src={image.image}
                   alt={image.caption ?? image.title}
                   fill
-                  sizes="600px"
+                  sizes="(max-width: 640px) 100vw, 600px"
                   priority
                   className="object-contain"
                 />
