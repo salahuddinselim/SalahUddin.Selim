@@ -22,6 +22,8 @@ export const siteConfig = {
     "CSE student at United International University, aspiring data analyst with a background in full-stack engineering, IoT, and AI.",
   keywords: [
     "Salah Uddin Selim",
+    "Sala Uddin Selim",
+    "Salauddin Selim",
     "CSE",
     "UIU",
     "data analyst",

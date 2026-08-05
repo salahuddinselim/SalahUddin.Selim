@@ -15,6 +15,7 @@ export function buildJsonLd(socials: SocialLinkData[], email?: string, gpaText?:
         "@type": "Person",
         "@id": `${s}/#person`,
         name: "Salah Uddin Selim",
+        alternateName: ["Sala Uddin Selim", "Salauddin Selim"],
         url: s,
         email: email || fallbackContactEmail,
         jobTitle: "CSE Student & Aspiring Data Analyst",
