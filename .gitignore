@@ -61,3 +61,4 @@ nul
 %s
 next-dev-output.txt
 next-startup.txt
+.gstack/

@@ -27,6 +27,7 @@ export const fallbackSocials = [
   { name: "LinkedIn", url: "https://www.linkedin.com/in/selimsalahuddin/", icon: "linkedin" },
   { name: "Instagram", url: "https://www.instagram.com/selimsalahuddin", icon: "instagram" },
   { name: "Facebook", url: "https://www.facebook.com/salahuddin.selim.19", icon: "facebook" },
+  { name: "WhatsApp", url: "https://wa.me/selimsalahuddin", icon: "whatsapp" },
   { name: "Kaggle", url: "https://kaggle.com/salahuddinselim", icon: "kaggle" },
   { name: "X (Twitter)", url: "https://x.com/salahuddinselim", icon: "twitter" },
 ]
