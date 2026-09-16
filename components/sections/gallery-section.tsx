@@ -149,12 +149,13 @@ export function GallerySection({ images }: { images: GalleryImageData[] }) {
         className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 auto-rows-[160px] sm:auto-rows-[200px] gap-3 sm:gap-4"
       >
         <AnimatePresence mode="popLayout">
-          {filtered.map((img) => (
+          {filtered.map((img, i) => (
             <GalleryTile
               key={img._id}
               image={img}
               activeImage={activeImage}
               setActiveImage={setActiveImage}
+              priority={i < 4}
             />
           ))}
         </AnimatePresence>

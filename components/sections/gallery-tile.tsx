@@ -30,9 +30,12 @@ interface GalleryTileProps {
   image: GalleryImageData
   activeImage: GalleryImageData | null
   setActiveImage: (image: GalleryImageData | null) => void
+  /** Pass for above-the-fold tiles (e.g. the first row) so their image
+   * loads eagerly -- Next.js flags this as the LCP element otherwise. */
+  priority?: boolean
 }
 
-export function GalleryTile({ image, activeImage, setActiveImage }: GalleryTileProps) {
+export function GalleryTile({ image, activeImage, setActiveImage, priority }: GalleryTileProps) {
   const ref = useRef<HTMLDivElement>(null)
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const previouslyFocusedRef = useRef<HTMLElement | null>(null)
@@ -173,6 +176,7 @@ export function GalleryTile({ image, activeImage, setActiveImage }: GalleryTileP
           imageUrl={image.image}
           alt={image.caption ?? image.title}
           className="h-full w-full"
+          priority={priority}
         >
           {image.location && (
             <p className="mb-1 flex items-center gap-1 text-[10px] font-mono uppercase tracking-wider text-cyan-300/80">

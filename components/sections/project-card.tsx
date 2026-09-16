@@ -19,6 +19,10 @@ interface ProjectCardProps {
   activeProject: Project | null
   setActiveProject: (project: Project | null) => void
   variant?: "grid" | "list"
+  /** Pass for above-the-fold cards (e.g. the first row) so their image
+   * loads eagerly instead of lazily -- Next.js flags this as the LCP
+   * element otherwise, since the default `loading="lazy"` defers it. */
+  priority?: boolean
 }
 
 // Derives "owner/repo" from a GitHub URL for the no-screenshot fallback's
@@ -108,6 +112,7 @@ export const ProjectCard = memo(function ProjectCard({
   activeProject,
   setActiveProject,
   variant = "grid",
+  priority = false,
 }: ProjectCardProps) {
   const ref = useRef<HTMLDivElement>(null)
   const id = useId()
@@ -309,6 +314,7 @@ export const ProjectCard = memo(function ProjectCard({
               className="h-60 w-full rounded-lg"
               fallbackTextClassName="text-sm"
               sizes="(max-width: 768px) 100vw, 50vw"
+              priority={priority}
             />
             <div className="flex justify-center items-center flex-col">
               <motion.h3
@@ -370,6 +376,7 @@ export const ProjectCard = memo(function ProjectCard({
             className="aspect-video w-full"
             fallbackTextClassName="text-xs"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            priority={priority}
           />
 
           <div className="p-4 space-y-3">

@@ -48,12 +48,13 @@ export function ProjectsPreview({ projects: featuredProjects }: { projects: Sani
         </motion.div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
-          {featured.map((project) => (
+          {featured.map((project, i) => (
             <ProjectCard
               key={project._id ?? project.title}
               project={project}
               activeProject={activeProject}
               setActiveProject={handleSelectProject}
+              priority={i < 3}
             />
           ))}
         </div>
