@@ -15,9 +15,20 @@ export default function middleware(request: NextRequest) {
   // -blocked outright). The nonce is still generated/exposed via `x-nonce`
   // for any future genuinely-dynamic route that wants it, but script-src
   // can't rely on it while the site's pages are statically generated.
+  // Next.js dev mode (Turbopack) uses eval() for React's dev-only stack
+  // trace reconstruction -- harmless and never shipped in production ("React
+  // will never use eval() in production mode" is React's own message), but
+  // this repo's CSP has no 'unsafe-eval' so it logs a console error on every
+  // render in `next dev`. Scoped to development only; the production CSP
+  // (what actually matters for security) is unchanged.
+  const scriptSrc =
+    process.env.NODE_ENV === "development"
+      ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://va.vercel-scripts.com"
+      : "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://va.vercel-scripts.com"
+
   const cspDirectives = [
     "default-src 'self'",
-    `script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://va.vercel-scripts.com`,
+    scriptSrc,
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob: https:",
     "font-src 'self' data:",
