@@ -1,39 +1,32 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import { TECH_STACK } from "@/lib/tech-stack"
+import { TECH_STACK, type TechStackItem } from "@/lib/tech-stack"
 
-// Six icons, evenly spaced -- enough to read as "tech stack" without
-// crowding the ring. TECH_STACK already leads with Python/SQL/Streamlit for
-// the data-analyst positioning, so slicing the front keeps that intact.
-const RING_ITEMS = TECH_STACK.slice(0, 6)
-
-// The ring's diameter is 2x this. The previous orbiting rings were removed
-// entirely because their icons drifted over the hero headline/subheading at
-// real viewport widths. The hero text column caps at max-w-[900px] (450px
-// half-width) -- RADIUS must clear that with real margin, not just exceed
-// it slightly, since the icon itself has a 22px radius on top of this
-// number. 560 leaves ~88px of clear space between the icon's own edge and
-// the text column's edge, verified against a live screenshot.
-const RADIUS = 560
+// The hero text column caps at max-w-[900px] (450px half-width). Each ring's
+// radius must clear that with real margin, not just exceed it slightly,
+// since the icon itself adds another 22px on top of the number. These were
+// verified against live screenshots at multiple rotation phases (the 3/9
+// o'clock positions are the tightest case) -- the previous orbiting rings
+// were removed entirely because they didn't clear this and drifted over the
+// headline/subheading.
+const INNER_RADIUS = 560
+const OUTER_RADIUS = 760
+const INNER_ITEMS = TECH_STACK.slice(0, 8)
+const OUTER_ITEMS = TECH_STACK.slice(8)
 const DURATION_S = 90
+const OUTER_DURATION_S = 130
 
 function det(index: number, offset = 0): number {
   const x = Math.sin(index * 12345.6789 + offset * 9876.54321) * 10000
   return x - Math.floor(x)
 }
 
-export function HeroTechRing() {
+function useRoomFor(minWidth: number, minHeight: number) {
   const [enabled, setEnabled] = useState(false)
 
   useEffect(() => {
-    // Room requirement is deliberate, not decorative: at RADIUS=560 the ring
-    // is 1120px across. Below this viewport width it would overlap the
-    // centered hero text -- the exact bug that got the original rings
-    // removed -- so it simply doesn't render there instead of degrading
-    // badly. Height clipping (top/bottom icons on shorter viewports) is
-    // safe by comparison -- `overflow-hidden` just hides them, no overlap.
-    const roomy = window.matchMedia("(min-width: 1440px) and (min-height: 800px)")
+    const roomy = window.matchMedia(`(min-width: ${minWidth}px) and (min-height: ${minHeight}px)`)
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)")
     const update = () => {
       const isLowPower = (navigator.hardwareConcurrency || 8) <= 4
@@ -46,25 +39,35 @@ export function HeroTechRing() {
       roomy.removeEventListener("change", update)
       reducedMotion.removeEventListener("change", update)
     }
-  }, [])
+  }, [minWidth, minHeight])
 
-  const items = useMemo(
+  return enabled
+}
+
+function Ring({
+  items,
+  radius,
+  durationS,
+  direction,
+}: {
+  items: TechStackItem[]
+  radius: number
+  durationS: number
+  direction: "clockwise" | "counter"
+}) {
+  const placed = useMemo(
     () =>
-      RING_ITEMS.map((tech, i) => ({
+      items.map((tech, i) => ({
         tech,
-        startAngle: (i / RING_ITEMS.length) * 360 + det(i) * 8,
+        startAngle: (i / items.length) * 360 + det(i, radius) * 6,
       })),
-    [],
+    [items, radius],
   )
-
-  if (!enabled) return null
+  const counterDirection = direction === "clockwise" ? "counter" : "clockwise"
 
   return (
-    <div
-      className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden"
-      aria-hidden
-    >
-      {items.map(({ tech, startAngle }) => {
+    <>
+      {placed.map(({ tech, startAngle }) => {
         const Icon = tech.icon
         return (
           <div
@@ -77,7 +80,7 @@ export function HeroTechRing() {
               left: "50%",
               marginLeft: -22,
               marginTop: -22,
-              animation: `orbit-spin-clockwise ${DURATION_S}s linear infinite`,
+              animation: `orbit-spin-${direction} ${durationS}s linear infinite`,
               transformOrigin: "50% 50%",
             }}
           >
@@ -89,7 +92,7 @@ export function HeroTechRing() {
               style={{
                 width: "100%",
                 height: "100%",
-                transform: `rotate(${startAngle}deg) translateY(-${RADIUS}px) rotate(-${startAngle}deg)`,
+                transform: `rotate(${startAngle}deg) translateY(-${radius}px) rotate(-${startAngle}deg)`,
               }}
             >
               {/* Counter-rotates at the same speed so the icon itself stays
@@ -98,7 +101,7 @@ export function HeroTechRing() {
                 style={{
                   width: "100%",
                   height: "100%",
-                  animation: `orbit-spin-counter ${DURATION_S}s linear infinite`,
+                  animation: `orbit-spin-${counterDirection} ${durationS}s linear infinite`,
                   transformOrigin: "50% 50%",
                 }}
               >
@@ -120,6 +123,41 @@ export function HeroTechRing() {
           </div>
         )
       })}
+    </>
+  )
+}
+
+export function HeroTechRing() {
+  // Inner ring (8 icons): most desktop/laptop screens.
+  const innerEnabled = useRoomFor(1440, 800)
+  // Outer ring (the remaining 11 icons, all of TECH_STACK together with the
+  // inner ring): only on genuinely wide monitors. At OUTER_RADIUS=760 the
+  // ring is 1520px across -- showing it on a cramped viewport would clip
+  // hard or crowd the inner ring, so it stays gated well above the inner
+  // ring's own threshold instead of sharing it.
+  const outerEnabled = useRoomFor(1800, 900)
+
+  if (!innerEnabled) return null
+
+  return (
+    <div
+      className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden"
+      aria-hidden
+    >
+      <Ring
+        items={INNER_ITEMS}
+        radius={INNER_RADIUS}
+        durationS={DURATION_S}
+        direction="clockwise"
+      />
+      {outerEnabled && (
+        <Ring
+          items={OUTER_ITEMS}
+          radius={OUTER_RADIUS}
+          durationS={OUTER_DURATION_S}
+          direction="counter"
+        />
+      )}
     </div>
   )
 }
