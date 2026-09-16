@@ -13,7 +13,7 @@ export function HeroContent({ profile }: { profile: SanityProfile | null }) {
           fill
           priority
           sizes="128px"
-          quality={80}
+          quality={75}
           className="object-cover"
         />
       </div>
