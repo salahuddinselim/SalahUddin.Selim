@@ -28,7 +28,7 @@ export function AboutPreview({ education }: { education: EducationData[] }) {
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            "radial-gradient(74% 54% at 20% 14%, rgba(0, 217, 255, 0.14), transparent 69%), radial-gradient(66% 52% at 82% 82%, rgba(139, 92, 246, 0.13), transparent 72%)",
+            "radial-gradient(74% 54% at 20% 14%, rgba(0, 217, 255, 0.14), transparent 69%), radial-gradient(66% 52% at 82% 82%, rgba(8, 145, 178, 0.13), transparent 72%)",
         }}
       />
       <div className="mx-auto max-w-6xl">

@@ -32,6 +32,9 @@ declare global {
 // Per-instance widget tracking — no shared global state
 const widgetIds = new WeakMap<HTMLDivElement, string>()
 
+// A normal challenge solve/network round trip finishes well under this.
+const STUCK_WIDGET_TIMEOUT_MS = 10_000
+
 export function Turnstile({ onVerify, onExpire, onError, theme = "dark" }: TurnstileProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const loadedRef = useRef(false)
@@ -70,6 +73,12 @@ export function Turnstile({ onVerify, onExpire, onError, theme = "dark" }: Turns
     if (!window.turnstile || !containerRef.current || loadedRef.current) return
     loadedRef.current = true
     setWidgetError(false)
+    // Imperative, not just the state update above: render() runs
+    // synchronously in this same tick (e.g. from the Retry button's
+    // onClick), before React commits the widgetError=false re-render that
+    // would drop the "hidden" class. Cloudflare's iframe can measure a
+    // zero-size container if it's still display:none at render() time.
+    containerRef.current.classList.remove("hidden")
     const id = window.turnstile.render(containerRef.current, {
       sitekey: process.env.NEXT_PUBLIC_TURNSTILE_SITEKEY!,
       callback: (token: string) => {
@@ -88,12 +97,11 @@ export function Turnstile({ onVerify, onExpire, onError, theme = "dark" }: Turns
     // the widget retry silently forever -- never verifying, never erroring,
     // never telling us anything. Without this, the visitor sees an
     // apparently-blank widget with no way to know the form is unusable.
-    // Ten seconds is well past a normal challenge solve/network round trip.
     clearStuckTimeout()
     stuckTimeoutRef.current = setTimeout(() => {
       if (!widgetIdRef.current) return
       handleError()
-    }, 10000)
+    }, STUCK_WIDGET_TIMEOUT_MS)
   }, [onVerify, onExpire, theme, handleError])
 
   // The contact form (and this widget) sits at the bottom of the homepage,

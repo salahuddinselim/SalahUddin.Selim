@@ -160,9 +160,7 @@ function EducationEntry({ item }: EducationEntryProps) {
       {item.gpa && (
         <div className="flex items-center gap-2 rounded-lg bg-teal-400/5 border border-teal-400/10 px-3 py-2 mb-3">
           <span className="text-[10px] font-mono uppercase tracking-wider text-white/30">CGPA</span>
-          <span className="font-mono text-teal-300 font-bold text-sm leading-none tabular-nums">
-            {item.gpa}
-          </span>
+          <span className="stat-mono text-teal-300 font-bold text-sm leading-none">{item.gpa}</span>
           {item.gpaScale && <span className="text-white/30 text-xs">/{item.gpaScale}</span>}
           {item.completedCredits != null && item.totalCredits != null && (
             <span className="text-white/30 text-xs">

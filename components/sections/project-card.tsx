@@ -24,7 +24,7 @@ interface ProjectCardProps {
 // Derives "owner/repo" from a GitHub URL for the no-screenshot fallback's
 // terminal chrome. Falls back to null (renders a generic label) rather than
 // guessing at a malformed URL.
-function repoPathFrom(githubUrl?: string): string | null {
+export function repoPathFrom(githubUrl?: string): string | null {
   if (!githubUrl) return null
   try {
     const { pathname } = new URL(githubUrl)
@@ -86,7 +86,10 @@ function ProjectThumb({
           </div>
           <div className="flex flex-1 flex-col justify-center gap-2 overflow-hidden px-4">
             <p className={cn("truncate text-accent/70", fallbackTextClassName ?? "text-xs")}>
-              $ git clone {project.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}
+              $ git clone{" "}
+              {repoPath
+                ? repoPath.split("/").pop()
+                : project.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}
             </p>
             {project.technologies && project.technologies.length > 0 && (
               <p className="truncate text-[10px] text-muted/50">

@@ -273,7 +273,7 @@ export function MonitorSection() {
             className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 shadow-[0_8px_30px_rgba(0,0,0,0.2)]"
           >
             <div className="flex items-center gap-2 mb-3">
-              <Rocket size={14} className="text-purple-400" />
+              <Rocket size={14} className="text-teal-400" />
               <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-white/30">
                 LAST DEPLOY
               </span>
@@ -356,7 +356,7 @@ export function MonitorSection() {
               </div>
               <div className="w-full h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
                 <motion.div
-                  className="h-full rounded-full bg-gradient-to-r from-purple-400 to-pink-500"
+                  className="h-full rounded-full bg-gradient-to-r from-teal-400 to-teal-600"
                   initial={{ width: 0 }}
                   animate={{ width: "100%" }}
                   transition={{ duration: 0.6, ease: "easeOut" as const }}

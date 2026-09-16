@@ -67,16 +67,17 @@
 .btn-secondary:hover {
   background: rgba(0, 217, 255, 0.06);
   border-color: rgba(0, 217, 255, 0.35);
-  box-shadow: none;
+  box-shadow: 0 0 10px rgba(0, 217, 255, 0.06);
 }
 
 /* .stat-mono: monospace treatment for standalone numbers/metrics (GPA, stats,
    dates). Gives the data-analyst identity a home in the type system itself
-   instead of only in copy. */
+   instead of only in copy. Deliberately owns only numeric formatting, not
+   color -- callers pair it with whichever accent (cyan/teal) fits the
+   surrounding card, same as any other text utility. */
 .stat-mono {
   font-family: var(--font-code-family);
   font-variant-numeric: tabular-nums;
-  color: var(--accent-primary);
   letter-spacing: -0.01em;
 }
 
