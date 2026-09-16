@@ -43,7 +43,7 @@ function ProjectThumb({
       layoutId={layoutId}
       transition={transition}
       className={cn(
-        "relative shrink-0 overflow-hidden bg-gradient-to-br from-accent/20 via-accent-secondary/10 to-bg-secondary flex items-center justify-center",
+        "relative shrink-0 overflow-hidden bg-bg-secondary flex items-end justify-start p-4",
         className,
       )}
     >
@@ -57,11 +57,31 @@ function ProjectThumb({
           className="object-cover object-top"
         />
       ) : (
-        <span
-          className={cn("font-heading font-bold text-accent/30 select-none", fallbackTextClassName)}
-        >
-          {project.title.charAt(0)}
-        </span>
+        <>
+          {/* No screenshot on file for this project yet -- a deliberate
+              monogram tile instead of a random gradient blob, so the
+              placeholder reads as intentional rather than unfinished. */}
+          <span
+            aria-hidden
+            className="absolute inset-0 opacity-[0.07]"
+            style={{
+              backgroundImage:
+                "linear-gradient(var(--accent-primary) 1px, transparent 1px), linear-gradient(90deg, var(--accent-primary) 1px, transparent 1px)",
+              backgroundSize: "24px 24px",
+            }}
+          />
+          <span
+            className={cn(
+              "relative font-heading font-semibold text-foreground/15 select-none leading-none",
+              fallbackTextClassName,
+            )}
+          >
+            {project.title.charAt(0)}
+          </span>
+          <span className="absolute top-3 right-3 text-[10px] font-mono uppercase tracking-widest text-muted/50">
+            {project.category}
+          </span>
+        </>
       )}
     </motion.div>
   )

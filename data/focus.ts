@@ -1,17 +1,18 @@
 export const currentFocusCopy = {
   eyebrow: "RIGHT NOW",
   heading: "Current Focus",
-  description: "No full-time role yet — here's where my energy is going instead.",
+  description:
+    "Actively seeking data analyst internships and research roles — here's where my energy is going.",
 }
 
 export const currentFocusTags = [
-  "Open to Internships",
-  "Open Source Contributor",
+  "Open to Data Analyst Internships",
+  "Python & SQL",
   "AI Research",
   "Full Stack Development",
   "Competitive Programming",
+  "Open Source Contributor",
   "Building Real Projects",
-  "Looking for Opportunities",
 ]
 
 export const relevantCoursework = [

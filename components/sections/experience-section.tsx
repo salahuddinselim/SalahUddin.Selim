@@ -140,9 +140,9 @@ function EducationEntry({ item }: EducationEntryProps) {
   return (
     <div
       style={GLASS_STYLE}
-      className={`group relative overflow-hidden rounded-2xl p-5 transition-[border-color,box-shadow] duration-300 hover:border-purple-400/20 hover:shadow-[0_0_40px_-8px_rgba(168,85,247,0.1)] ${GLASS_CLASS}`}
+      className={`group relative overflow-hidden rounded-2xl p-5 transition-[border-color,box-shadow] duration-300 hover:border-teal-400/20 hover:shadow-[0_0_40px_-8px_rgba(8,145,178,0.12)] ${GLASS_CLASS}`}
     >
-      <span className="inline-flex items-center gap-1.5 text-[10px] font-mono text-purple-300/70 mb-2">
+      <span className="inline-flex items-center gap-1.5 text-[10px] font-mono text-teal-300/70 mb-2">
         {item.startYear ?? ""}
         {item.startYear && item.endYear ? " — " : ""}
         {item.endYear ?? ""}
@@ -151,16 +151,18 @@ function EducationEntry({ item }: EducationEntryProps) {
         {item.degree}
         {item.field ? ` in ${item.field}` : ""}
       </h3>
-      <p className="text-sm text-purple-300/70 font-medium mb-3">{item.institution}</p>
+      <p className="text-sm text-teal-300/70 font-medium mb-3">{item.institution}</p>
       {item.description && (
         <p className="text-base text-white/60 leading-relaxed max-w-prose mb-3">
           {item.description}
         </p>
       )}
       {item.gpa && (
-        <div className="flex items-center gap-2 rounded-lg bg-purple-400/5 border border-purple-400/10 px-3 py-2 mb-3">
+        <div className="flex items-center gap-2 rounded-lg bg-teal-400/5 border border-teal-400/10 px-3 py-2 mb-3">
           <span className="text-[10px] font-mono uppercase tracking-wider text-white/30">CGPA</span>
-          <span className="text-purple-300 font-bold text-sm leading-none">{item.gpa}</span>
+          <span className="font-mono text-teal-300 font-bold text-sm leading-none tabular-nums">
+            {item.gpa}
+          </span>
           {item.gpaScale && <span className="text-white/30 text-xs">/{item.gpaScale}</span>}
           {item.completedCredits != null && item.totalCredits != null && (
             <span className="text-white/30 text-xs">
@@ -168,7 +170,7 @@ function EducationEntry({ item }: EducationEntryProps) {
             </span>
           )}
           {isOngoing && (
-            <span className="ml-auto rounded-full border border-purple-400/20 px-2 py-0.5 text-[10px] font-mono text-purple-300/60">
+            <span className="ml-auto rounded-full border border-teal-400/20 px-2 py-0.5 text-[10px] font-mono text-teal-300/60">
               Ongoing
             </span>
           )}
@@ -185,7 +187,7 @@ function EducationEntry({ item }: EducationEntryProps) {
               <span
                 key={course}
                 role="listitem"
-                className="rounded-full border border-white/[0.06] bg-white/[0.03] px-2 py-0.5 text-[10px] font-mono text-white/50 transition-colors group-hover:border-purple-400/10 group-hover:text-purple-300/60"
+                className="rounded-full border border-white/[0.06] bg-white/[0.03] px-2 py-0.5 text-[10px] font-mono text-white/50 transition-colors group-hover:border-teal-400/10 group-hover:text-teal-300/60"
               >
                 {course}
               </span>
@@ -237,7 +239,7 @@ export function ExperienceSection({
           <motion.div
             aria-hidden
             style={{ scaleY: scrollYProgress, transformOrigin: "top" }}
-            className="absolute left-[19px] sm:left-[27px] top-2 bottom-2 w-px bg-gradient-to-b from-cyan-400 via-purple-400 to-purple-400/20"
+            className="absolute left-[19px] sm:left-[27px] top-2 bottom-2 w-px bg-gradient-to-b from-cyan-400 via-teal-400 to-teal-400/20"
           />
 
           <motion.ol
@@ -261,8 +263,8 @@ export function ExperienceSection({
             {sortedEducation.map((item) => (
               <TimelineEntry
                 key={item.institution + (item.degree ?? "")}
-                dotColor="#A855F7"
-                glowColor="rgba(168,85,247,0.5)"
+                dotColor="#0891B2"
+                glowColor="rgba(8,145,178,0.5)"
               >
                 <EducationEntry item={item} />
               </TimelineEntry>
