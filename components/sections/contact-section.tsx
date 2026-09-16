@@ -240,7 +240,11 @@ export function ContactSection({
               />
             </div>
 
-            <Turnstile onVerify={handleTurnstileVerify} onExpire={handleTurnstileExpire} />
+            <Turnstile
+              onVerify={handleTurnstileVerify}
+              onExpire={handleTurnstileExpire}
+              onError={handleTurnstileExpire}
+            />
             {fieldErrors.turnstileToken && (
               <p className="text-xs text-error font-body mt-1">{fieldErrors.turnstileToken}</p>
             )}
