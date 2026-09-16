@@ -1,7 +1,7 @@
 export const contactSectionCopy = {
   heading: "Get In Touch",
   connectHeading: "Connect With Me",
-  connectDescription: "Click the center button to expand my social links",
+  connectDescription: "Select the center button to reveal my social links",
   sendLabel: "Send Message",
   sendingLabel: "Sending...",
   sentLabel: "Message Sent!",

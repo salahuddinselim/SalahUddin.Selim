@@ -97,17 +97,22 @@ export function AboutPreview({ education }: { education: EducationData[] }) {
             <p className="text-lg text-accent font-body font-medium">
               CSE Student & Aspiring Data Analyst
             </p>
-            <p className="text-base text-muted font-body leading-relaxed max-w-prose">
-              CSE student at United International University, Dhaka
-              {gpaText ? ` (GPA ${gpaText})` : ""} with demonstrated experience in full-stack web
-              development, IoT systems, and algorithm design. Proficient in Java, Python, PHP,
-              C/C++, JavaScript, Node.js, Express, SQL, and Arduino. Built 5 production-quality
-              projects spanning desktop applications, embedded IoT telemetry systems, web platforms,
-              and AI-powered tools. Awarded 6th Runner-Up at UIU Software Project Competition,
-              Spring 2025 for a JavaFX-based multilevel puzzle game with real-time Socket
-              Programming chat. Seeking data analysis and research opportunities where I can apply
-              systems thinking and analytical skills to solve real-world problems.
-            </p>
+            <div className="space-y-3 max-w-prose">
+              <p className="text-base text-muted font-body leading-relaxed">
+                CSE student at United International University, Dhaka
+                {gpaText ? ` (GPA ${gpaText})` : ""} with demonstrated experience in full-stack web
+                development, IoT systems, and algorithm design. Proficient in Java, Python, PHP,
+                C/C++, JavaScript, Node.js, Express, SQL, and Arduino.
+              </p>
+              <p className="text-base text-muted font-body leading-relaxed">
+                Built 5 production-quality projects spanning desktop applications, embedded IoT
+                telemetry systems, web platforms, and AI-powered tools &mdash; including a
+                JavaFX-based multilevel puzzle game with real-time Socket Programming chat that won
+                6th Runner-Up at UIU&apos;s Software Project Competition, Spring 2025. Seeking data
+                analysis and research opportunities to apply systems thinking and analytical skills
+                to real-world problems.
+              </p>
+            </div>
 
             <div className="flex flex-wrap gap-4 text-sm text-muted font-body">
               <span className="flex items-center gap-1.5">
