@@ -1,5 +1,6 @@
 "use client"
 
+import { useCallback, useState } from "react"
 import { motion } from "framer-motion"
 import { ExternalLink } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -26,6 +27,11 @@ export function PersonaSection({
   education: EducationData[]
 }) {
   const ongoingEducation = education.find((edu) => edu.status === "ongoing")
+  const [repoCount, setRepoCount] = useState<number | null>(null)
+
+  const handleGitHubStatsLoaded = useCallback((githubStats: { public_repos: number }) => {
+    setRepoCount(githubStats.public_repos)
+  }, [])
 
   const stats = personaStats.map((stat) => {
     if (stat.label === "CGPA / 4.0" && ongoingEducation?.gpa) {
@@ -37,6 +43,9 @@ export function PersonaSection({
     }
     if (stat.label === "Credits Earned" && ongoingEducation?.completedCredits != null) {
       return { ...stat, value: `${ongoingEducation.completedCredits}+` }
+    }
+    if (stat.label === "GitHub Repos" && repoCount != null) {
+      return { ...stat, value: `${repoCount}` }
     }
     return stat
   })
@@ -209,7 +218,7 @@ export function PersonaSection({
         <h2 className="text-lg font-semibold text-white/80 mb-4">
           {personaSectionCopy.gitHubStatsHeading}
         </h2>
-        <GitHubStats />
+        <GitHubStats onLoaded={handleGitHubStatsLoaded} />
       </motion.div>
 
       {/* Contribution Chart */}

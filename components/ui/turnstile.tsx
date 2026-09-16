@@ -5,6 +5,7 @@ import { useEffect, useRef, useCallback, useState } from "react"
 interface TurnstileProps {
   onVerify: (token: string) => void
   onExpire?: () => void
+  onError?: () => void
   theme?: "light" | "dark" | "auto"
 }
 
@@ -17,6 +18,7 @@ declare global {
           sitekey: string
           callback: (token: string) => void
           "expired-callback"?: () => void
+          "error-callback"?: () => void
           theme?: string
         },
       ) => string
@@ -30,25 +32,77 @@ declare global {
 // Per-instance widget tracking — no shared global state
 const widgetIds = new WeakMap<HTMLDivElement, string>()
 
-export function Turnstile({ onVerify, onExpire, theme = "dark" }: TurnstileProps) {
+// A normal challenge solve/network round trip finishes well under this.
+const STUCK_WIDGET_TIMEOUT_MS = 10_000
+
+export function Turnstile({ onVerify, onExpire, onError, theme = "dark" }: TurnstileProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const loadedRef = useRef(false)
   const widgetIdRef = useRef<string | null>(null)
   const [scriptError, setScriptError] = useState(false)
   const [isNearViewport, setIsNearViewport] = useState(false)
+  // Cloudflare's own "unable to connect" fallback (a network failure
+  // reaching their challenge servers, distinct from our script failing to
+  // load) renders inside the widget's cross-origin iframe -- we can't
+  // restyle it, and it ignores `theme`, so it shows up as an un-themed
+  // light-gray box inside an otherwise dark form. On error-callback we tear
+  // the broken widget down and show our own themed message instead.
+  const [widgetError, setWidgetError] = useState(false)
+  const stuckTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const clearStuckTimeout = () => {
+    if (stuckTimeoutRef.current) {
+      clearTimeout(stuckTimeoutRef.current)
+      stuckTimeoutRef.current = null
+    }
+  }
+
+  const handleError = useCallback(() => {
+    clearStuckTimeout()
+    if (widgetIdRef.current && window.turnstile) {
+      window.turnstile.remove(widgetIdRef.current)
+    }
+    if (containerRef.current) widgetIds.delete(containerRef.current)
+    widgetIdRef.current = null
+    loadedRef.current = false
+    setWidgetError(true)
+    onError?.()
+  }, [onError])
 
   const renderWidget = useCallback(() => {
     if (!window.turnstile || !containerRef.current || loadedRef.current) return
     loadedRef.current = true
+    setWidgetError(false)
+    // Imperative, not just the state update above: render() runs
+    // synchronously in this same tick (e.g. from the Retry button's
+    // onClick), before React commits the widgetError=false re-render that
+    // would drop the "hidden" class. Cloudflare's iframe can measure a
+    // zero-size container if it's still display:none at render() time.
+    containerRef.current.classList.remove("hidden")
     const id = window.turnstile.render(containerRef.current, {
       sitekey: process.env.NEXT_PUBLIC_TURNSTILE_SITEKEY!,
-      callback: onVerify,
+      callback: (token: string) => {
+        clearStuckTimeout()
+        onVerify(token)
+      },
       "expired-callback": onExpire,
+      "error-callback": handleError,
       theme,
     })
     widgetIdRef.current = id
     widgetIds.set(containerRef.current, id)
-  }, [onVerify, onExpire, theme])
+
+    // Cloudflare's error-callback fires on a single failed attempt, but a
+    // domain/config mismatch (wrong sitekey for this host) instead makes
+    // the widget retry silently forever -- never verifying, never erroring,
+    // never telling us anything. Without this, the visitor sees an
+    // apparently-blank widget with no way to know the form is unusable.
+    clearStuckTimeout()
+    stuckTimeoutRef.current = setTimeout(() => {
+      if (!widgetIdRef.current) return
+      handleError()
+    }, STUCK_WIDGET_TIMEOUT_MS)
+  }, [onVerify, onExpire, theme, handleError])
 
   // The contact form (and this widget) sits at the bottom of the homepage,
   // but ContactSection was mounting unconditionally on page load -- so the
@@ -90,6 +144,7 @@ export function Turnstile({ onVerify, onExpire, theme = "dark" }: TurnstileProps
     s.onerror = () => setScriptError(true)
     document.head.appendChild(s)
     return () => {
+      clearStuckTimeout()
       if (container) {
         const wid = widgetIds.get(container)
         if (wid && window.turnstile) {
@@ -105,7 +160,25 @@ export function Turnstile({ onVerify, onExpire, theme = "dark" }: TurnstileProps
 
   return (
     <div>
-      <div ref={containerRef} data-turnstile-widget />
+      <div
+        ref={containerRef}
+        data-turnstile-widget
+        className={widgetError ? "hidden" : undefined}
+      />
+      {widgetError && (
+        <div className="flex items-center justify-between gap-3 rounded-xl border border-error/20 bg-error/10 px-4 py-3">
+          <p className="text-xs text-error/90 font-body">
+            Security check couldn&apos;t connect — check your connection and try again.
+          </p>
+          <button
+            type="button"
+            onClick={renderWidget}
+            className="shrink-0 text-xs font-medium text-error underline underline-offset-2 hover:text-error/80"
+          >
+            Retry
+          </button>
+        </div>
+      )}
       {scriptError && (
         <p className="text-xs text-error/90 font-body mt-1">
           Security check failed to load — disable ad blockers and refresh the page.

@@ -1,61 +1,11 @@
 "use client"
 
-import React, { useMemo, useRef, useEffect, useState, useCallback, startTransition } from "react"
-import { motion, useSpring, useTransform, useMotionValue } from "framer-motion"
-import { ShootingStars } from "@/components/ui/shooting-stars"
+import { useRef, useEffect, useState, useCallback, startTransition } from "react"
+import { useSpring, useTransform, useMotionValue } from "framer-motion"
 
 function det(index: number, offset = 0): number {
   const x = Math.sin(index * 12345.6789 + offset * 9876.54321) * 10000
   return x - Math.floor(x)
-}
-
-const dust = Array.from({ length: 30 }, (_, i) => ({
-  id: i,
-  size: det(i) * 3 + 1.5,
-  x: det(i, 1) * 100,
-  y: det(i, 2) * 100,
-  duration: det(i, 3) * 10 + 8,
-  delay: det(i, 4) * 6,
-}))
-
-function NebulaGlow({
-  className,
-  color,
-  index,
-}: {
-  className?: string
-  color: string
-  index: number
-}) {
-  const baseX = (det(index, 10) - 0.5) * 60
-  const baseY = (det(index, 11) - 0.5) * 60
-
-  return (
-    <motion.div
-      className={`absolute rounded-full pointer-events-none ${className}`}
-      style={{
-        background: color,
-        filter: "blur(100px)",
-        // Without this hint, Chrome doesn't reliably promote a large
-        // blur(100px) element to its own compositor layer, so animating its
-        // position re-rasterizes the blur every frame instead of just
-        // moving a cached bitmap. Measured this as the dominant cost of the
-        // page's idle main-thread usage (RasterTask was ~87% of total
-        // work in a profile with zero user interaction) -- three of these
-        // run in an infinite 20s loop on every page, forever.
-        willChange: "transform",
-      }}
-      animate={{
-        x: [baseX, baseX + 30, baseX - 20, baseX],
-        y: [baseY, baseY - 25, baseY + 15, baseY],
-      }}
-      transition={{
-        duration: 20,
-        repeat: Infinity,
-        ease: "easeInOut",
-      }}
-    />
-  )
 }
 
 interface BigStar {
@@ -145,15 +95,6 @@ export function SpaceBackground() {
 
   const [bigStars, setBigStars] = useState<BigStar[]>([])
   const [constellations, setConstellations] = useState<Array<[number, number, number, number]>>([])
-
-  const nebulaPositions = useMemo(
-    () => [
-      { className: "top-1/4 left-1/4 w-[500px] h-[500px]" },
-      { className: "bottom-1/3 right-1/4 w-[600px] h-[600px]" },
-      { className: "top-1/2 left-2/3 w-[400px] h-[400px]" },
-    ],
-    [],
-  )
 
   useEffect(() => {
     if (isReducedMotion) return
@@ -323,90 +264,27 @@ export function SpaceBackground() {
 
   return (
     <div ref={containerRef} className="fixed inset-0 overflow-hidden pointer-events-none">
-      {/* Layer 1: Deep dark gradient background */}
+      {/* Layer 1: Deep dark gradient background -- single accent hue, no
+          second violet glow, so the backdrop reads as calm rather than a
+          multi-color light show. */}
       <div
         className="absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse 80% 80% at 50% -20%, rgba(0, 217, 255, 0.08), transparent), radial-gradient(ellipse 60% 50% at 20% 80%, rgba(139, 92, 246, 0.06), transparent), #050816",
+            "radial-gradient(ellipse 80% 80% at 50% -20%, rgba(0, 217, 255, 0.05), transparent), #050816",
         }}
       />
 
-      {/* Layer 2: Big stars + constellation canvas */}
+      {/* Layer 2: Big stars + constellation canvas -- the site's one quiet
+          signature motion. Shooting stars, nebula glows, and drifting dust
+          were removed: four more animated layers stacked on top of this one
+          read as unfocused flair rather than a deliberate visual identity. */}
       <canvas
         ref={canvasRef}
         className="absolute inset-0"
         width={size.width}
         height={size.height}
       />
-
-      {/* Layer 4: Shooting stars */}
-      {!(isReducedMotion || isLowPower) && (
-        <>
-          <ShootingStars
-            minSpeed={8}
-            maxSpeed={25}
-            minDelay={1500}
-            maxDelay={5000}
-            starColor="#00D9FF"
-            trailColor="#00D9FF"
-            starWidth={12}
-            starHeight={1.5}
-          />
-          <ShootingStars
-            minSpeed={6}
-            maxSpeed={20}
-            minDelay={2000}
-            maxDelay={6000}
-            starColor="#8B5CF6"
-            trailColor="#8B5CF6"
-            starWidth={8}
-            starHeight={1}
-          />
-        </>
-      )}
-
-      {/* Layer 5: Nebula glows */}
-      {!(isReducedMotion || isLowPower) &&
-        nebulaPositions.map((pos, i) => (
-          <NebulaGlow
-            key={i}
-            index={i}
-            className={pos.className}
-            color={
-              i === 0
-                ? "radial-gradient(circle, rgba(0, 217, 255, 0.1), transparent 70%)"
-                : i === 1
-                  ? "radial-gradient(circle, rgba(139, 92, 246, 0.08), transparent 70%)"
-                  : "radial-gradient(circle, rgba(0, 217, 255, 0.06), transparent 70%)"
-            }
-          />
-        ))}
-
-      {/* Layer 6: Dust particles */}
-      {dust.map((d) => (
-        <motion.div
-          key={d.id}
-          suppressHydrationWarning
-          className="absolute rounded-full bg-white/20"
-          style={{
-            width: `${d.size}px`,
-            height: `${d.size}px`,
-            left: `${d.x}%`,
-            top: `${d.y}%`,
-          }}
-          animate={{
-            opacity: [0, 0.4, 0],
-            y: [0, -15, 0],
-          }}
-          transition={{
-            duration: d.duration,
-            delay: d.delay,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-      ))}
     </div>
   )
 }

@@ -224,7 +224,7 @@ export function VisitorPanel({ open, onClose }: VisitorPanelProps) {
                           </div>
                           <div className="w-full h-1 rounded-full bg-white/[0.06] overflow-hidden">
                             <motion.div
-                              className="h-full rounded-full bg-gradient-to-r from-cyan-400 to-purple-500"
+                              className="h-full rounded-full bg-gradient-to-r from-cyan-400 to-teal-500"
                               initial={{ width: 0 }}
                               animate={{ width: `${(c.count / maxCountry) * 100}%` }}
                               transition={{ duration: 0.6, ease: "easeOut" }}
@@ -262,7 +262,7 @@ export function VisitorPanel({ open, onClose }: VisitorPanelProps) {
                         </div>
                         <div className="w-full h-1 rounded-full bg-white/[0.06] overflow-hidden">
                           <motion.div
-                            className="h-full rounded-full bg-gradient-to-r from-cyan-400/80 to-purple-500/80"
+                            className="h-full rounded-full bg-gradient-to-r from-cyan-400/80 to-teal-500/80"
                             initial={{ width: 0 }}
                             animate={{ width: `${(d.count / maxDevice) * 100}%` }}
                             transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}

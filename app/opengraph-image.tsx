@@ -24,7 +24,7 @@ export default async function og() {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        background: "linear-gradient(135deg, #030712 0%, #0B1120 50%, #0F172A 100%)",
+        background: "linear-gradient(135deg, #050816 0%, #0B1120 100%)",
         position: "relative",
         overflow: "hidden",
       }}
@@ -37,7 +37,7 @@ export default async function og() {
           width: 700,
           height: 700,
           borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(30,58,138,0.3), transparent)",
+          background: "radial-gradient(circle, rgba(0,217,255,0.16), transparent)",
         }}
       />
       <div
@@ -48,7 +48,7 @@ export default async function og() {
           width: 600,
           height: 600,
           borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(217,119,6,0.15), transparent)",
+          background: "radial-gradient(circle, rgba(8,145,178,0.14), transparent)",
         }}
       />
       <div

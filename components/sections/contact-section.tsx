@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, type FormEvent } from "react"
+import { useState, useCallback, type FormEvent } from "react"
 import dynamic from "next/dynamic"
 import { motion } from "framer-motion"
 import { Send, Loader2, CheckCircle2, AlertCircle, Mail } from "lucide-react"
@@ -57,13 +57,21 @@ export function ContactSection({
   const [state, setState] = useState<SubmitState>("idle")
   const [errorMsg, setErrorMsg] = useState("")
 
-  const handleTurnstileVerify = (token: string) => {
-    updateField("turnstileToken", token)
-  }
+  // Stable identities (empty deps, functional setState) so the Turnstile
+  // widget's mount effect doesn't see a new callback on every keystroke and
+  // tear down/recreate the widget -- it was doing exactly that when these
+  // were plain functions closing over updateField.
+  const handleTurnstileVerify = useCallback((token: string) => {
+    setFields((prev) => ({ ...prev, turnstileToken: token }))
+  }, [])
 
-  const handleTurnstileExpire = () => {
-    updateField("turnstileToken", "")
-  }
+  const handleTurnstileExpire = useCallback(() => {
+    setFields((prev) => ({ ...prev, turnstileToken: "" }))
+  }, [])
+
+  const handleTurnstileError = useCallback(() => {
+    setFields((prev) => ({ ...prev, turnstileToken: "" }))
+  }, [])
 
   const updateField = (field: keyof FormFields, value: string) => {
     setFields((prev) => ({ ...prev, [field]: value }))
@@ -240,7 +248,11 @@ export function ContactSection({
               />
             </div>
 
-            <Turnstile onVerify={handleTurnstileVerify} onExpire={handleTurnstileExpire} />
+            <Turnstile
+              onVerify={handleTurnstileVerify}
+              onExpire={handleTurnstileExpire}
+              onError={handleTurnstileError}
+            />
             {fieldErrors.turnstileToken && (
               <p className="text-xs text-error font-body mt-1">{fieldErrors.turnstileToken}</p>
             )}

@@ -74,7 +74,7 @@ function ErrorCard({ onRetry, isStale }: { onRetry: () => void; isStale: boolean
   )
 }
 
-export function GitHubStats() {
+export function GitHubStats({ onLoaded }: { onLoaded?: (stats: GitHubStats) => void }) {
   const [stats, setStats] = useState<GitHubStats | null>(null)
   const [error, setError] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -86,6 +86,7 @@ export function GitHubStats() {
     if (cached && now - cached.ts < 3600 * 1000) {
       setStats(cached.data)
       setLoading(false)
+      onLoaded?.(cached.data)
       return
     }
 
@@ -100,6 +101,7 @@ export function GitHubStats() {
 
       cacheRef.current = { data: result, ts: Date.now() }
       setStats(result)
+      onLoaded?.(result)
       try {
         localStorage.setItem(LAST_KNOWN_STATS_KEY, JSON.stringify(result))
       } catch {
@@ -109,7 +111,11 @@ export function GitHubStats() {
       setError(true)
       try {
         const raw = localStorage.getItem(LAST_KNOWN_STATS_KEY)
-        if (raw) setStats(JSON.parse(raw))
+        if (raw) {
+          const parsed: GitHubStats = JSON.parse(raw)
+          setStats(parsed)
+          onLoaded?.(parsed)
+        }
       } catch {
         // no last-known stats available — will show the plain error state
       }

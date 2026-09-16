@@ -19,6 +19,24 @@ interface ProjectCardProps {
   activeProject: Project | null
   setActiveProject: (project: Project | null) => void
   variant?: "grid" | "list"
+  /** Pass for above-the-fold cards (e.g. the first row) so their image
+   * loads eagerly instead of lazily -- Next.js flags this as the LCP
+   * element otherwise, since the default `loading="lazy"` defers it. */
+  priority?: boolean
+}
+
+// Derives "owner/repo" from a GitHub URL for the no-screenshot fallback's
+// terminal chrome. Falls back to null (renders a generic label) rather than
+// guessing at a malformed URL.
+export function repoPathFrom(githubUrl?: string): string | null {
+  if (!githubUrl) return null
+  try {
+    const { pathname } = new URL(githubUrl)
+    const path = pathname.replace(/^\/+|\/+$/g, "")
+    return path || null
+  } catch {
+    return null
+  }
 }
 
 function ProjectThumb({
@@ -38,14 +56,13 @@ function ProjectThumb({
   priority?: boolean
   transition?: import("framer-motion").Transition
 }) {
+  const repoPath = repoPathFrom(project.githubUrl)
+
   return (
     <motion.div
       layoutId={layoutId}
       transition={transition}
-      className={cn(
-        "relative shrink-0 overflow-hidden bg-gradient-to-br from-accent/20 via-accent-secondary/10 to-bg-secondary flex items-center justify-center",
-        className,
-      )}
+      className={cn("relative shrink-0 overflow-hidden bg-bg-secondary", className)}
     >
       {project.image ? (
         <Image
@@ -57,11 +74,34 @@ function ProjectThumb({
           className="object-cover object-top"
         />
       ) : (
-        <span
-          className={cn("font-heading font-bold text-accent/30 select-none", fallbackTextClassName)}
-        >
-          {project.title.charAt(0)}
-        </span>
+        // No screenshot on file for this project -- rather than fake a
+        // product screenshot that doesn't exist, render it honestly as a
+        // repo card: real GitHub path and tech stack in the site's own
+        // terminal/monospace voice. This is a deliberate design choice for
+        // GitHub-only projects, not an apology for a missing asset.
+        <div className="absolute inset-0 flex flex-col font-mono">
+          <div className="flex items-center gap-1.5 border-b border-white/[0.06] bg-black/20 px-3 py-2">
+            <span className="h-2 w-2 rounded-full bg-white/15" aria-hidden />
+            <span className="h-2 w-2 rounded-full bg-white/15" aria-hidden />
+            <span className="h-2 w-2 rounded-full bg-white/15" aria-hidden />
+            <span className="ml-2 truncate text-[10px] text-muted/50">
+              {repoPath ?? project.category}
+            </span>
+          </div>
+          <div className="flex flex-1 flex-col justify-center gap-2 overflow-hidden px-4">
+            <p className={cn("truncate text-accent/70", fallbackTextClassName ?? "text-xs")}>
+              $ git clone{" "}
+              {repoPath
+                ? repoPath.split("/").pop()
+                : project.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}
+            </p>
+            {project.technologies && project.technologies.length > 0 && (
+              <p className="truncate text-[10px] text-muted/50">
+                {project.technologies.slice(0, 4).join(" · ")}
+              </p>
+            )}
+          </div>
+        </div>
       )}
     </motion.div>
   )
@@ -72,6 +112,7 @@ export const ProjectCard = memo(function ProjectCard({
   activeProject,
   setActiveProject,
   variant = "grid",
+  priority = false,
 }: ProjectCardProps) {
   const ref = useRef<HTMLDivElement>(null)
   const id = useId()
@@ -152,7 +193,7 @@ export const ProjectCard = memo(function ProjectCard({
                 layoutId={`image-${project._id}-${id}`}
                 transition={modalTransition}
                 className="w-full h-80 shrink-0 sm:rounded-t-3xl"
-                fallbackTextClassName="text-5xl"
+                fallbackTextClassName="text-sm"
                 sizes="500px"
                 priority
               />
@@ -271,8 +312,9 @@ export const ProjectCard = memo(function ProjectCard({
               layoutId={`image-${project._id}-${id}`}
               transition={modalTransition}
               className="h-60 w-full rounded-lg"
-              fallbackTextClassName="text-4xl"
+              fallbackTextClassName="text-sm"
               sizes="(max-width: 768px) 100vw, 50vw"
+              priority={priority}
             />
             <div className="flex justify-center items-center flex-col">
               <motion.h3
@@ -332,8 +374,9 @@ export const ProjectCard = memo(function ProjectCard({
             layoutId={`image-${project._id}-${id}`}
             transition={modalTransition}
             className="aspect-video w-full"
-            fallbackTextClassName="text-3xl"
+            fallbackTextClassName="text-xs"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            priority={priority}
           />
 
           <div className="p-4 space-y-3">

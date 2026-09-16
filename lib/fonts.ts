@@ -1,8 +1,8 @@
-import { Poppins, Inter, JetBrains_Mono } from "next/font/google"
+import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google"
 
-export const fontHeading = Poppins({
+export const fontHeading = Space_Grotesk({
   subsets: ["latin"],
-  weight: ["600", "700"],
+  weight: ["500", "600", "700"],
   variable: "--font-heading",
   display: "swap",
   preload: true,
