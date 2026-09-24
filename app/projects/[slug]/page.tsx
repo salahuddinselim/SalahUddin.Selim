@@ -96,7 +96,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
         </h1>
         <p className="text-accent font-body mt-2">{project.description}</p>
         <p className="text-xs text-muted font-mono mt-2">
-          {project.year} &middot; {project.category}
+          {project.year} &middot; {project.category === "ml" ? "data & ml" : project.category}
         </p>
 
         <p className="text-base text-muted font-body leading-relaxed max-w-prose mt-6">
