@@ -18,6 +18,7 @@ export const credential = defineType({
           { title: "Competition", value: "Competition" },
           { title: "Academic", value: "Academic" },
           { title: "Certification", value: "Certification" },
+          { title: "Internship", value: "Internship" },
         ],
       },
     }),

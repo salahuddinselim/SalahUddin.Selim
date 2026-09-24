@@ -25,6 +25,7 @@ export const project = defineType({
           { title: 'Frontend', value: 'frontend' },
           { title: 'Backend', value: 'backend' },
           { title: 'Full Stack', value: 'fullstack' },
+          { title: 'Data & ML', value: 'ml' },
         ],
       },
     }),
