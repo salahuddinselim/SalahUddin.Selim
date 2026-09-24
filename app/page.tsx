@@ -33,6 +33,11 @@ const ExperienceSection = nextDynamic(
   { loading: () => <div className="min-h-[400px] animate-pulse bg-white/5 rounded-2xl m-8" /> },
 )
 
+const AcademicJourney = nextDynamic(
+  () => import("@/components/sections/academic-journey").then((mod) => mod.AcademicJourney),
+  { loading: () => <div className="min-h-[400px] animate-pulse bg-white/5 rounded-2xl m-8" /> },
+)
+
 const ContactSection = nextDynamic(
   () => import("@/components/sections/contact-section").then((mod) => mod.ContactSection),
   { loading: () => <div className="min-h-[400px] animate-pulse bg-white/5 rounded-2xl m-8" /> },
@@ -68,7 +73,8 @@ export default async function Home() {
       <HeroSection />
       <ProjectsPreview projects={allProjects} />
       <AboutPreview education={education} />
-      <ExperienceSection experience={experience} education={education} />
+      <ExperienceSection experience={experience} />
+      <AcademicJourney education={education} />
       <ContactSection socials={socials} email={email} />
     </main>
   )

@@ -164,6 +164,7 @@ const educationQuery = groq`*[_type == "education"] | order(order asc) {
   institution,
   degree,
   field,
+  location,
   startYear,
   endYear,
   gpa,
@@ -179,6 +180,7 @@ export interface EducationData {
   institution: string
   degree: string
   field?: string
+  location?: string
   startYear?: number
   endYear?: string
   gpa?: string

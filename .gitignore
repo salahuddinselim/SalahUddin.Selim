@@ -63,3 +63,6 @@ next-dev-output.txt
 next-startup.txt
 .gstack/
 .playwright-cli/
+
+# impeccable live-server runtime state (contains a session token)
+.impeccable/live/server.json

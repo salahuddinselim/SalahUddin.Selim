@@ -18,6 +18,12 @@ export const education = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({ name: "field", title: "Field of Study", type: "string" }),
+    defineField({
+      name: "location",
+      title: "Location",
+      type: "string",
+      description: 'e.g. "Dhaka, Bangladesh"',
+    }),
     defineField({ name: "startYear", title: "Start Year", type: "number" }),
     defineField({
       name: "endYear",
