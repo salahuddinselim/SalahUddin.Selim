@@ -17,7 +17,7 @@ export const siteConfig = {
   title: "Salah Uddin Selim | CSE Student & Aspiring Data Analyst",
   titleTemplate: "%s | Salah Uddin Selim",
   description:
-    "CSE student at UIU (GPA 3.74/4.0) with hands-on experience in full-stack web development, IoT systems, and algorithm design. Built 5 production-quality projects across Java, Python, PHP, C/C++, and Arduino.",
+    "CSE student at UIU (GPA 3.79/4.0) with hands-on experience in full-stack web development, IoT systems, and algorithm design. Built 5 production-quality projects across Java, Python, PHP, C/C++, and Arduino.",
   ogDescription:
     "CSE student at United International University, aspiring data analyst with a background in full-stack engineering, IoT, and AI.",
   keywords: [
@@ -39,5 +39,5 @@ export const siteConfig = {
   googleSiteVerification: "google08db23e23b4fc7df",
   locale: "en_US",
   ogImage: { url: "/og-image.png", width: 1200, height: 630 },
-  twitterImage: "/og-image.png",
+  twitterImage: "/opengraph-image",
 }

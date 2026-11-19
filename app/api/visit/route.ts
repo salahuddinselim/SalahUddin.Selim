@@ -29,7 +29,24 @@ function getDevice(userAgent: string): string {
   return "Other"
 }
 
-async function lookupCountry(ip: string) {
+function codeToFlag(code: string): string {
+  return (
+    String.fromCodePoint(code.codePointAt(0)! - 0x41 + 0x1f1e6) +
+    String.fromCodePoint(code.codePointAt(1)! - 0x41 + 0x1f1e6)
+  )
+}
+
+// Use Vercel's trusted edge headers when available; fall back to ip-api.com only in local dev.
+async function lookupCountry(ip: string, request: NextRequest) {
+  const vercelCode = request.headers.get("x-vercel-ip-country")
+  if (vercelCode && vercelCode.length === 2) {
+    const vercelRegion = request.headers.get("x-vercel-ip-country-region") ?? ""
+    const name = vercelRegion ? `${vercelCode} (${vercelRegion})` : vercelCode
+    return { name, code: vercelCode, flag: codeToFlag(vercelCode) }
+  }
+
+  // Local dev fallback only — not reached on Vercel production
+  if (ip === "127.0.0.1" || ip === "unknown") return null
   try {
     const res = await fetch(`https://ip-api.com/json/${ip}?fields=status,country,countryCode`, {
       signal: AbortSignal.timeout(3000),
@@ -37,10 +54,7 @@ async function lookupCountry(ip: string) {
     const data = await res.json()
     if (data.status !== "success") return null
     const code = data.countryCode as string
-    const flag =
-      String.fromCodePoint(code.codePointAt(0)! - 0x41 + 0x1f1e6) +
-      String.fromCodePoint(code.codePointAt(1)! - 0x41 + 0x1f1e6)
-    return { name: data.country as string, code, flag }
+    return { name: data.country as string, code, flag: codeToFlag(code) }
   } catch {
     return null
   }
@@ -67,7 +81,7 @@ export async function POST(request: NextRequest) {
     const ip = getIP(request)
 
     const ua = request.headers.get("user-agent") ?? "Unknown"
-    const countryInfo = ip !== "127.0.0.1" && ip !== "unknown" ? await lookupCountry(ip) : null
+    const countryInfo = await lookupCountry(ip, request)
 
     const MAX_ATTEMPTS = 3
     let persisted = false
