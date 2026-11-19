@@ -72,24 +72,19 @@ export function GallerySection({ images }: { images: GalleryImageData[] }) {
 
       {/* Header */}
       <motion.div variants={headerVariants} initial="hidden" animate="visible" className="mb-8">
-        <p className="text-[11px] font-mono uppercase tracking-[0.35em] text-cyan-400/40 mb-3">
+        <p className="text-[11px] font-mono uppercase tracking-[0.22em] text-accent/60 mb-3">
           {gallerySectionCopy.eyecatch}
         </p>
-        <div className="flex items-center gap-4 mb-2">
-          <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-white">
-            My{" "}
-            <span className="text-cyan-300 drop-shadow-[0_0_20px_rgba(0,217,255,0.3)]">
-              {gallerySectionCopy.heading}
-            </span>
+        <div className="flex items-end gap-4 mb-2">
+          <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-white">
+            {gallerySectionCopy.heading}
           </h1>
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] font-mono text-white/50">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] font-mono text-white/50 mb-1">
             <ImageIcon size={12} />
             {images.length}
           </span>
         </div>
-        <p className="text-sm font-mono text-white/50 tracking-[0.15em]">
-          {gallerySectionCopy.subtitle}
-        </p>
+        <p className="text-sm text-white/40 tracking-[0.05em]">{gallerySectionCopy.subtitle}</p>
       </motion.div>
 
       {/* Category Filters */}

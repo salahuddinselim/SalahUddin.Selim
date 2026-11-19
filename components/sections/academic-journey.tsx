@@ -2,15 +2,15 @@
 
 import { useRef } from "react"
 import { motion, useScroll } from "framer-motion"
-import { Building2, Calendar, MapPin, GraduationCap, BookOpen, School } from "lucide-react"
+import { GraduationCap, BookOpen, School } from "lucide-react"
 import type { EducationData } from "@/lib/sanity/fetch"
 import { relevantCoursework } from "@/data"
 
 // Documented glass-panel token (same recipe as about-preview.tsx's card grid) —
 // content cards use this, not the lighter nav-chrome glass.
 const GLASS_CLASS =
-  "bg-[rgba(17,24,39,0.65)] backdrop-blur-[16px] border border-[rgba(255,255,255,0.06)] shadow-[0_8px_32px_rgba(0,0,0,0.2)]"
-const GLASS_STYLE = { WebkitBackdropFilter: "blur(16px)" }
+  "bg-[rgba(255,255,255,0.05)] backdrop-blur-[10px] border border-[rgba(255,255,255,0.1)] shadow-[0_4px_24px_rgba(0,0,0,0.4)]"
+const GLASS_STYLE = { WebkitBackdropFilter: "blur(10px)" }
 
 const NODE_ICONS = [GraduationCap, School, BookOpen]
 
@@ -33,80 +33,128 @@ function EducationCard({ item, align }: EducationCardProps) {
   const isOngoing = item.status === "ongoing"
   const alignClass = align === "right" ? "md:ml-auto md:text-right" : ""
   const metaJustify = align === "right" ? "md:justify-end" : ""
+  const years = [item.startYear, item.endYear].filter(Boolean).join(" — ")
+  const gpaLabel = item.gpa ? `${item.gpa}${item.gpaScale ? ` / ${item.gpaScale}` : ""}` : undefined
+
+  const stats: { label: string; value: string }[] = []
+  if (item.abbreviation) stats.push({ label: "Program", value: item.abbreviation })
+  if (item.completedCredits && item.totalCredits) {
+    stats.push({ label: "Credits", value: `${item.completedCredits} / ${item.totalCredits}` })
+  }
+  if (item.location) stats.push({ label: "Campus", value: item.location })
+  if (item.status) {
+    stats.push({ label: "Status", value: isOngoing ? "Ongoing" : item.status })
+  }
+
+  const abbr = (item.abbreviation ?? item.institution ?? "").slice(0, 3).toUpperCase()
 
   return (
     <div
       style={GLASS_STYLE}
-      className={`group relative overflow-hidden rounded-2xl p-5 w-full max-w-md ${alignClass} transition-[border-color,box-shadow] duration-300 hover:border-accent/20 hover:shadow-[0_0_40px_-8px_rgba(0,217,255,0.12)] ${GLASS_CLASS}`}
+      className={`group relative overflow-hidden rounded-2xl w-full max-w-md ${alignClass} transition-[border-color,box-shadow] duration-300 hover:border-accent/20 hover:shadow-[0_0_40px_-8px_rgba(0,217,255,0.12)] ${GLASS_CLASS}`}
     >
-      <h3 className="text-base font-semibold text-white mb-2">
-        {item.degree}
-        {item.field ? ` in ${item.field}` : ""}
-      </h3>
-
-      <div className={`space-y-1 mb-3 ${metaJustify}`}>
-        <p className={`flex items-center gap-1.5 text-xs text-white/50 ${metaJustify}`}>
-          <Building2 size={12} className="text-accent/70 shrink-0" />
-          {item.institution}
-        </p>
-        {item.location && (
-          <p className={`flex items-center gap-1.5 text-xs text-white/50 ${metaJustify}`}>
-            <MapPin size={12} className="text-accent/70 shrink-0" />
-            {item.location}
-          </p>
-        )}
-        <p className={`flex items-center gap-1.5 text-xs text-white/50 ${metaJustify}`}>
-          <Calendar size={12} className="text-accent/70 shrink-0" />
-          {item.startYear ?? ""}
-          {item.startYear && item.endYear ? " — " : ""}
-          {item.endYear ?? ""}
-        </p>
-      </div>
-
-      {item.description && (
-        <p className="text-sm text-white/60 leading-relaxed mb-3">{item.description}</p>
-      )}
-
-      {item.gpa && (
-        <p className={`flex items-center gap-2 text-xs text-white/40 mb-3 ${metaJustify}`}>
-          GPA:
-          <span className="rounded-full bg-accent/10 px-2.5 py-0.5 font-mono font-semibold text-accent">
-            {item.gpa}
-            {item.gpaScale ? ` / ${item.gpaScale}` : ""}
-          </span>
-          {isOngoing && (
-            <span className="rounded-full border border-accent/20 px-2 py-0.5 text-[10px] font-mono text-accent/60">
-              Ongoing
-            </span>
-          )}
-        </p>
-      )}
-
-      {isOngoing && (
-        <div>
-          <p
-            className={`flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-wider text-white/30 mb-2 ${metaJustify}`}
-          >
-            <BookOpen size={11} />
-            Relevant Coursework
-          </p>
-          <div
-            className={`flex flex-wrap gap-1.5 ${align === "right" ? "md:justify-end" : ""}`}
-            role="list"
-            aria-label="Relevant coursework"
-          >
-            {relevantCoursework.map((course) => (
-              <span
-                key={course}
-                role="listitem"
-                className="rounded-full border border-white/[0.06] bg-white/[0.03] px-2 py-0.5 text-[10px] font-mono text-white/50 transition-colors group-hover:border-accent/10 group-hover:text-accent/60"
-              >
-                {course}
-              </span>
-            ))}
+      {/* Amber accent bar */}
+      <div className="h-0.5 w-full bg-gradient-to-r from-[rgba(245,158,11,0.8)] via-[rgba(245,158,11,0.4)] to-transparent" />
+      <div className="p-5">
+        {/* Institution header row */}
+        <div
+          className={`mb-3 flex items-start gap-3 ${align === "right" ? "md:flex-row-reverse" : ""}`}
+        >
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent/10 border border-accent/20">
+            <span className="font-heading font-bold text-xs text-accent">{abbr}</span>
+          </div>
+          <div className={`min-w-0 flex-1 ${align === "right" ? "md:text-right" : ""}`}>
+            <div className={`mb-0.5 flex flex-wrap items-center gap-2 ${metaJustify}`}>
+              <h3 className="font-heading text-base font-bold text-white">{item.institution}</h3>
+              {isOngoing && (
+                <span className="rounded-full border border-accent/30 bg-accent/10 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-accent">
+                  Ongoing
+                </span>
+              )}
+            </div>
+            {item.degree && (
+              <p className="text-sm font-medium text-accent/80">
+                {item.degree}
+                {item.field ? ` in ${item.field}` : ""}
+              </p>
+            )}
+            {years && (
+              <p className="mt-1 font-mono text-[11px] text-[rgba(255,255,255,0.35)]">{years}</p>
+            )}
           </div>
         </div>
-      )}
+
+        {item.description && (
+          <p className="mb-3 text-sm leading-relaxed text-[rgba(255,255,255,0.65)]">
+            {item.description}
+          </p>
+        )}
+
+        {gpaLabel && (
+          <div className={`mb-3 flex flex-wrap items-center gap-2 ${metaJustify}`}>
+            <span className="rounded-full border border-accent/30 bg-accent/10 px-2.5 py-1 font-mono text-[10px] font-semibold text-accent">
+              GPA {gpaLabel}
+            </span>
+            {item.completedCredits && item.totalCredits && (
+              <span className="font-mono text-[10px] text-[rgba(255,255,255,0.35)]">
+                {item.completedCredits} / {item.totalCredits} credits
+              </span>
+            )}
+          </div>
+        )}
+
+        {isOngoing && (
+          <div className="mb-3">
+            <p
+              className={`mb-2 flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-[rgba(255,255,255,0.35)] ${metaJustify}`}
+            >
+              <BookOpen size={11} aria-hidden />
+              Relevant Coursework
+            </p>
+            <div
+              className={`flex flex-wrap gap-1.5 ${align === "right" ? "md:justify-end" : ""}`}
+              role="list"
+              aria-label="Relevant coursework"
+            >
+              {relevantCoursework.map((course) => (
+                <span
+                  key={course}
+                  role="listitem"
+                  className="rounded-full border border-white/10 bg-white/[0.03] px-2 py-0.5 font-mono text-[10px] text-[rgba(255,255,255,0.55)]"
+                >
+                  {course}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {stats.length > 0 && (
+          <dl
+            className={`grid grid-cols-2 gap-3 border-t border-white/[0.08] pt-3 ${
+              stats.length >= 4
+                ? "sm:grid-cols-4"
+                : stats.length === 3
+                  ? "sm:grid-cols-3"
+                  : "sm:grid-cols-2"
+            } ${metaJustify}`}
+          >
+            {stats.map((stat) => (
+              <div
+                key={stat.label}
+                className={`min-w-0 ${align === "right" ? "md:text-right" : ""}`}
+              >
+                <dt className="font-mono text-[9px] uppercase tracking-[0.2em] text-[rgba(255,255,255,0.35)]">
+                  {stat.label}
+                </dt>
+                <dd className="mt-0.5 truncate text-xs font-medium text-[rgba(255,255,255,0.65)]">
+                  {stat.value}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        )}
+      </div>
     </div>
   )
 }
@@ -135,20 +183,25 @@ export function AcademicJourney({ education }: { education: EducationData[] }) {
   if (sortedEducation.length === 0) return null
 
   return (
-    <section id="academic-journey" className="relative w-full py-24 sm:py-32 px-4">
-      <div className="mx-auto max-w-5xl">
+    <section id="academic-journey" className="relative w-full py-28 px-6">
+      <div className="mx-auto w-full max-w-5xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="text-center mb-14"
+          className="mb-10"
         >
-          <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-white mb-3">
-            Academic <span className="text-accent/70">Journey</span>
+          <p className="mb-2 font-mono text-xs uppercase tracking-[0.35em] text-accent/60">
+            Academic Journey
+          </p>
+          <h2
+            className="font-heading font-bold text-white"
+            style={{ fontSize: "clamp(2rem,5vw,3rem)" }}
+          >
+            Education
           </h2>
-          <div className="mx-auto h-1 w-14 rounded-full bg-gradient-to-r from-accent/30 to-accent mb-4" />
-          <p className="text-sm text-white/50 max-w-md mx-auto">
+          <p className="mt-3 max-w-md text-sm text-[rgba(255,255,255,0.5)]">
             Formal education shaping my analytical approach to software engineering.
           </p>
         </motion.div>

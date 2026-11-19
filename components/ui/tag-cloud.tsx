@@ -371,7 +371,15 @@ export function TagCloud({ items, categoryColors, onTagClick, className = "" }: 
         const iconX = -pillW / 2 + horizontalPad
         const iconY = -iconSize / 2
         ctx.globalAlpha = opacity
+        // Clip icon to circle to prevent square icon backgrounds from showing
+        ctx.save()
+        ctx.beginPath()
+        const iconR = iconSize / 2
+        ctx.arc(iconX + iconR, 0, iconR, 0, Math.PI * 2)
+        ctx.clip()
         ctx.drawImage(iconCanvas, iconX, iconY, iconSize, iconSize)
+        ctx.restore()
+        ctx.globalAlpha = opacity
 
         // text on the right of icon
         const textX = iconX + iconSize + gap

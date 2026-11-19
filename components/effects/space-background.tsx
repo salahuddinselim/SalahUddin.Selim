@@ -271,7 +271,7 @@ export function SpaceBackground() {
         className="absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse 80% 80% at 50% -20%, rgba(0, 217, 255, 0.05), transparent), #050816",
+            "radial-gradient(ellipse 80% 80% at 50% -20%, rgba(0, 217, 255, 0.04), transparent), #0a0a0a",
         }}
       />
 

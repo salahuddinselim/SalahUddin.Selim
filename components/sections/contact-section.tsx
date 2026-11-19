@@ -3,7 +3,7 @@
 import { useState, useCallback, type FormEvent } from "react"
 import dynamic from "next/dynamic"
 import { motion } from "framer-motion"
-import { Send, Loader2, CheckCircle2, AlertCircle, Mail } from "lucide-react"
+import { Send, Loader2, CheckCircle2, AlertCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Turnstile, resetTurnstile } from "@/components/ui/turnstile"
 import { contactSectionCopy, contactFormFields, contactApiEndpoint, fallbackSocials } from "@/data"
@@ -153,8 +153,10 @@ export function ContactSection({
           viewport={{ once: true, margin: "-60px" }}
           className="mb-10"
         >
-          <h2 className="flex items-center gap-2.5 text-2xl md:text-3xl font-bold tracking-tight text-foreground">
-            <Mail size={24} className="text-accent shrink-0" aria-hidden="true" />
+          <p className="text-[11px] font-mono uppercase tracking-[0.22em] text-accent/60 mb-3">
+            Get In Touch
+          </p>
+          <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-foreground">
             {contactSectionCopy.heading}
           </h2>
         </motion.div>

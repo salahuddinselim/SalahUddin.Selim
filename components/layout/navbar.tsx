@@ -240,7 +240,7 @@ export function Navbar() {
             <nav
               ref={mobileMenuRef}
               id="mobile-menu"
-              className="rounded-3xl border border-white/10 bg-[#0B1220]/95 p-4 backdrop-blur-2xl shadow-2xl max-h-[75dvh] overflow-y-auto"
+              className="rounded-3xl border border-white/10 bg-[#0a0a0a]/95 p-4 backdrop-blur-2xl shadow-2xl max-h-[75dvh] overflow-y-auto"
               aria-label="Mobile navigation"
             >
               <div className="flex items-center justify-between mb-2 px-1">

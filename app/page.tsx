@@ -9,7 +9,7 @@ import {
   getProfile,
 } from "@/lib/sanity/fetch"
 import { fallbackSocials } from "@/data"
-import type { SanityProject, SanityExperience } from "@/types"
+import type { SanityProject, SanityExperience, SanityProfile } from "@/types"
 import type { EducationData, SocialLinkData } from "@/lib/sanity/fetch"
 
 export const metadata: Metadata = {
@@ -48,6 +48,7 @@ export default async function Home() {
   let experience: SanityExperience[] = []
   let education: EducationData[] = []
   let socials: SocialLinkData[] = fallbackSocials
+  let profile: SanityProfile | undefined
   let email: string | undefined
 
   try {
@@ -63,7 +64,10 @@ export default async function Home() {
     if (experienceResult.status === "fulfilled") experience = experienceResult.value
     if (educationResult.status === "fulfilled") education = educationResult.value
     if (socialsResult.status === "fulfilled") socials = socialsResult.value
-    if (profileResult.status === "fulfilled") email = profileResult.value?.email
+    if (profileResult.status === "fulfilled") {
+      profile = profileResult.value
+      email = profile?.email
+    }
   } catch (error) {
     console.error("Failed to load home page data:", error)
   }
@@ -72,8 +76,8 @@ export default async function Home() {
     <main>
       <HeroSection />
       <ProjectsPreview projects={allProjects} />
-      <AboutPreview education={education} />
-      <ExperienceSection experience={experience} />
+      <AboutPreview education={education} profile={profile} />
+      <ExperienceSection experience={experience} education={education} />
       <AcademicJourney education={education} />
       <ContactSection socials={socials} email={email} />
     </main>

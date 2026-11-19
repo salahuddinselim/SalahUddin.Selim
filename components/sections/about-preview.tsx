@@ -1,10 +1,8 @@
 "use client"
 
 import { motion } from "framer-motion"
-import Image from "next/image"
-import { Zap, MapPin, GraduationCap, Code2, BarChart3, Cpu, Layers } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { AwardBadge } from "@/components/sections/award-badge"
+import { MapPin, GraduationCap } from "lucide-react"
+import type { SanityProfile } from "@/types"
 import type { EducationData } from "@/lib/sanity/fetch"
 
 const fadeUp = {
@@ -12,187 +10,179 @@ const fadeUp = {
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.08, duration: 0.5, ease: "easeOut" as const },
+    transition: { delay: i * 0.1, duration: 0.5, ease: "easeOut" as const },
   }),
 }
 
-const philosophy =
-  "To become a data analyst or researcher — combining strong analytical thinking, full-stack engineering, and AI to turn data into real-world impact."
+export function AboutPreview({
+  education,
+  profile,
+}: {
+  education: EducationData[]
+  profile?: SanityProfile
+}) {
+  const featuredEducation = education.find((edu) => edu.status === "ongoing") ?? education[0]
 
-const coreCapabilities = [
-  { icon: Code2, label: "Full-Stack Web Dev" },
-  { icon: BarChart3, label: "Data Analysis & SQL" },
-  { icon: Cpu, label: "IoT & Embedded Systems" },
-  { icon: Layers, label: "Algorithm Design" },
-]
+  const name = profile?.name?.trim() || "Salah Uddin Selim"
+  const firstName = name.split(" ")[0]
+  const bio =
+    profile?.bio?.trim() ||
+    "Aspiring data analyst turning data into insight — available for internships and research roles."
+  const tagline = profile?.tagline?.trim()
+  const location = profile?.location?.trim() || "Dhaka, Bangladesh"
 
-const CARD_CLASS =
-  "rounded-2xl bg-[rgba(17,24,39,0.65)] backdrop-blur-[16px] border border-[rgba(255,255,255,0.06)] p-5 sm:p-6"
+  const gpaLabel = featuredEducation?.gpa
+    ? `${featuredEducation.gpa}${featuredEducation.gpaScale ? ` / ${featuredEducation.gpaScale}` : ""}`
+    : undefined
+  const years = featuredEducation
+    ? [featuredEducation.startYear, featuredEducation.endYear].filter(Boolean).join(" – ")
+    : undefined
 
-export function AboutPreview({ education }: { education: EducationData[] }) {
-  const ongoingEducation = education.find((edu) => edu.status === "ongoing")
+  const abbr = (featuredEducation?.abbreviation ?? featuredEducation?.institution ?? "")
+    .slice(0, 3)
+    .toUpperCase()
 
   return (
-    <section id="about-preview" className="relative w-full py-24 sm:py-32 px-4">
+    <section id="about-preview" className="relative w-full py-28 px-6">
       <div
-        className="absolute inset-0 pointer-events-none"
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(74% 54% at 20% 14%, rgba(0, 217, 255, 0.14), transparent 69%), radial-gradient(66% 52% at 82% 82%, rgba(8, 145, 178, 0.13), transparent 72%)",
+            "radial-gradient(74% 54% at 20% 14%, rgba(0, 217, 255, 0.07), transparent 69%), radial-gradient(66% 52% at 82% 82%, rgba(8, 145, 178, 0.06), transparent 72%)",
         }}
       />
-      <div className="mx-auto max-w-6xl">
+      <div className="relative mx-auto w-full max-w-4xl">
+        {/* Section header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="mb-10"
+          className="mb-12"
         >
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-3">
-            Who I <span className="text-accent">Am</span>
+          <p className="mb-2 font-mono text-xs uppercase tracking-[0.35em] text-accent/60">
+            Who I Am
+          </p>
+          <h2
+            className="font-heading font-bold text-white"
+            style={{ fontSize: "clamp(2rem,5vw,3rem)" }}
+          >
+            About Me
           </h2>
-          <div className="h-1 w-14 rounded-full bg-gradient-to-r from-accent/30 to-accent" />
         </motion.div>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3 md:auto-rows-[minmax(0,auto)]">
-          {/* Photo */}
+        {/* Two-column: Bio (left) + Education (right) */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8 lg:gap-12 items-start">
+          {/* Left: Bio */}
           <motion.div
             custom={0}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
             variants={fadeUp}
-            className="md:col-start-1 md:row-start-1 md:row-span-2"
           >
-            <div
-              className={cn(
-                "relative h-64 md:h-full w-full overflow-hidden rounded-2xl",
-                "bg-[rgba(10,15,30,0.58)] border border-[rgba(148,163,184,0.2)]",
-              )}
+            <h3
+              className="font-heading font-bold text-white mb-5"
+              style={{ fontSize: "clamp(1.3rem,3vw,1.6rem)" }}
             >
-              <Image
-                src="/hero.webp"
-                alt="Salah Uddin Selim"
-                width={768}
-                height={960}
-                loading="lazy"
-                className="h-full w-full object-cover"
-                sizes="(max-width: 768px) 100vw, 33vw"
-                quality={75}
-                placeholder="blur"
-                blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mN8/+F9PQAI8wNPvd7POQAAAABJRU5ErkJggg=="
-              />
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-5 pt-14">
-                <h3 className="text-lg font-semibold tracking-tight text-foreground mb-0.5">
-                  Salah Uddin Selim
-                </h3>
-                <p className="text-sm text-accent font-body font-medium">
-                  CSE Student &amp; Aspiring Data Analyst
-                </p>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Philosophy */}
-          <motion.div
-            custom={1}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={fadeUp}
-            className={cn(CARD_CLASS, "md:col-start-2 md:col-span-2 md:row-start-1")}
-          >
-            <div className="flex items-center gap-2.5 mb-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/10">
-                <Zap size={16} className="text-accent" />
-              </div>
-              <h3 className="text-base font-semibold tracking-tight text-foreground">
-                The Philosophy
-              </h3>
-            </div>
-            <p className="text-base text-muted font-body leading-relaxed max-w-prose">
-              {philosophy}
-            </p>
-          </motion.div>
-
-          {/* Location */}
-          <motion.div
-            custom={2}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={fadeUp}
-            className={cn(
-              CARD_CLASS,
-              "md:col-start-2 md:row-start-2 flex flex-col items-center justify-center text-center gap-2",
-            )}
-          >
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-accent/10">
-              <MapPin size={16} className="text-accent" />
-            </div>
-            <p className="text-base font-semibold text-foreground">Dhaka, Bangladesh</p>
-            <p className="text-[11px] uppercase tracking-wider text-muted/70">Location</p>
-          </motion.div>
-
-          {/* Core Capabilities */}
-          <motion.div
-            custom={3}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={fadeUp}
-            className={cn(CARD_CLASS, "md:col-start-3 md:row-start-2 md:row-span-2")}
-          >
-            <h3 className="text-base font-semibold tracking-tight text-foreground mb-4">
-              Core Capabilities
+              Hi, I&apos;m {firstName}
             </h3>
-            <div className="space-y-2.5">
-              {coreCapabilities.map(({ icon: Icon, label }) => (
-                <div
-                  key={label}
-                  className="flex items-center gap-2.5 rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 py-2.5"
-                >
-                  <Icon size={15} className="text-accent shrink-0" />
-                  <span className="text-sm font-medium text-foreground/90">{label}</span>
-                </div>
-              ))}
+            <div className="space-y-4 mb-7">
+              <p className="text-[rgba(255,255,255,0.65)] leading-relaxed">{bio}</p>
+              {tagline && (
+                <p className="text-[rgba(255,255,255,0.65)] leading-relaxed">{tagline}</p>
+              )}
+            </div>
+            {/* Location + school badges */}
+            <div className="flex flex-wrap gap-2">
+              <span className="flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 font-mono text-xs text-[rgba(255,255,255,0.45)]">
+                <MapPin size={11} className="text-accent/70" aria-hidden />
+                {location}
+              </span>
+              {featuredEducation && (
+                <span className="flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 font-mono text-xs text-[rgba(255,255,255,0.45)]">
+                  <GraduationCap size={11} className="text-accent/70" aria-hidden />
+                  {featuredEducation.abbreviation ?? featuredEducation.institution}
+                  {featuredEducation.endYear ? ` · ${featuredEducation.endYear}` : ""}
+                </span>
+              )}
             </div>
           </motion.div>
 
-          {/* Education */}
-          <motion.div
-            custom={4}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={fadeUp}
-            className={cn(
-              CARD_CLASS,
-              "md:col-start-1 md:col-span-2 md:row-start-3 flex flex-col sm:flex-row sm:items-center gap-4",
-            )}
-          >
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent/10">
-              <GraduationCap size={20} className="text-accent" />
-            </div>
-            <div className="flex-1 space-y-2">
-              <h3 className="text-base font-semibold tracking-tight text-foreground">
-                Computer Science &amp; Engineering
-              </h3>
-              <p className="text-sm text-muted font-body">
-                United International University
-                {ongoingEducation?.gpa
-                  ? ` · GPA ${ongoingEducation.gpa}/${ongoingEducation.gpaScale ?? "4.0"}`
-                  : ""}
-              </p>
-              <div className="flex flex-wrap items-center gap-3 pt-1">
-                <span className="inline-block rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-medium text-foreground/80">
-                  BSc in CSE
-                </span>
-                <AwardBadge />
+          {/* Right: Education card */}
+          {featuredEducation && (
+            <motion.div
+              custom={1}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeUp}
+            >
+              <h3 className="font-heading font-semibold text-white text-lg mb-4">Education</h3>
+              <div
+                className="rounded-2xl border border-white/10 bg-white/[0.05] p-5"
+                style={{ backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)" }}
+              >
+                <div className="flex items-start gap-4 mb-4">
+                  {/* Institution icon block */}
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-accent/10 border border-accent/20">
+                    <span className="font-heading font-bold text-sm text-accent">{abbr}</span>
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-heading font-bold text-white text-sm leading-snug">
+                      {featuredEducation.institution}
+                    </p>
+                    {featuredEducation.degree && (
+                      <p className="text-accent text-xs mt-1 font-medium leading-snug">
+                        {featuredEducation.degree}
+                        {featuredEducation.field ? ` in ${featuredEducation.field}` : ""}
+                      </p>
+                    )}
+                    {years && (
+                      <p className="text-[rgba(255,255,255,0.35)] font-mono text-[11px] mt-1">
+                        {years}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* GPA + status row */}
+                {(gpaLabel || featuredEducation.status === "ongoing") && (
+                  <div className="flex flex-wrap items-center justify-between gap-2 border-t border-white/[0.08] pt-4">
+                    {gpaLabel && (
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[rgba(255,255,255,0.35)]">
+                          CGPA
+                        </span>
+                        <span className="font-heading font-bold text-accent text-base">
+                          {featuredEducation.gpa}
+                        </span>
+                        <span className="font-mono text-[11px] text-[rgba(255,255,255,0.35)]">
+                          /{featuredEducation.gpaScale ?? "4.0"}
+                        </span>
+                      </div>
+                    )}
+                    {featuredEducation.status === "ongoing" && (
+                      <span className="rounded-full border border-accent/30 bg-accent/10 px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider text-accent">
+                        Ongoing
+                      </span>
+                    )}
+                  </div>
+                )}
+
+                {/* Credits row */}
+                {featuredEducation.completedCredits && featuredEducation.totalCredits && (
+                  <div className="mt-3 flex items-center justify-between font-mono text-[10px] text-[rgba(255,255,255,0.35)]">
+                    <span className="uppercase tracking-[0.15em]">Credits Completed</span>
+                    <span>
+                      {featuredEducation.completedCredits} / {featuredEducation.totalCredits}
+                    </span>
+                  </div>
+                )}
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          )}
         </div>
       </div>
     </section>

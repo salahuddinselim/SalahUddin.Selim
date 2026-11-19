@@ -93,14 +93,11 @@ export function CredentialsSection({ credentials }: { credentials: CredentialDat
         transition={{ duration: 0.5, ease: "easeOut" as const }}
         className="mb-8"
       >
-        <p className="text-[10px] font-mono uppercase tracking-[0.35em] text-cyan-400/50 mb-3">
+        <p className="text-[11px] font-mono uppercase tracking-[0.22em] text-accent/60 mb-3">
           {credentialsSectionCopy.eyecatch}
         </p>
-        <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-white">
-          My{" "}
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-400 drop-shadow-[0_0_20px_rgba(0,217,255,0.2)]">
-            {credentialsSectionCopy.heading}
-          </span>
+        <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-white">
+          {credentialsSectionCopy.heading}
         </h1>
         <p className="mt-2 text-xs font-mono tracking-[0.15em] text-white/30">
           {credentials.length} achievement{credentials.length !== 1 ? "s" : ""} · click any entry to

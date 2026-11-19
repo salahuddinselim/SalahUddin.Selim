@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next"
 import { headers } from "next/headers"
 import "./globals.css"
 import { fontVariables } from "@/lib/fonts"
-import { Navbar } from "@/components/layout/navbar"
+import { Navbar } from "@/components/layout/Navbar"
 import { Footer } from "@/components/layout/Footer"
 import { VisitorPanelProvider } from "@/components/analytics/visitor-context"
 import { VisitTracker } from "@/components/analytics/visit-tracker"
@@ -45,7 +45,9 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: "#050816",
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#0a0a0a",
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
@@ -79,14 +81,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link rel="dns-prefetch" href="https://cdn.sanity.io" />
         <link rel="dns-prefetch" href="https://challenges.cloudflare.com" />
       </head>
-      <body className="min-h-screen bg-[#050816] text-foreground antialiased relative overflow-x-hidden">
+      <body className="min-h-screen bg-[#0a0a0a] text-foreground antialiased relative overflow-x-hidden">
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-xl focus:bg-accent focus:text-white focus:text-sm focus:font-semibold focus:outline-none focus:ring-2 focus:ring-accent/50"
         >
           Skip to main content
         </a>
-        <style>{`html{background:#050816;color:#fff;scroll-behavior:smooth;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}body{margin:0;font-family:var(--font-body-family),system-ui,sans-serif;line-height:1.5;background:#050816;color:#fff;min-height:100vh}body,button,textarea,input,select{font:inherit}a{color:#00d9ff;text-decoration:none}img{max-width:100%;display:block}button{font:inherit}.animate-role-in{animation:heroRoleIn .3s ease-out}.animate-large-role-in{animation:heroLargeRoleIn .5s ease-out}.animate-dropdown-in{animation:dropdownIn .15s ease-out}@keyframes heroRoleIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}@keyframes heroLargeRoleIn{from{opacity:0;transform:translateY(40px);filter:blur(8px)}to{opacity:1;transform:translateY(0);filter:blur(0)}}@keyframes dropdownIn{from{opacity:0;transform:translateY(-8px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}@keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}`}</style>
+        <style>{`html{background:#0a0a0a;color:#fff;scroll-behavior:smooth;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}body{margin:0;font-family:var(--font-body-family),system-ui,sans-serif;line-height:1.5;background:#0a0a0a;color:#fff;min-height:100vh}body,button,textarea,input,select{font:inherit}a{color:#00d9ff;text-decoration:none}img{max-width:100%;display:block}button{font:inherit}.animate-role-in{animation:heroRoleIn .3s ease-out}.animate-large-role-in{animation:heroLargeRoleIn .5s ease-out}.animate-dropdown-in{animation:dropdownIn .15s ease-out}@keyframes heroRoleIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}@keyframes heroLargeRoleIn{from{opacity:0;transform:translateY(40px);filter:blur(8px)}to{opacity:1;transform:translateY(0);filter:blur(0)}}@keyframes dropdownIn{from{opacity:0;transform:translateY(-8px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}@keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}`}</style>
         <SpaceBackgroundWrapper />
         <div className="relative z-10" id="main-content">
           <VisitorPanelProvider>

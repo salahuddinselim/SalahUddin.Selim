@@ -13,8 +13,8 @@ export const personaSectionCopy = {
 export const personaStats = [
   { value: "5+", label: "Projects Built", color: "#00D9FF" },
   { value: "—", label: "GitHub Repos", color: "#0891B2" },
-  { value: "3.74", label: "CGPA / 4.0", color: "#22C55E" },
-  { value: "126+", label: "Credits Earned", color: "#F97316" },
+  { value: "3.79", label: "CGPA / 4.0", color: "#22C55E" },
+  { value: "137+", label: "Credits Earned", color: "#F97316" },
   { value: "2x", label: "Perfect GPA", color: "#EAB308" },
 ]
 

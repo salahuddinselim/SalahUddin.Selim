@@ -45,7 +45,7 @@ export function HeroActions() {
       variants={fadeUp}
       initial={false}
       animate="show"
-      className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mt-8 sm:mt-10 w-full max-w-lg mx-auto px-4 sm:px-0"
+      className="flex flex-col sm:flex-row items-start justify-start gap-3 sm:gap-4 mt-8 sm:mt-10 w-full max-w-lg px-0"
     >
       <a
         href="#contact"

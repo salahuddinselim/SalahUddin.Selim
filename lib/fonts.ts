@@ -1,12 +1,12 @@
-import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google"
+import { Comfortaa, Inter, JetBrains_Mono } from "next/font/google"
 
-export const fontHeading = Space_Grotesk({
+export const fontHeading = Comfortaa({
   subsets: ["latin"],
-  weight: ["500", "600", "700"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-heading",
   display: "swap",
   preload: true,
-  fallback: ["system-ui", "sans-serif"],
+  fallback: ["Space Grotesk", "system-ui", "sans-serif"],
 })
 
 export const fontBody = Inter({

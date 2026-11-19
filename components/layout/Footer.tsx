@@ -40,7 +40,7 @@ export function Footer() {
       whileInView="visible"
       viewport={{ once: true, margin: "-40px" }}
       variants={containerVariants}
-      className="relative w-full bg-[#050608]"
+      className="relative w-full bg-[#0a0a0a]"
     >
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400/60 to-transparent" />
 

@@ -13,7 +13,7 @@
 export function HeroVisualsShell() {
   return (
     <div className="absolute inset-0 pointer-events-none" aria-hidden>
-      <div className="absolute inset-0 bg-[radial-gradient(72%_60%_at_50%_38%,rgba(0,217,255,0.10),transparent_72%),linear-gradient(180deg,rgba(5,8,22,0.45)_0%,rgba(7,13,29,0.65)_100%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(72%_60%_at_50%_38%,rgba(0,217,255,0.08),transparent_72%),linear-gradient(180deg,rgba(0,0,0,0.3)_0%,rgba(0,0,0,0.5)_100%)]" />
     </div>
   )
 }

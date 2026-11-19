@@ -5,6 +5,8 @@ import type { SanityProfile, SanitySkill, SanityProject, SanityExperience } from
 const SANITY_REVALIDATE_SECONDS = 3600
 
 const profileQuery = groq`*[_type == "profile"][0]{
+  _id,
+  _type,
   name,
   title,
   tagline,
