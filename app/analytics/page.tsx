@@ -8,12 +8,14 @@ const MonitorSection = nextDynamic(
 
 export const metadata: Metadata = {
   title: "Monitor",
-  description: "System dashboard and real-time analytics for the portfolio.",
+  description:
+    "Public system dashboard — real-time analytics, infrastructure health, and content metrics for salahuddin.dev.",
   openGraph: {
     title: "Monitor | Salah Uddin Selim",
-    description: "System dashboard and real-time analytics for the portfolio.",
+    description:
+      "Public system dashboard — real-time analytics, infrastructure health, and content metrics for salahuddin.dev.",
   },
-  robots: { index: false, follow: true },
+  robots: { index: true, follow: true },
   alternates: { canonical: "/analytics" },
 }
 export const dynamic = "force-static"

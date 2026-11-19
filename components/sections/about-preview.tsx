@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { MapPin, GraduationCap } from "lucide-react"
+import { MapPin, GraduationCap, ExternalLink } from "lucide-react"
 import type { SanityProfile } from "@/types"
 import type { EducationData } from "@/lib/sanity/fetch"
 
@@ -72,11 +72,87 @@ export function AboutPreview({
           </h2>
         </motion.div>
 
-        {/* Two-column: Bio (left) + Education (right) */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8 lg:gap-12 items-start">
-          {/* Left: Bio */}
+        {/* Two-column: Location card (left) + Bio + Education (right) */}
+        <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-8 lg:gap-12 items-start">
+          {/* Left: Location card — large city name + coordinates */}
           <motion.div
             custom={0}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={fadeUp}
+            className="flex flex-col gap-4"
+          >
+            {/* Location card */}
+            <div
+              className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 overflow-hidden relative"
+              style={{ backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)" }}
+            >
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-0 opacity-30"
+                style={{
+                  background:
+                    "radial-gradient(60% 60% at 80% 20%, rgba(0,217,255,0.12), transparent)",
+                }}
+              />
+              <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-accent/50 mb-2">
+                📍 Based In
+              </p>
+              <p
+                className="font-heading font-bold text-white leading-none mb-1"
+                style={{ fontSize: "clamp(2rem, 5vw, 2.8rem)" }}
+              >
+                DHAKA
+              </p>
+              <p className="font-mono text-xs text-[rgba(255,255,255,0.35)] mb-3">Bangladesh</p>
+              <div className="border-t border-white/[0.08] pt-3 flex flex-col gap-1">
+                <p className="font-mono text-[10px] text-[rgba(255,255,255,0.3)] tracking-wider">
+                  23.8103° N, 90.4125° E
+                </p>
+                <p className="font-mono text-[10px] text-[rgba(255,255,255,0.3)] tracking-wider">
+                  UTC +6:00 · Asia/Dhaka
+                </p>
+              </div>
+            </div>
+
+            {/* School badge card */}
+            {featuredEducation && (
+              <div
+                className="rounded-2xl border border-white/10 bg-white/[0.04] p-4"
+                style={{ backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)" }}
+              >
+                <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-accent/50 mb-2">
+                  🎓 Studying At
+                </p>
+                <p className="font-heading font-semibold text-white text-sm">
+                  {featuredEducation.institution}
+                </p>
+                {featuredEducation.degree && (
+                  <p className="text-accent text-xs mt-0.5 font-medium">
+                    {featuredEducation.degree}
+                    {featuredEducation.field ? ` in ${featuredEducation.field}` : ""}
+                  </p>
+                )}
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {featuredEducation.gpa && (
+                    <span className="rounded-full border border-accent/30 bg-accent/10 px-2.5 py-0.5 font-mono text-[10px] text-accent font-semibold">
+                      CGPA {featuredEducation.gpa}
+                    </span>
+                  )}
+                  {featuredEducation.status === "ongoing" && (
+                    <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 font-mono text-[10px] text-emerald-400">
+                      Ongoing
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+          </motion.div>
+
+          {/* Right: Bio */}
+          <motion.div
+            custom={1}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
@@ -91,98 +167,26 @@ export function AboutPreview({
             <div className="space-y-4 mb-7">
               <p className="text-[rgba(255,255,255,0.65)] leading-relaxed">{bio}</p>
               {tagline && (
-                <p className="text-[rgba(255,255,255,0.65)] leading-relaxed">{tagline}</p>
+                <blockquote className="border-l-2 border-accent/40 pl-4 italic text-[rgba(255,255,255,0.45)] text-sm leading-relaxed">
+                  &ldquo;{tagline}&rdquo;
+                </blockquote>
               )}
             </div>
-            {/* Location + school badges */}
+            {/* Location badge */}
             <div className="flex flex-wrap gap-2">
               <span className="flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 font-mono text-xs text-[rgba(255,255,255,0.45)]">
                 <MapPin size={11} className="text-accent/70" aria-hidden />
                 {location}
               </span>
-              {featuredEducation && (
-                <span className="flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 font-mono text-xs text-[rgba(255,255,255,0.45)]">
-                  <GraduationCap size={11} className="text-accent/70" aria-hidden />
-                  {featuredEducation.abbreviation ?? featuredEducation.institution}
-                  {featuredEducation.endYear ? ` · ${featuredEducation.endYear}` : ""}
-                </span>
-              )}
+              <a
+                href="/persona"
+                className="flex items-center gap-1.5 rounded-full border border-accent/20 bg-accent/5 px-3 py-1.5 font-mono text-xs text-accent/70 hover:text-accent hover:border-accent/40 transition-colors"
+              >
+                <ExternalLink size={11} aria-hidden />
+                View Profile
+              </a>
             </div>
           </motion.div>
-
-          {/* Right: Education card */}
-          {featuredEducation && (
-            <motion.div
-              custom={1}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeUp}
-            >
-              <h3 className="font-heading font-semibold text-white text-lg mb-4">Education</h3>
-              <div
-                className="rounded-2xl border border-white/10 bg-white/[0.05] p-5"
-                style={{ backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)" }}
-              >
-                <div className="flex items-start gap-4 mb-4">
-                  {/* Institution icon block */}
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-accent/10 border border-accent/20">
-                    <span className="font-heading font-bold text-sm text-accent">{abbr}</span>
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="font-heading font-bold text-white text-sm leading-snug">
-                      {featuredEducation.institution}
-                    </p>
-                    {featuredEducation.degree && (
-                      <p className="text-accent text-xs mt-1 font-medium leading-snug">
-                        {featuredEducation.degree}
-                        {featuredEducation.field ? ` in ${featuredEducation.field}` : ""}
-                      </p>
-                    )}
-                    {years && (
-                      <p className="text-[rgba(255,255,255,0.35)] font-mono text-[11px] mt-1">
-                        {years}
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                {/* GPA + status row */}
-                {(gpaLabel || featuredEducation.status === "ongoing") && (
-                  <div className="flex flex-wrap items-center justify-between gap-2 border-t border-white/[0.08] pt-4">
-                    {gpaLabel && (
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[rgba(255,255,255,0.35)]">
-                          CGPA
-                        </span>
-                        <span className="font-heading font-bold text-accent text-base">
-                          {featuredEducation.gpa}
-                        </span>
-                        <span className="font-mono text-[11px] text-[rgba(255,255,255,0.35)]">
-                          /{featuredEducation.gpaScale ?? "4.0"}
-                        </span>
-                      </div>
-                    )}
-                    {featuredEducation.status === "ongoing" && (
-                      <span className="rounded-full border border-accent/30 bg-accent/10 px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider text-accent">
-                        Ongoing
-                      </span>
-                    )}
-                  </div>
-                )}
-
-                {/* Credits row */}
-                {featuredEducation.completedCredits && featuredEducation.totalCredits && (
-                  <div className="mt-3 flex items-center justify-between font-mono text-[10px] text-[rgba(255,255,255,0.35)]">
-                    <span className="uppercase tracking-[0.15em]">Credits Completed</span>
-                    <span>
-                      {featuredEducation.completedCredits} / {featuredEducation.totalCredits}
-                    </span>
-                  </div>
-                )}
-              </div>
-            </motion.div>
-          )}
         </div>
       </div>
     </section>

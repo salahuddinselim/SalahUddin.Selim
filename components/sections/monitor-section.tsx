@@ -153,6 +153,12 @@ export function MonitorSection() {
             <p className="mt-2 text-xs font-mono tracking-[0.2em] text-white/25">
               Real-time diagnostics · portfolio infrastructure
             </p>
+            <div className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-cyan-400/15 bg-cyan-400/5 px-3 py-1">
+              <span className="h-1.5 w-1.5 rounded-full bg-cyan-400/60" />
+              <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-cyan-400/50">
+                Public · Open Analytics
+              </span>
+            </div>
           </div>
           <button
             type="button"
