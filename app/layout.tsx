@@ -61,7 +61,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const socials = socialsResult.status === "fulfilled" ? socialsResult.value : fallbackSocials
   const email = profileResult.status === "fulfilled" ? profileResult.value?.email : undefined
   const education = educationResult.status === "fulfilled" ? educationResult.value : []
-  const ongoingEducation = education.find((edu) => edu.status === "ongoing")
+  const ongoingEducation =
+    education.find((edu) => edu.status === "ongoing") ??
+    education.find((edu) => edu.status === "completed") ??
+    education[0]
   const gpaText = ongoingEducation?.gpa
     ? `GPA ${ongoingEducation.gpa}/${ongoingEducation.gpaScale ?? "4.0"}`
     : undefined

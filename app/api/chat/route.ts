@@ -9,14 +9,14 @@ export const maxDuration = 30
 const PORTFOLIO_DATA = `
 ABOUT SALAH UDDIN SELIM:
 - Name: Salah Uddin Selim
-- Title: CSE Student & Aspiring Data Analyst
+- Title: BSc Graduate in CSE & Aspiring Data Analyst
 - Location: Dhaka, Bangladesh
 - Email: selimsalahuddin19@gmail.com
 - GitHub: github.com/salahuddinselim
 - LinkedIn: linkedin.com/in/selimsalahuddin
 - Instagram: instagram.com/selimsalahuddin
 - Facebook: facebook.com/salahuddin.selim.19
-- Education: B.Sc. in Computer Science & Engineering at United International University (GPA 3.79/4.00, 137/137 credits, 2022 — Present)
+- Education: B.Sc. in Computer Science & Engineering at United International University (GPA 3.79/4.00, 137/137 credits, 2022 — Nov 2026, Graduated 2 November 2026)
 - HSC: Pirganj Govt. College, Thakurgaon — GPA 5.00/5.00 (2018-2020)
 - SSC: Pirganj Pilot High School, Thakurgaon — GPA 5.00/5.00 (2013-2018)
 
@@ -47,7 +47,7 @@ const FALLBACK_ANSWERS: Record<string, string> = {
   "tell me about his projects":
     "A few highlights: a multiplayer Puzzle Solving Game in Java/JavaFX that won 6th Runner-Up at UIU's Software Project Competition, a full-stack Tournament Management System (PHP/MySQL), an Automated Fish Pond Monitoring System using Arduino and IoT sensors, and an AI Voice Assistant in Python. Check out the Projects page for details and links.",
   "what's his education background?":
-    "Salah is pursuing a B.Sc. in Computer Science & Engineering at United International University (GPA 3.79/4.00). He earned a perfect GPA of 5.00/5.00 in both his HSC and SSC exams in Bangladesh.",
+    "Salah completed his B.Sc. in Computer Science & Engineering at United International University (GPA 3.79/4.00, graduated 2 November 2026). He earned a perfect GPA of 5.00/5.00 in both his HSC and SSC exams in Bangladesh.",
   "what awards has he won?":
     "He placed 6th Runner-Up at the UIU Software Project Competition, Spring 2025, and achieved a perfect GPA of 5.00/5.00 in both HSC and SSC.",
   "how can i contact him?":

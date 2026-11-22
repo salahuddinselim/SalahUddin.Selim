@@ -37,11 +37,11 @@ export const pageMeta: Record<string, Metadata> = {
   persona: {
     title: "GitHub",
     description:
-      "Personal background of Salah Uddin Selim — CSE student at UIU, GitHub stats, education history, and social links.",
+      "Personal background of Salah Uddin Selim — BSc graduate in CSE from UIU (Nov 2026), GitHub stats, education history, and social links.",
     openGraph: {
       title: "GitHub | Salah Uddin Selim",
       description:
-        "Personal background of Salah Uddin Selim — CSE student at UIU, GitHub stats, education history, and social links.",
+        "Personal background of Salah Uddin Selim — BSc graduate in CSE from UIU (Nov 2026), GitHub stats, education history, and social links.",
     },
     alternates: { canonical: "/persona" },
   },

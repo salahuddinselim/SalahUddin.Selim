@@ -14,23 +14,26 @@ export const s = siteUrl.replace(/\/+$/, "")
 
 export const siteConfig = {
   name: "Salah Uddin Selim",
-  title: "Salah Uddin Selim | CSE Student & Aspiring Data Analyst",
+  title: "Salah Uddin Selim | BSc Graduate in CSE & Aspiring Data Analyst",
   titleTemplate: "%s | Salah Uddin Selim",
   description:
-    "CSE student at UIU (GPA 3.79/4.0) with hands-on experience in full-stack web development, IoT systems, and algorithm design. Built 5 production-quality projects across Java, Python, PHP, C/C++, and Arduino.",
+    "BSc graduate in Computer Science & Engineering from UIU (GPA 3.79/4.0, graduated Nov 2026) with hands-on experience in full-stack web development, IoT systems, and algorithm design. Built 5 production-quality projects across Java, Python, PHP, C/C++, and Arduino.",
   ogDescription:
-    "CSE student at United International University, aspiring data analyst with a background in full-stack engineering, IoT, and AI.",
+    "BSc graduate in Computer Science & Engineering from United International University (Nov 2026), aspiring data analyst with a background in full-stack engineering, IoT, and AI.",
   keywords: [
     "Salah Uddin Selim",
     "Sala Uddin Selim",
     "Salauddin Selim",
     "CSE",
     "UIU",
+    "BSc Computer Science",
     "data analyst",
     "full-stack developer",
     "IoT",
     "portfolio",
     "Bangladesh",
+    "UIU graduate",
+    "computer science graduate",
   ],
   author: { name: "Salah Uddin Selim" },
   icon: "/favicon-32.png",

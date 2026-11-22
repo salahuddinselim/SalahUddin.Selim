@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og"
 import { getEducation } from "@/lib/sanity/fetch"
 
-export const alt = "Salah Uddin Selim | CSE Student & Aspiring Data Analyst"
+export const alt = "Salah Uddin Selim | BSc Graduate in CSE & Aspiring Data Analyst"
 export const size = { width: 1200, height: 630 }
 export const contentType = "image/png"
 
@@ -9,8 +9,11 @@ export default async function og() {
   let gpaText = "GPA 3.74/4.0"
   try {
     const education = await getEducation()
-    const ongoing = education.find((edu) => edu.status === "ongoing")
-    if (ongoing?.gpa) gpaText = `GPA ${ongoing.gpa}/${ongoing.gpaScale ?? "4.0"}`
+    const featured =
+      education.find((edu) => edu.status === "ongoing") ??
+      education.find((edu) => edu.status === "completed") ??
+      education[0]
+    if (featured?.gpa) gpaText = `GPA ${featured.gpa}/${featured.gpaScale ?? "4.0"}`
   } catch {
     // fall back to the default string above
   }
@@ -93,7 +96,7 @@ export default async function og() {
             letterSpacing: "0.05em",
           }}
         >
-          CSE Student &amp; Aspiring Data Analyst
+          BSc Graduate in CSE &amp; Aspiring Data Analyst
         </span>
         <div
           style={{

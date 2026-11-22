@@ -26,7 +26,10 @@ export function PersonaSection({
   socials: SocialLinkData[]
   education: EducationData[]
 }) {
-  const ongoingEducation = education.find((edu) => edu.status === "ongoing")
+  const ongoingEducation =
+    education.find((edu) => edu.status === "ongoing") ??
+    education.find((edu) => edu.status === "completed") ??
+    education[0]
   const [repoCount, setRepoCount] = useState<number | null>(null)
 
   const handleGitHubStatsLoaded = useCallback((githubStats: { public_repos: number }) => {
@@ -69,7 +72,7 @@ export function PersonaSection({
           {personaSectionCopy.heading}
         </h1>
         <p className="mt-3 max-w-md text-sm text-[rgba(255,255,255,0.5)]">
-          A snapshot of who I am, where I study, and what I&apos;m building.
+          A snapshot of who I am, where I studied, and what I&apos;m building.
         </p>
       </motion.div>
 
@@ -87,7 +90,8 @@ export function PersonaSection({
           </h2>
           <div className="space-y-3 text-sm text-[rgba(255,255,255,0.65)] leading-relaxed max-w-prose">
             <p>
-              CSE student at <span className="text-accent">United International University</span>
+              BSc graduate in CSE from{" "}
+              <span className="text-accent">United International University</span>
               {ongoingEducation?.gpa && (
                 <>
                   {" "}
@@ -96,9 +100,9 @@ export function PersonaSection({
                     {ongoingEducation.gpa} / {ongoingEducation.gpaScale ?? "4.0"}
                   </span>
                 </>
-              )}
-              , graduating 2026. I build at the intersection of full-stack development, IoT systems,
-              and algorithm design.
+              )}{" "}
+              (graduated Nov 2026). I build at the intersection of full-stack development, IoT
+              systems, and algorithm design.
             </p>
             <p>
               My current focus: full-stack engineering with JavaFX and PHP, IoT systems with Arduino

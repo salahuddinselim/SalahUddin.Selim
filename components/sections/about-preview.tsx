@@ -123,7 +123,7 @@ export function AboutPreview({
                 style={{ backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)" }}
               >
                 <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-accent/50 mb-2">
-                  🎓 Studying At
+                  🎓 Graduated From
                 </p>
                 <p className="font-heading font-semibold text-white text-sm">
                   {featuredEducation.institution}
@@ -140,11 +140,15 @@ export function AboutPreview({
                       CGPA {featuredEducation.gpa}
                     </span>
                   )}
-                  {featuredEducation.status === "ongoing" && (
+                  {featuredEducation.status === "completed" ? (
+                    <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 font-mono text-[10px] text-emerald-400">
+                      Graduated Nov 2026
+                    </span>
+                  ) : featuredEducation.status === "ongoing" ? (
                     <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 font-mono text-[10px] text-emerald-400">
                       Ongoing
                     </span>
-                  )}
+                  ) : null}
                 </div>
               </div>
             )}
