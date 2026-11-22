@@ -46,7 +46,7 @@ function HeroPhotoCard({
         <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/95 via-black/60 to-transparent p-4 pt-14">
           <p className="text-base font-heading font-bold text-white leading-tight">{name}</p>
           <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-accent/70 mt-0.5">
-            CSE @ UIU &nbsp;·&nbsp; 2021–2026
+            CSE @ UIU &nbsp;·&nbsp; 2022–2026
           </p>
           <div className="flex items-center gap-1.5 mt-1">
             <span className="text-xs text-foreground/50 font-mono">📍</span>
