@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { MapPin, GraduationCap, ExternalLink } from "lucide-react"
+import { MapPin, ExternalLink } from "lucide-react"
 import type { SanityProfile } from "@/types"
 import type { EducationData } from "@/lib/sanity/fetch"
 
@@ -30,17 +30,6 @@ export function AboutPreview({
     "Aspiring data analyst turning data into insight — available for internships and research roles."
   const tagline = profile?.tagline?.trim()
   const location = profile?.location?.trim() || "Dhaka, Bangladesh"
-
-  const gpaLabel = featuredEducation?.gpa
-    ? `${featuredEducation.gpa}${featuredEducation.gpaScale ? ` / ${featuredEducation.gpaScale}` : ""}`
-    : undefined
-  const years = featuredEducation
-    ? [featuredEducation.startYear, featuredEducation.endYear].filter(Boolean).join(" – ")
-    : undefined
-
-  const abbr = (featuredEducation?.abbreviation ?? featuredEducation?.institution ?? "")
-    .slice(0, 3)
-    .toUpperCase()
 
   return (
     <section id="about-preview" className="relative w-full py-28 px-6">
