@@ -2,7 +2,7 @@ import { s } from "./site"
 import type { SocialLinkData } from "@/lib/sanity/fetch"
 
 export const fallbackContactEmail = "selimsalahuddin19@gmail.com"
-const fallbackGpaText = "GPA 3.74/4.0"
+const fallbackGpaText = "GPA 3.79/4.0"
 
 // Social profile URLs (sameAs) come from Sanity's socialLink documents so this
 // stays in sync with what's actually configured in the CMS — no duplicated,

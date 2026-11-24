@@ -6,7 +6,7 @@ export const size = { width: 1200, height: 630 }
 export const contentType = "image/png"
 
 export default async function og() {
-  let gpaText = "GPA 3.74/4.0"
+  let gpaText = "GPA 3.79/4.0"
   try {
     const education = await getEducation()
     const featured =
