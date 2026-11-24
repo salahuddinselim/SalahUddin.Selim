@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { HeroSection } from "@/components/sections/hero-section"
+import { ResearchSection } from "@/components/sections/research-section"
 import nextDynamic from "next/dynamic"
 import {
   getProjects,
@@ -75,6 +76,7 @@ export default async function Home() {
   return (
     <main>
       <HeroSection />
+      <ResearchSection />
       <ProjectsPreview projects={allProjects} />
       <AboutPreview education={education} profile={profile} />
       <ExperienceSection experience={experience} education={education} />

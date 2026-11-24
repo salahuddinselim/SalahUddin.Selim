@@ -37,6 +37,7 @@ const projectsQuery = groq`*[_type == "project"] | order(year desc, featured des
   liveUrl,
   githubUrl,
   featured,
+  awardWinner,
   year
 }`
 

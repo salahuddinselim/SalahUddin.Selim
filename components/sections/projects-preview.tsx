@@ -4,7 +4,7 @@ import { useState, useMemo, useCallback, startTransition } from "react"
 import dynamic from "next/dynamic"
 import Link from "next/link"
 import { motion } from "framer-motion"
-import { ArrowUpRight } from "lucide-react"
+import { ArrowUpRight, Award } from "lucide-react"
 import type { SanityProject } from "@/types"
 
 const ProjectCard = dynamic(
@@ -18,10 +18,11 @@ const ProjectCard = dynamic(
 )
 
 export function ProjectsPreview({ projects: featuredProjects }: { projects: SanityProject[] }) {
-  const featured = useMemo(
-    () => featuredProjects.filter((p) => p.featured).slice(0, 4),
-    [featuredProjects],
-  )
+  const featured = useMemo(() => {
+    const f = featuredProjects.filter((p) => p.featured)
+    // Award-winning project first: PuzzleSolving-Game (6th Runner-Up UIU Spring 2025)
+    return [...f.filter((p) => p.awardWinner), ...f.filter((p) => !p.awardWinner)].slice(0, 4)
+  }, [featuredProjects])
   const [activeProject, setActiveProject] = useState<SanityProject | null>(null)
 
   const handleSelectProject = useCallback((project: SanityProject | null) => {

@@ -107,6 +107,7 @@ export interface SanityProject {
   liveUrl?: string
   githubUrl?: string
   featured: boolean
+  awardWinner?: boolean
   year: number
 }
 
