@@ -1,8 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { ArrowUpRight, FlaskConical, FileText } from "lucide-react"
-import { FaGithub } from "react-icons/fa"
+import { ArrowUpRight, FlaskConical, FileText, Lock } from "lucide-react"
 import Link from "next/link"
 
 type BadgeType = "paper" | "ml" | "iot" | "security" | "fydp" | "datamining"
@@ -16,6 +15,7 @@ interface ResearchProject {
   year: number
   coAuthor?: string
   paperTitle?: string
+  privateRepo?: boolean
 }
 
 const academicPapers: ResearchProject[] = [
@@ -24,18 +24,11 @@ const academicPapers: ResearchProject[] = [
     paperTitle: "Carbon-Aware Precision Scheduling for LLM Inference",
     description:
       "Investigated whether switching LLM inference precision (FP16 / INT8 / INT4) in real time based on grid carbon intensity reduces carbon footprint. Built a full measurement pipeline across 7 LLMs on a consumer RTX 3060, backtested against real ElectricityMaps data from Norway, Germany, and Poland. Key finding: on consumer GPUs, bitsandbytes INT8 uses 2.4× and INT4 uses 7.8× the energy of FP16 — a negative result reported honestly, with structural explanation. Conference-formatted IEEEtran paper submitted.",
-    tags: [
-      "LLM Inference",
-      "Carbon Efficiency",
-      "PyTorch",
-      "bitsandbytes",
-      "Python",
-      "ElectricityMaps",
-    ],
-    githubUrl: "https://github.com/salahuddinselim/GreenComputing",
+    tags: ["LLM Inference", "Carbon Efficiency", "PyTorch", "bitsandbytes", "ElectricityMaps"],
     type: "paper",
     year: 2026,
     coAuthor: "Afia Tasnim Ria",
+    privateRepo: true,
   },
   {
     title: "Computer Security — Forensic Artifact Survival in Containerized Environments",
@@ -43,11 +36,11 @@ const academicPapers: ResearchProject[] = [
       "Where Does the Evidence Go? A Systematic Study of Forensic Artifact Survival in Containerized and Serverless Compute Environments",
     description:
       "Systematic study of which digital forensic artifacts survive teardown in Docker containers, Kubernetes pods, and AWS Lambda functions — and at what capture cost. Proposes a minimal-overhead capture technique. Full research proposal, literature review (20+ papers), testbed harness, and working conference paper draft (IEEEtran, two-column) with Afia Tasnim Ria.",
-    tags: ["Digital Forensics", "Docker", "Kubernetes", "Serverless", "AWS Lambda", "LaTeX"],
-    githubUrl: "https://github.com/salahuddinselim/ComputerSecurity",
+    tags: ["Digital Forensics", "Docker", "Kubernetes", "Serverless", "AWS Lambda"],
     type: "paper",
     year: 2026,
     coAuthor: "Afia Tasnim Ria",
+    privateRepo: true,
   },
   {
     title: "Final Year Project — Blood Cell Leukemia Classification",
@@ -56,9 +49,9 @@ const academicPapers: ResearchProject[] = [
     description:
       "End-to-end medical AI pipeline that classifies leukemia subtypes (ALL, AML, CLL, CML, Normal) from blood smear images. A heterogeneous 3-model teacher ensemble (ResNet50 + ConvNeXt-Tiny + Swin-Tiny) is distilled into two lightweight students (MobileNetV3-Small, ConvNeXt-Atto) deployable on cheap hardware. Includes Grad-CAM explainability heatmaps and cross-model trust scoring that flags uncertain cases for mandatory doctor review.",
     tags: ["PyTorch", "Knowledge Distillation", "Medical AI", "Computer Vision", "Grad-CAM"],
-    githubUrl: "https://github.com/salahuddinselim/FYPD",
     type: "fydp",
     year: 2026,
+    privateRepo: true,
   },
   {
     title: "Data Mining — GDM Biomarkers Study",
@@ -67,10 +60,10 @@ const academicPapers: ResearchProject[] = [
     description:
       "Data-mining study on NHANES 2007–2018 (n = 2,641) testing whether composite biomarker ratios (SII, SIMI, TyG, AIP, NLR) improve ML prediction of gestational diabetes history over raw lab markers. Key finding: composite ratios are a net loss across all tested models (LightGBM, XGBoost, Logistic Regression). External validation AUROC 0.632 — no overfitting. Explains the 0.47–0.92 AUROC spread in the literature as a control-group selection artefact. Elsevier-format manuscript co-authored with Afia Tasnim Ria.",
     tags: ["LightGBM", "XGBoost", "NHANES", "Biomarkers", "Clinical ML"],
-    githubUrl: "https://github.com/salahuddinselim/DataMining",
     type: "datamining",
     year: 2025,
     coAuthor: "Afia Tasnim Ria",
+    privateRepo: true,
   },
 ]
 
@@ -190,17 +183,23 @@ function ResearchCard({ project, index }: { project: ResearchProject; index: num
         ))}
       </div>
 
-      <Link
-        href={project.githubUrl!}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-flex items-center gap-1.5 text-xs font-mono text-accent/70 hover:text-accent transition-colors"
-        aria-label={`View ${project.title} on GitHub`}
-      >
-        <FaGithub size={12} aria-hidden="true" />
-        View on GitHub
-        <ArrowUpRight size={11} aria-hidden="true" />
-      </Link>
+      {project.privateRepo ? (
+        <span className="inline-flex items-center gap-1.5 text-xs font-mono text-foreground/35">
+          <Lock size={11} aria-hidden="true" />
+          Private — not yet published
+        </span>
+      ) : (
+        <Link
+          href={project.githubUrl!}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 text-xs font-mono text-accent/70 hover:text-accent transition-colors"
+          aria-label={`View ${project.title} on GitHub`}
+        >
+          View on GitHub
+          <ArrowUpRight size={11} aria-hidden="true" />
+        </Link>
+      )}
     </motion.article>
   )
 }
@@ -264,7 +263,6 @@ export function ResearchSection() {
             rel="noopener noreferrer"
             className="btn-secondary"
           >
-            <FaGithub size={15} aria-hidden="true" />
             All Research on GitHub
             <ArrowUpRight size={16} aria-hidden="true" />
           </Link>
