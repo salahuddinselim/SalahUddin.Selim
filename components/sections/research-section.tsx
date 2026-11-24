@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { ArrowUpRight, FlaskConical, FileText, Lock } from "lucide-react"
+import { ArrowUpRight, FlaskConical, FileText } from "lucide-react"
 import { FaGithub } from "react-icons/fa"
 import Link from "next/link"
 
@@ -16,7 +16,6 @@ interface ResearchProject {
   year: number
   coAuthor?: string
   paperTitle?: string
-  pending?: boolean
 }
 
 const academicPapers: ResearchProject[] = [
@@ -51,22 +50,27 @@ const academicPapers: ResearchProject[] = [
     coAuthor: "Afia Tasnim Ria",
   },
   {
-    title: "Final Year Design Project (FYDP)",
+    title: "Final Year Project — Blood Cell Leukemia Classification",
+    paperTitle:
+      "Automated Deep-Learning System for Classifying Leukemia Subtypes from Microscopic Blood Smear Images",
     description:
-      "Capstone research project for BSc Computer Science & Engineering. Repository will be linked here once public.",
-    tags: ["Final Year Project", "Research", "UIU"],
+      "End-to-end medical AI pipeline that classifies leukemia subtypes (ALL, AML, CLL, CML, Normal) from blood smear images. A heterogeneous 3-model teacher ensemble (ResNet50 + ConvNeXt-Tiny + Swin-Tiny) is distilled into two lightweight students (MobileNetV3-Small, ConvNeXt-Atto) deployable on cheap hardware. Includes Grad-CAM explainability heatmaps and cross-model trust scoring that flags uncertain cases for mandatory doctor review.",
+    tags: ["PyTorch", "Knowledge Distillation", "Medical AI", "Computer Vision", "Grad-CAM"],
+    githubUrl: "https://github.com/salahuddinselim/FYPD",
     type: "fydp",
     year: 2026,
-    pending: true,
   },
   {
-    title: "Data Mining — Course Research Project",
+    title: "Data Mining — GDM Biomarkers Study",
+    paperTitle:
+      "GDM Biomarkers: Do Composite Inflammatory Ratios Improve Gestational Diabetes Prediction?",
     description:
-      "Applied data mining research project. Repository will be linked here once public.",
-    tags: ["Data Mining", "Research", "UIU"],
+      "Data-mining study on NHANES 2007–2018 (n = 2,641) testing whether composite biomarker ratios (SII, SIMI, TyG, AIP, NLR) improve ML prediction of gestational diabetes history over raw lab markers. Key finding: composite ratios are a net loss across all tested models (LightGBM, XGBoost, Logistic Regression). External validation AUROC 0.632 — no overfitting. Explains the 0.47–0.92 AUROC spread in the literature as a control-group selection artefact. Elsevier-format manuscript co-authored with Afia Tasnim Ria.",
+    tags: ["LightGBM", "XGBoost", "NHANES", "Biomarkers", "Clinical ML"],
+    githubUrl: "https://github.com/salahuddinselim/DataMining",
     type: "datamining",
     year: 2025,
-    pending: true,
+    coAuthor: "Afia Tasnim Ria",
   },
 ]
 
@@ -153,11 +157,7 @@ function ResearchCard({ project, index }: { project: ResearchProject; index: num
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.4, delay: index * 0.07 }}
-      className={`group relative flex flex-col rounded-2xl border p-5 transition-colors duration-200 ${
-        project.pending
-          ? "border-white/[0.05] bg-white/[0.02] opacity-60"
-          : "border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06] hover:border-white/[0.14]"
-      }`}
+      className="group relative flex flex-col rounded-2xl border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06] hover:border-white/[0.14] p-5 transition-colors duration-200"
     >
       <div className="flex items-start justify-between gap-3 mb-3">
         <span
@@ -190,24 +190,17 @@ function ResearchCard({ project, index }: { project: ResearchProject; index: num
         ))}
       </div>
 
-      {project.pending ? (
-        <span className="inline-flex items-center gap-1.5 text-xs font-mono text-foreground/30">
-          <Lock size={11} aria-hidden="true" />
-          Repo coming soon
-        </span>
-      ) : (
-        <Link
-          href={project.githubUrl!}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 text-xs font-mono text-accent/70 hover:text-accent transition-colors"
-          aria-label={`View ${project.title} on GitHub`}
-        >
-          <FaGithub size={12} aria-hidden="true" />
-          View on GitHub
-          <ArrowUpRight size={11} aria-hidden="true" />
-        </Link>
-      )}
+      <Link
+        href={project.githubUrl!}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex items-center gap-1.5 text-xs font-mono text-accent/70 hover:text-accent transition-colors"
+        aria-label={`View ${project.title} on GitHub`}
+      >
+        <FaGithub size={12} aria-hidden="true" />
+        View on GitHub
+        <ArrowUpRight size={11} aria-hidden="true" />
+      </Link>
     </motion.article>
   )
 }
